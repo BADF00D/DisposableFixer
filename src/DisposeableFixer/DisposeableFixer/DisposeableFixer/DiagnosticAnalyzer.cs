@@ -37,6 +37,7 @@ namespace DisposeableFixer {
         {
             var node = context.Node;
             var tree = node.SyntaxTree;
+            var symanticModel = context.SemanticModel;
             var test = new StringBuilder();
             var creation = node
                 .DescendantNodes()
@@ -44,18 +45,14 @@ namespace DisposeableFixer {
                 .FirstOrDefault(n => n?.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().Any() ?? false);
 
             if (creation == null) return; //nothing to analyse
+            var identifierNameSyntax = node.DescendantNodes().OfType<IdentifierNameSyntax>().FirstOrDefault();
+            var typeInfo = symanticModel.GetSymbolInfo(identifierNameSyntax).Symbol as INamedTypeSymbol;
+            if (typeInfo == null) return;
+            if (!typeInfo.AllInterfaces.Any(i => i.Name == "IDisposable")) return;
 
             var name = creation.Identifier.Text;
             var location = creation.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().FirstOrDefault().GetLocation();
-
-            var createdTypeIdentifier = creation
-                .DescendantNodes()
-                .OfType<ObjectCreationExpressionSyntax>()
-                .FirstOrDefault()
-                .DescendantNodes()
-                .OfType<IdentifierNameSyntax>()
-                .FirstOrDefault();
-
+            
             //find all definitions for a variable wihtin the class and all its methods
             //var usages = context.SemanticModel.SyntaxTree.GetRoot().DescendantNodes().OfType<VariableDeclarationSyntax>();
             var usages = context.SemanticModel.SyntaxTree.GetRoot().DescendantNodes();
