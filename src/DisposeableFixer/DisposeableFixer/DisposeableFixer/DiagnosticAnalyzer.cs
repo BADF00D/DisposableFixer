@@ -29,10 +29,6 @@ namespace DisposeableFixer {
         public override void Initialize(AnalysisContext context) {
             // TODO: Consider registering other actions that act on syntax instead of or in addition to symbols
             // See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Analyzer%20Actions%20Semantics.md for more information
-            //context.RegisterSymbolAction(AnalyzeSymbol, SymbolKind.Field);
-            //context.RegisterSyntaxTreeAction(AnalyseTree);
-            //context.RegisterCodeBlockAction(AnalyseCodeBock);
-            //context.RegisterSyntaxTreeAction(AnalyseSyntaxTreeAction);
             context.RegisterSyntaxNodeAction(AnalyseSyntaxNode,SyntaxKind.LocalDeclarationStatement);
             
         }
@@ -42,106 +38,41 @@ namespace DisposeableFixer {
             var node = context.Node;
             var tree = node.SyntaxTree;
             var test = new StringBuilder();
-            var newNode = node.DescendantNodes().FirstOrDefault(n =>
-            {
-                var vardecl = n as VariableDeclaratorSyntax;
-                return vardecl?.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().Any() 
-                    ?? false;
-            }) as VariableDeclaratorSyntax;
-            if (newNode != null)
-            {
-                //find variablename
-                var name = newNode.Identifier.Text;
-                var location =
-                    newNode.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().FirstOrDefault().GetLocation();
+            var creation = node
+                .DescendantNodes()
+                .OfType<VariableDeclaratorSyntax>()
+                .FirstOrDefault(n => n?.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().Any() ?? false);
 
+            if (creation == null) return; //nothing to analyse
 
+            var name = creation.Identifier.Text;
+            var location = creation.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().FirstOrDefault().GetLocation();
 
-                //find all definitions for a variable wihtin the class and all its methods
-                //var usages = context.SemanticModel.SyntaxTree.GetRoot().DescendantNodes().OfType<VariableDeclarationSyntax>();
-                var usages = context.SemanticModel.SyntaxTree.GetRoot().DescendantNodes();
-                var access = usages.OfType<MemberAccessExpressionSyntax>();
+            var createdTypeIdentifier = creation
+                .DescendantNodes()
+                .OfType<ObjectCreationExpressionSyntax>()
+                .FirstOrDefault()
+                .DescendantNodes()
+                .OfType<IdentifierNameSyntax>()
+                .FirstOrDefault();
 
+            //find all definitions for a variable wihtin the class and all its methods
+            //var usages = context.SemanticModel.SyntaxTree.GetRoot().DescendantNodes().OfType<VariableDeclarationSyntax>();
+            var usages = context.SemanticModel.SyntaxTree.GetRoot().DescendantNodes();
+            var access = usages.OfType<MemberAccessExpressionSyntax>();
 
-                //var dispose = access
-                //    .Where(a => a.Expression is IdentifierNameSyntax)
-                //    .Select(a => a.Expression as IdentifierNameSyntax)
-                //    .Select(a => a.Identifier.Text)
-                //    .ToList();
-
-                var dispose = access
-                    .Where(a =>
-                    {
-                        var id = a.Expression as IdentifierNameSyntax;
-                        return id?.Identifier.Text == name && a.Name.Identifier.Text == "Dispose";
-                    });
-
-                if (!dispose.Any())
+            var dispose = access
+                .Where(a =>
                 {
-                    var diagnostic = Diagnostic.Create(Rule, location);
-                    context.ReportDiagnostic(diagnostic);
-                }
+                    var id = a.Expression as IdentifierNameSyntax;
+                    return id?.Identifier.Text == name && a.Name.Identifier.Text == "Dispose";
+                });
 
-            }
-        }
-        
-
-        private static void AnalyseCodeBock(CodeBlockAnalysisContext context)
-        {
-            var block = context.CodeBlock;
-            
-            var fds = block as FieldDeclarationSyntax;
-            var declaration = fds?.Declaration;
-            if (declaration?.Type is IdentifierNameSyntax)
+            if (!dispose.Any())
             {
-                var ns = (IdentifierNameSyntax) declaration.Type;
-                if (ns.Identifier.ValueText == "IDisposable")
-                {
-                    var diagnostic = Diagnostic.Create(Rule,block.GetLocation());
-                    context.ReportDiagnostic(diagnostic);
-                }
-            }
-        }
-
-        private static void AnalyseTree(SyntaxTreeAnalysisContext context)
-        {
-            var tree = context.Tree;
-
-            var field = tree.GetRoot(context.CancellationToken)
-                .ChildNodes()
-                .Where(d =>
-                {
-                    var data = d is FieldDeclarationSyntax;
-                    return data;
-                })
-                .ToArray();
-
-            Debug.WriteLine("");
-        }
-
-
-        private static void AnalyzeSymbol(SymbolAnalysisContext context) {
-            // TODO: Replace the following code with your own analysis, generating Diagnostic objects for any issues you find
-            var fieldsymbol = (IFieldSymbol)context.Symbol;
-            
-            // Find just those named type symbols with names containing lowercase letters.
-            if (fieldsymbol.Name.ToCharArray().Any(char.IsLower)) {
-                // For all such symbols, produce a diagnostic.
-                var diagnostic = Diagnostic.Create(Rule, fieldsymbol.Locations[0], fieldsymbol.Name);
-
+                var diagnostic = Diagnostic.Create(Rule, location);
                 context.ReportDiagnostic(diagnostic);
             }
-        }
-    }
-
-    public class SomeSyntaxWalker : SyntaxWalker
-    {
-        public override void Visit(SyntaxNode node)
-        {
-            if (node is MethodDeclarationSyntax)
-            {
-                Debug.WriteLine("Do something");
-            }
-        }
+        }   
     }
 }
