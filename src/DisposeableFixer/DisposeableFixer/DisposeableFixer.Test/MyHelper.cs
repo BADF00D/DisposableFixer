@@ -26,6 +26,13 @@ namespace DisposeableFixer.Test
             MetadataReference.CreateFromFile(typeof (Compilation).Assembly.Location);
 
 
+        public static SyntaxNode CompileAndRetrieveRootNode(string source)
+        {
+            var documents = GetDocumentFrom(source);
+
+            return documents[0].GetSyntaxRootAsync().GetAwaiter().GetResult();
+        }
+
         public static Diagnostic[] RunAnalyser(string source, DiagnosticAnalyzer analyzer)
         {
             var documents = GetDocumentFrom(source);

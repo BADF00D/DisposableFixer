@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using DisposeableFixer.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -100,9 +101,8 @@ namespace DisposeableFixer
             var identifierNameSyntax = context.Node.DescendantNodes().OfType<IdentifierNameSyntax>().FirstOrDefault();
             /*at this point we cant get the type of the variable, because its assignment to a field.
              * We have to find the field and get the name from that FieldDeclaration */
-            var classDeclaration = FindContainingClass(context.Node);
-            if (classDeclaration == null) return;
-            var fieldDeclaration = FindFieldInClass(classDeclaration, identifierNameSyntax.Identifier.Text);
+            var classDeclaration = context.Node.FindContainingClass();
+            var fieldDeclaration = classDeclaration?.FindFieldNamed(identifierNameSyntax.Identifier.Text);
             if (fieldDeclaration == null) return;
             var identifierSyntax = fieldDeclaration.DescendantNodes()
                 .OfType<IdentifierNameSyntax>()
@@ -129,33 +129,6 @@ namespace DisposeableFixer
             if (!dispose.Any()) {
                 var diagnostic = Diagnostic.Create(Rule, location);
                 context.ReportDiagnostic(diagnostic);
-            }
-        }
-
-        private static FieldDeclarationSyntax FindFieldInClass(ClassDeclarationSyntax classNode, string field_name)
-        {
-            return classNode
-                .DescendantNodes()
-                .OfType<FieldDeclarationSyntax>()
-                .Where(fds =>
-                {
-                    return fds
-                            .DescendantNodes()
-                            .OfType<VariableDeclarationSyntax>()
-                            .Count(id => id.Variables.Any(v => v.Identifier.Text== field_name)) == 1;
-                })
-                .FirstOrDefault();
-        }
-
-        private static ClassDeclarationSyntax FindContainingClass(SyntaxNode node)
-        {
-            while (true)
-            {
-                var @class = node.Parent as ClassDeclarationSyntax;
-                if (@class != null)
-                    return @class;
-
-                node = node.Parent;
             }
         }
     }

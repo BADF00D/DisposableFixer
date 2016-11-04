@@ -119,6 +119,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DisposeableFixerAnalyzerSpecs\DisposeableFixerAnalyzerSpec.cs" />
+    <Compile Include="Extensions\ClassDeclarationSyntaxExtensionsSpecs\If_FindFieldNamed_is_called_with_class_that_contains_no_fields.cs" />
+    <Compile Include="Extensions\ClassDeclarationSyntaxExtensionsSpecs\If_FindFieldNamed_is_called_with_class_that_contains_searched_field.cs" />
+    <Compile Include="Extensions\SyntaxNodeExtensionsSpecs\If_FindContainingClass_is_called_on_NamespaceDeclaration.cs" />
+    <Compile Include="Extensions\SyntaxNodeExtensionsSpecs\If_FindContainingClass_is_called_on_ClassDeclaration_of_a_private_Class.cs" />
+    <Compile Include="Extensions\SyntaxNodeExtensionsSpecs\If_FindContainingClass_is_called_on_ClassDeclaration_that_is_no_private_class.cs" />
+    <Compile Include="Extensions\SyntaxNodeExtensionsSpecs\If_FindContainingClass_is_called_on_ConstructorDeclaration.cs" />
+    <Compile Include="Extensions\SyntaxNodeExtensionsSpecs\If_FindContainingClass_is_called_on_FieldDeclaration.cs" />
+    <Compile Include="Extensions\SyntaxNodeExtensionsSpecs\If_FindContainingClass_is_called_on_FieldDeclaration_of_a_private_Class.cs" />
+    <Compile Include="Extensions\SyntaxNodeExtensionsSpecs\If_FindContainingClass_is_called_on_MethodDeclaration.cs" />
+    <Compile Include="Extensions\SyntaxNodeExtensionsSpecs\If_FindContainingClass_is_called_on_PropertyDeclaration.cs" />
     <Compile Include="MyHelper.cs" />
     <Compile Include="Spec.cs" />
     <Compile Include="Verifiers\CodeFixVerifier.cs" />
