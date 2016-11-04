@@ -65,27 +65,64 @@ namespace DisposeableFixer
             if (typeInfo == null) return;
             if (!typeInfo.AllInterfaces.Any(i => i.Name == "IDisposable")) return;
 
-            var name = creation.Identifier.Text;
+           
             var location =
                 creation.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().FirstOrDefault().GetLocation();
+            var name = creation.Identifier.Text;
+
+            //is this instance wrapped into a using
+            var method = creation.FindContainingMethod();
+            if (method != null)
+            {
+                var usingsInMethods = method.DescendantNodes()
+                .OfType<UsingStatementSyntax>()
+                .Where(us => {
+                    var descendantNodes = us.DescendantNodes().ToArray();
+                    return descendantNodes.OfType<IdentifierNameSyntax>().Count(id => id.Identifier.Text == name) >
+                           0;
+                });
+                if (usingsInMethods.Any()) return;
+                var diagnostic = Diagnostic.Create(Rule, location);
+                context.ReportDiagnostic(diagnostic);
+                return;
+            }
+            
+            //sereach using in ctor
+            var ctor = creation.FindContainingConstructor();
+            if (ctor != null)
+            {
+                var usingInCtors = ctor.DescendantNodes()
+                .OfType<UsingStatementSyntax>()
+                .Where(us =>
+                {
+                    var descendantNodes = us.DescendantNodes().ToArray();
+                    return descendantNodes.OfType<IdentifierNameSyntax>().Count(id => id.Identifier.Text == name) >
+                           0;
+                });
+
+                if (usingInCtors.Any()) return;
+
+                var diagnostic = Diagnostic.Create(Rule, location);
+                context.ReportDiagnostic(diagnostic);
+                return;
+            }
 
             //find all definitions for a variable wihtin the class and all its methods
             //var usages = context.SemanticModel.SyntaxTree.GetRoot().DescendantNodes().OfType<VariableDeclarationSyntax>();
+            
             var usages = context.SemanticModel.SyntaxTree.GetRoot().DescendantNodes();
             var access = usages.OfType<MemberAccessExpressionSyntax>();
 
+            //is there a call to Dispose?
             var dispose = access
-                .Where(a =>
-                {
-                    var id = a.Expression as IdentifierNameSyntax;
-                    return id?.Identifier.Text == name && a.Name.Identifier.Text == "Dispose";
-                });
+                 .Where(a => {
+                     var id = a.Expression as IdentifierNameSyntax;
+                     return id?.Identifier.Text == name && a.Name.Identifier.Text == "Dispose";
+                 });
 
-            if (!dispose.Any())
-            {
-                var diagnostic = Diagnostic.Create(Rule, location);
-                context.ReportDiagnostic(diagnostic);
-            }
+            if (dispose.Any()) return;
+
+            context.ReportDiagnostic(Diagnostic.Create(Rule, location));
         }
 
         private static void SimpleAssignmentExpression(SyntaxNodeAnalysisContext context)
