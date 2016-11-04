@@ -7,31 +7,26 @@ namespace DisposeableFixer.Extensions
     {
         public static MethodDeclarationSyntax FindContainingMethod(this VariableDeclaratorSyntax node)
         {
-            var temp = node as SyntaxNode;
+            return node.FindParent<MethodDeclarationSyntax, ConstructorDeclarationSyntax>();
+        }
+
+        public static ConstructorDeclarationSyntax FindContainingConstructor(this VariableDeclaratorSyntax node)
+        {
+            return node.FindParent<ConstructorDeclarationSyntax, MethodDeclarationSyntax>();
+        }
+
+        private static TOut FindParent<TOut, TBreak>(this SyntaxNode node) where TBreak : SyntaxNode where TOut : SyntaxNode
+        {
+            var temp = node;
             while (true) {
                 if (temp.Parent == null) return null;
-                if (temp.Parent is ConstructorDeclarationSyntax) return null;
-                var method = temp.Parent as MethodDeclarationSyntax;
-                if (method != null)
-                    return method;
+                if (temp.Parent is TBreak) return null;
+                var result = temp.Parent as TOut;
+                if (result != null)
+                    return result;
 
                 temp = temp.Parent;
             }
         }
-
-        public static ConstructorDeclarationSyntax FindContainingConstructor(this VariableDeclaratorSyntax node) {
-            var temp = node as SyntaxNode;
-            while (true) {
-                if (temp.Parent == null) return null;
-                if (temp.Parent is MethodDeclarationSyntax) return null; 
-                var ctor = temp.Parent as ConstructorDeclarationSyntax;
-                if (ctor != null)
-                    return ctor;
-
-                temp = temp.Parent;
-            }
-        }
-
-
     }
 }
