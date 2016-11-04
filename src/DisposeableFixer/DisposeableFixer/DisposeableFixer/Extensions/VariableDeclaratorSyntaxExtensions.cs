@@ -10,6 +10,7 @@ namespace DisposeableFixer.Extensions
             var temp = node as SyntaxNode;
             while (true) {
                 if (temp.Parent == null) return null;
+                if (temp.Parent is ConstructorDeclarationSyntax) return null;
                 var method = temp.Parent as MethodDeclarationSyntax;
                 if (method != null)
                     return method;
@@ -30,5 +31,7 @@ namespace DisposeableFixer.Extensions
                 temp = temp.Parent;
             }
         }
+
+
     }
 }
