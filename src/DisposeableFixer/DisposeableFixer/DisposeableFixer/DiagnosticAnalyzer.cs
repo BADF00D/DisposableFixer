@@ -30,7 +30,7 @@ namespace DisposeableFixer {
             // TODO: Consider registering other actions that act on syntax instead of or in addition to symbols
             // See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Analyzer%20Actions%20Semantics.md for more information
             context.RegisterSyntaxNodeAction(AnalyseSyntaxNode,SyntaxKind.LocalDeclarationStatement);
-            
+            context.RegisterSyntaxNodeAction(AnalyseSyntaxNode,SyntaxKind.FieldDeclaration);
         }
 
         private static void AnalyseSyntaxNode(SyntaxNodeAnalysisContext context)
