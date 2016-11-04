@@ -82,6 +82,17 @@ namespace DisposeableFixer
                            0;
                 });
                 if (usingsInMethods.Any()) return;
+
+                var isDisposed = method.DescendantNodes()
+                    .OfType<MemberAccessExpressionSyntax>()
+                    .Where(maes =>
+                    {
+                        var ins = maes.Expression as IdentifierNameSyntax;
+                        return ins?.Identifier.Text == name && maes.Name.Identifier.Text == "Dispose";
+                    });
+
+                if (isDisposed.Any()) return;
+
                 var diagnostic = Diagnostic.Create(Rule, location);
                 context.ReportDiagnostic(diagnostic);
                 return;
@@ -101,26 +112,29 @@ namespace DisposeableFixer
                 });
 
                 if (usingInCtors.Any()) return;
+                
+                var isDisposed = ctor.DescendantNodes()
+                   .OfType<MemberAccessExpressionSyntax>()
+                   .Where(maes => {
+                       var ins = maes.Expression as IdentifierNameSyntax;
+                       return ins?.Identifier.Text == name && maes.Name.Identifier.Text == "Dispose";
+                   });
+
+                if (isDisposed.Any()) return;
 
                 var diagnostic = Diagnostic.Create(Rule, location);
                 context.ReportDiagnostic(diagnostic);
                 return;
             }
 
-            //find all definitions for a variable wihtin the class and all its methods
-            //var usages = context.SemanticModel.SyntaxTree.GetRoot().DescendantNodes().OfType<VariableDeclarationSyntax>();
-            
-            var usages = context.SemanticModel.SyntaxTree.GetRoot().DescendantNodes();
-            var access = usages.OfType<MemberAccessExpressionSyntax>();
+            //this is a field => go to containing class and find dispose
+            var classDeclaration = creation.FindContainingClass();
+            var isDisposed2 = (classDeclaration?
+                .DescendantNodes()
+                .OfType<MemberAccessExpressionSyntax>())
+                .Any(maes => (maes.Expression as IdentifierNameSyntax)?.Identifier.Text == name && maes.Name.Identifier.Text == "Dispose"),
 
-            //is there a call to Dispose?
-            var dispose = access
-                 .Where(a => {
-                     var id = a.Expression as IdentifierNameSyntax;
-                     return id?.Identifier.Text == name && a.Name.Identifier.Text == "Dispose";
-                 });
-
-            if (dispose.Any()) return;
+            if (isDisposed2) return;
 
             context.ReportDiagnostic(Diagnostic.Create(Rule, location));
         }
