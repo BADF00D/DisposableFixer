@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading;
 using DisposeableFixer.Extensions;
@@ -52,80 +53,74 @@ namespace DisposeableFixer
         
         private static void AnalyseLocalDeclarationStatement(SyntaxNodeAnalysisContext context)
         {
-            var node = context.Node;
-            var symanticModel = context.SemanticModel;
-            var creation = node
-                .DescendantNodes()
-                .OfType<VariableDeclaratorSyntax>()
-                .FirstOrDefault(n => n?.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().Any() ?? false);
-
-            if (creation == null) return; //nothing to analyse
-            var identifierNameSyntax = node.DescendantNodes().OfType<IdentifierNameSyntax>().FirstOrDefault();
-            var typeInfo = symanticModel.GetSymbolInfo(identifierNameSyntax).Symbol as INamedTypeSymbol;
-            if (typeInfo == null) return;
-            if (!typeInfo.AllInterfaces.Any(i => i.Name == DisposableInterface)) return;
-
-           
-            var location =
-                creation.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().FirstOrDefault().GetLocation();
-            var name = creation.Identifier.Text;
-
-            //is this instance wrapped into a using
-            var method = creation.FindContainingMethod();
-            if (method != null)
+            try
             {
-                var usingsInMethods = method.DescendantNodes()
-                .OfType<UsingStatementSyntax>()
-                .Where(us => {
-                    var descendantNodes = us.DescendantNodes().ToArray();
-                    return descendantNodes.OfType<IdentifierNameSyntax>().Count(id => id.Identifier.Text == name) >
-                           0;
-                });
-                if (usingsInMethods.Any()) return;
+                var node = context.Node;
+                var symanticModel = context.SemanticModel;
+                var creation = node
+                    .DescendantNodes()
+                    .OfType<VariableDeclaratorSyntax>()
+                    .FirstOrDefault(n => n?.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().Any() ?? false);
 
-                var isDisposed = method.DescendantNodes()
-                    .OfType<MemberAccessExpressionSyntax>()
-                    .Where(maes =>
-                    {
-                        var ins = maes.Expression as IdentifierNameSyntax;
-                        return ins?.Identifier.Text == name && maes.Name.Identifier.Text == DisposeMethod;
-                    });
+                if (creation == null) return; //nothing to analyse
+                var identifierNameSyntax = node.DescendantNodes().OfType<IdentifierNameSyntax>().FirstOrDefault();
+                var typeInfo = symanticModel.GetSymbolInfo(identifierNameSyntax).Symbol as INamedTypeSymbol;
+                if (typeInfo == null) return;
+                if (!typeInfo.AllInterfaces.Any(i => i.Name == DisposableInterface)) return;
 
-                if (isDisposed.Any()) return;
 
-                var diagnostic = Diagnostic.Create(Rule, location);
-                context.ReportDiagnostic(diagnostic);
-                return;
-            }
-            
-            //sereach using in ctor
-            var ctor = creation.FindContainingConstructor();
-            if (ctor != null)
-            {
-                var usingInCtors = ctor.DescendantNodes()
-                .OfType<UsingStatementSyntax>()
-                .Where(us =>
+                var location =
+                    creation.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().FirstOrDefault().GetLocation();
+                var name = creation.Identifier.Text;
+
+                //is this instance wrapped into a using
+                var method = creation.FindContainingMethod();
+                if (IsCreationWithinMethod(method))
                 {
-                    var descendantNodes = us.DescendantNodes().ToArray();
-                    return descendantNodes.OfType<IdentifierNameSyntax>().Count(id => id.Identifier.Text == name) >
-                           0;
+                    AnalyseCreationWithinMethod(method, context, name, location);
+                    return;
+                }
+
+                //sereach using in ctor
+                var ctor = creation.FindContainingConstructor();
+                if (IsCreationWithinCtor(ctor))
+                {
+                    AnalyseCreationWithinMethod(ctor, context, name, location);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("Something went wrong: "+e);
+            }
+        }
+
+        private static void AnalyseCreationWithinMethod(SyntaxNode methodOrCtor, SyntaxNodeAnalysisContext context, string name, Location location)
+        {
+            if (methodOrCtor.ContainsUsingsOfVariableNamed(name)) return;
+            
+            var isDisposed = methodOrCtor.DescendantNodes()
+                .OfType<MemberAccessExpressionSyntax>()
+                .Where(maes =>
+                {
+                    var ins = maes.Expression as IdentifierNameSyntax;
+                    return ins?.Identifier.Text == name && maes.Name.Identifier.Text == DisposeMethod;
                 });
 
-                if (usingInCtors.Any()) return;
-                
-                var isDisposed = ctor.DescendantNodes()
-                   .OfType<MemberAccessExpressionSyntax>()
-                   .Where(maes => {
-                       var ins = maes.Expression as IdentifierNameSyntax;
-                       return ins?.Identifier.Text == name && maes.Name.Identifier.Text == DisposeMethod;
-                   });
+            if (isDisposed.Any()) return;
 
-                if (isDisposed.Any()) return;
+            var diagnostic = Diagnostic.Create(Rule, location);
+            context.ReportDiagnostic(diagnostic);
+            return;
+        }
 
-                var diagnostic = Diagnostic.Create(Rule, location);
-                context.ReportDiagnostic(diagnostic);
-                return;
-            }
+        private static bool IsCreationWithinCtor(ConstructorDeclarationSyntax ctor)
+        {
+            return ctor != null;
+        }
+
+        private static bool IsCreationWithinMethod(MethodDeclarationSyntax method)
+        {
+            return method != null;
         }
 
         private static void AnalyseFieldDeclaration(SyntaxNodeAnalysisContext context) {

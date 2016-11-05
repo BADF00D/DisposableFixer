@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Linq;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DisposeableFixer.Extensions
@@ -16,6 +17,17 @@ namespace DisposeableFixer.Extensions
 
                 node = node.Parent;
             }
+        }
+
+        public static bool ContainsUsingsOfVariableNamed(this SyntaxNode node, string variableName)
+        {
+            return node.DescendantNodes()
+                .OfType<UsingStatementSyntax>()
+                .Any(us => {
+                    var descendantNodes = us.DescendantNodes().ToArray();
+                    return descendantNodes.OfType<IdentifierNameSyntax>().Count(id => id.Identifier.Text == variableName) >
+                           0;
+                });
         }
     }
 }
