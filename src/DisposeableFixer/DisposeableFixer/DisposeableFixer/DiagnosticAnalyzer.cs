@@ -184,8 +184,6 @@ namespace DisposeableFixer
             var name = identifierSyntax.Identifier.Text;
             var location = creationSyntax.GetLocation();
 
-            //find all definitions for a variable wihtin the class and all its methods
-            //var usages = context.SemanticModel.SyntaxTree.GetRoot().DescendantNodes().OfType<VariableDeclarationSyntax>();
             var usages = context.SemanticModel.SyntaxTree.GetRoot().DescendantNodes();
             var access = usages.OfType<MemberAccessExpressionSyntax>();
 

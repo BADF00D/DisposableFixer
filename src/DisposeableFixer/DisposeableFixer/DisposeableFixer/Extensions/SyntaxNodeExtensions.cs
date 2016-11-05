@@ -23,10 +23,27 @@ namespace DisposeableFixer.Extensions
         {
             return node.DescendantNodes()
                 .OfType<UsingStatementSyntax>()
-                .Any(us => {
-                    var descendantNodes = us.DescendantNodes().ToArray();
-                    return descendantNodes.OfType<IdentifierNameSyntax>().Count(id => id.Identifier.Text == variableName) >
-                           0;
+                .Any(us =>
+                {
+                    //analysis for this using end when the BlockSyntax begins
+                    var descendantNodes = us.DescendantNodes().TakeWhile(dn => !(dn is BlockSyntax)).ToArray();
+                    if (descendantNodes.Length == 1)
+                    {
+                        /* matches when
+                         * var memstream = new MemoryStream();
+                         * using(memstream){}
+                         */
+                        return descendantNodes
+                            .OfType<IdentifierNameSyntax>()
+                            .Any(ins => ins.Identifier.Text == variableName);
+                    }
+                    /* matches when
+                     * using(var memstream = new MemoryStream()){}
+                     */
+                    return descendantNodes
+                        .TakeWhile(dn => !(dn is BlockSyntax))
+                        .OfType<VariableDeclaratorSyntax>()
+                        .Any(variableDeclaratorSyntax => variableDeclaratorSyntax.Identifier.Text == variableName);
                 });
         }
     }
