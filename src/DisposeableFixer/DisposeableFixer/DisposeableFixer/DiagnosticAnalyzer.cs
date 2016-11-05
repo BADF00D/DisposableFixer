@@ -36,17 +36,17 @@ namespace DisposeableFixer
         private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category,
             DiagnosticSeverity.Warning, isEnabledByDefault: true, description: Description);
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
-        {
-            get { return ImmutableArray.Create(Rule); }
-        }
+        private const string DisposeMethod = "Dispose";
+        private const string DisposableInterface = "IDisposable";
+
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
         public override void Initialize(AnalysisContext context)
         {
             // TODO: Consider registering other actions that act on syntax instead of or in addition to symbols
             // See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Analyzer%20Actions%20Semantics.md for more information
             context.RegisterSyntaxNodeAction(AnalyseLocalDeclarationStatement, SyntaxKind.LocalDeclarationStatement);
-            context.RegisterSyntaxNodeAction(AnalyseLocalDeclarationStatement, SyntaxKind.FieldDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyseFieldDeclaration, SyntaxKind.FieldDeclaration);
             context.RegisterSyntaxNodeAction(SimpleAssignmentExpression, SyntaxKind.SimpleAssignmentExpression);
         }
         
@@ -63,7 +63,7 @@ namespace DisposeableFixer
             var identifierNameSyntax = node.DescendantNodes().OfType<IdentifierNameSyntax>().FirstOrDefault();
             var typeInfo = symanticModel.GetSymbolInfo(identifierNameSyntax).Symbol as INamedTypeSymbol;
             if (typeInfo == null) return;
-            if (!typeInfo.AllInterfaces.Any(i => i.Name == "IDisposable")) return;
+            if (!typeInfo.AllInterfaces.Any(i => i.Name == DisposableInterface)) return;
 
            
             var location =
@@ -88,7 +88,7 @@ namespace DisposeableFixer
                     .Where(maes =>
                     {
                         var ins = maes.Expression as IdentifierNameSyntax;
-                        return ins?.Identifier.Text == name && maes.Name.Identifier.Text == "Dispose";
+                        return ins?.Identifier.Text == name && maes.Name.Identifier.Text == DisposeMethod;
                     });
 
                 if (isDisposed.Any()) return;
@@ -117,7 +117,7 @@ namespace DisposeableFixer
                    .OfType<MemberAccessExpressionSyntax>()
                    .Where(maes => {
                        var ins = maes.Expression as IdentifierNameSyntax;
-                       return ins?.Identifier.Text == name && maes.Name.Identifier.Text == "Dispose";
+                       return ins?.Identifier.Text == name && maes.Name.Identifier.Text == DisposeMethod;
                    });
 
                 if (isDisposed.Any()) return;
@@ -126,13 +126,36 @@ namespace DisposeableFixer
                 context.ReportDiagnostic(diagnostic);
                 return;
             }
+        }
 
+        private static void AnalyseFieldDeclaration(SyntaxNodeAnalysisContext context) {
+            var node = context.Node;
+            var symanticModel = context.SemanticModel;
+            var creation = node
+                .DescendantNodes()
+                .OfType<VariableDeclaratorSyntax>()
+                .FirstOrDefault(n => n?.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().Any() ?? false);
+
+            if (creation == null) return; //nothing to analyse
+            var identifierNameSyntax = node.DescendantNodes().OfType<IdentifierNameSyntax>().FirstOrDefault();
+            var typeInfo = symanticModel.GetSymbolInfo(identifierNameSyntax).Symbol as INamedTypeSymbol;
+            if (typeInfo == null) return;
+            if (!typeInfo.AllInterfaces.Any(i => i.Name == DisposableInterface)) return;
+
+
+            var location =
+                creation.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().FirstOrDefault().GetLocation();
+            var name = creation.Identifier.Text;
+            
             //this is a field => go to containing class and find dispose
             var classDeclaration = creation.FindContainingClass();
             var isDisposed2 = (classDeclaration?
                 .DescendantNodes()
                 .OfType<MemberAccessExpressionSyntax>())
-                .Any(maes => (maes.Expression as IdentifierNameSyntax)?.Identifier.Text == name && maes.Name.Identifier.Text == "Dispose"),
+                .Any(
+                    maes =>
+                        (maes.Expression as IdentifierNameSyntax)?.Identifier.Text == name &&
+                        maes.Name.Identifier.Text == DisposeMethod);
 
             if (isDisposed2) return;
 
@@ -161,7 +184,7 @@ namespace DisposeableFixer
 
             var typeInfo = symanticModel.GetSymbolInfo(identifierSyntax).Symbol as INamedTypeSymbol;
             if (typeInfo == null) return;
-            if (!typeInfo.AllInterfaces.Any(i => i.Name == "IDisposable")) return;
+            if (!typeInfo.AllInterfaces.Any(i => i.Name == DisposableInterface)) return;
 
             var name = identifierSyntax.Identifier.Text;
             var location = creationSyntax.GetLocation();
@@ -174,7 +197,7 @@ namespace DisposeableFixer
             var dispose = access
                 .Where(a => {
                     var id = a.Expression as IdentifierNameSyntax;
-                    return id?.Identifier.Text == name && a.Name.Identifier.Text == "Dispose";
+                    return id?.Identifier.Text == name && a.Name.Identifier.Text == DisposeMethod;
                 });
 
             if (!dispose.Any()) {
