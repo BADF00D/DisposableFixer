@@ -135,7 +135,7 @@ namespace DisposeableFixer
             var identifierNameSyntax = node.DescendantNodes().OfType<IdentifierNameSyntax>().FirstOrDefault();
             var typeInfo = symanticModel.GetSymbolInfo(identifierNameSyntax).Symbol as INamedTypeSymbol;
             if (typeInfo == null) return;
-            if (!typeInfo.AllInterfaces.Any(i => i.Name == DisposableInterface)) return;
+            if (!(IsDisposeableOrImplementsDisposable(typeInfo))) return;
 
 
             var location =
@@ -166,7 +166,7 @@ namespace DisposeableFixer
                 .OfType<ObjectCreationExpressionSyntax>()
                 .FirstOrDefault();
 
-            if (creationSyntax == null) return; //nothing to analyse
+            if (creationSyntax == null) return; 
             var identifierNameSyntax = context.Node.DescendantNodes().OfType<IdentifierNameSyntax>().FirstOrDefault();
             /*at this point we cant get the type of the variable, because its assignment to a field.
              * We have to find the field and get the name from that FieldDeclaration */
@@ -179,7 +179,7 @@ namespace DisposeableFixer
 
             var typeInfo = symanticModel.GetSymbolInfo(identifierSyntax).Symbol as INamedTypeSymbol;
             if (typeInfo == null) return;
-            if (!typeInfo.AllInterfaces.Any(i => i.Name == DisposableInterface)) return;
+            if (!(IsDisposeableOrImplementsDisposable(typeInfo))) return;
 
             var name = identifierSyntax.Identifier.Text;
             var location = creationSyntax.GetLocation();
@@ -187,6 +187,7 @@ namespace DisposeableFixer
             var usages = context.SemanticModel.SyntaxTree.GetRoot().DescendantNodes();
             var access = usages.OfType<MemberAccessExpressionSyntax>();
 
+            
             var dispose = access
                 .Where(a => {
                     var id = a.Expression as IdentifierNameSyntax;
@@ -197,6 +198,21 @@ namespace DisposeableFixer
                 var diagnostic = Diagnostic.Create(Rule, location);
                 context.ReportDiagnostic(diagnostic);
             }
+        }
+
+        private static bool IsDisposeableOrImplementsDisposable(INamedTypeSymbol typeInfo)
+        {
+            return IsIDisposable(typeInfo) || ImplementsIDisposable(typeInfo);
+        }
+
+        private static bool IsIDisposable(INamedTypeSymbol typeInfo)
+        {
+            return typeInfo.Name == DisposableInterface;
+        }
+
+        private static bool ImplementsIDisposable(INamedTypeSymbol typeInfo)
+        {
+            return typeInfo.AllInterfaces.Any(i => i.Name == DisposableInterface);
         }
     }
 }
