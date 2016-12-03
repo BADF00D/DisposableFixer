@@ -8,8 +8,8 @@
     <ProjectGuid>{B79E0F2C-C5BF-4365-A240-059F16F628CB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DisposeableFixer.Test</RootNamespace>
-    <AssemblyName>DisposeableFixer.Test</AssemblyName>
+    <RootNamespace>DisposableFixer.Test</RootNamespace>
+    <AssemblyName>DisposableFixer.Test</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -167,9 +167,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DisposeableFixer\DisposeableFixer.csproj">
+    <ProjectReference Include="..\DisposeableFixer\DisposableFixer.csproj">
       <Project>{38CBBE2A-DA57-4E27-8BCD-24206487BACB}</Project>
-      <Name>DisposeableFixer</Name>
+      <Name>DisposableFixer</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisposeableFixer", "DisposeableFixer\DisposeableFixer\DisposeableFixer.csproj", "{38CBBE2A-DA57-4E27-8BCD-24206487BACB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisposableFixer", "DisposeableFixer\DisposeableFixer\DisposableFixer.csproj", "{38CBBE2A-DA57-4E27-8BCD-24206487BACB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisposeableFixer.Test", "DisposeableFixer\DisposeableFixer.Test\DisposeableFixer.Test.csproj", "{B79E0F2C-C5BF-4365-A240-059F16F628CB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisposableFixer.Test", "DisposeableFixer\DisposeableFixer.Test\DisposableFixer.Test.csproj", "{B79E0F2C-C5BF-4365-A240-059F16F628CB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisposeableFixer.Vsix", "DisposeableFixer\DisposeableFixer.Vsix\DisposeableFixer.Vsix.csproj", "{1C414FAD-F6D3-401B-A882-C0ECB37319AD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisposableFixer.Vsix", "DisposeableFixer\DisposeableFixer.Vsix\DisposableFixer.Vsix.csproj", "{1C414FAD-F6D3-401B-A882-C0ECB37319AD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace DisposeableFixer.Extensions
+namespace DisposableFixer.Extensions
 {
     public static class ClassDeclarationSyntaxExtensions
     {

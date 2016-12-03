@@ -1,28 +1,29 @@
-﻿using System;
-using System.IO;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using NUnit.Framework;
 
-namespace DisposeableFixer.Test.DisposeableFixerAnalyzerSpecs
+namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs
 {
     [TestFixture]
     internal abstract class DisposeableFixerAnalyzerSpec : Spec
     {
-        protected readonly DisposeableFixerAnalyzer Sut;
+        protected readonly DisposableFixerAnalyzer Sut;
 
         protected DisposeableFixerAnalyzerSpec()
         {
-            Sut = new DisposeableFixerAnalyzer();
+            Sut = new DisposableFixerAnalyzer();
         }
     }
 
     [TestFixture]
-    internal class If_Analyser_runs_on_class_with_two_methods_each_containing_an_disposable_instance_with_the_same_name_but_only_one_is_disposed : DisposeableFixerAnalyzerSpec
+    internal class
+        If_Analyser_runs_on_class_with_two_methods_each_containing_an_disposable_instance_with_the_same_name_but_only_one_is_disposed :
+            DisposeableFixerAnalyzerSpec
     {
         private Diagnostic[] _diagnostics;
 
-        protected override void BecauseOf() {
+        protected override void BecauseOf()
+        {
             _diagnostics = MyHelper.RunAnalyser(Code, Sut);
         }
 
@@ -54,10 +55,14 @@ namespace DisFixerTest.Duplicates
     }
 
     [TestFixture]
-    internal class If_Analyser_runs_on_document_with_two_classes_each_containing_an_disposable_instance_with_the_same_name_but_only_one_is_disposed : DisposeableFixerAnalyzerSpec {
+    internal class
+        If_Analyser_runs_on_document_with_two_classes_each_containing_an_disposable_instance_with_the_same_name_but_only_one_is_disposed :
+            DisposeableFixerAnalyzerSpec
+    {
         private Diagnostic[] _diagnostics;
 
-        protected override void BecauseOf() {
+        protected override void BecauseOf()
+        {
             _diagnostics = MyHelper.RunAnalyser(Code, Sut);
         }
 
@@ -83,16 +88,21 @@ namespace DisFixerTest.Duplicates
 
 
         [Test]
-        public void Then_result_should_contain_one_Diagnostics() {
+        public void Then_result_should_contain_one_Diagnostics()
+        {
             _diagnostics.Length.Should().Be(1);
         }
     }
 
     [TestFixture]
-    internal class If_Analyser_runs_on_document_with_two_classes_each_containing_an_disposable_field_with_the_same_name_but_only_one_is_disposed : DisposeableFixerAnalyzerSpec {
+    internal class
+        If_Analyser_runs_on_document_with_two_classes_each_containing_an_disposable_field_with_the_same_name_but_only_one_is_disposed :
+            DisposeableFixerAnalyzerSpec
+    {
         private Diagnostic[] _diagnostics;
 
-        protected override void BecauseOf() {
+        protected override void BecauseOf()
+        {
             _diagnostics = MyHelper.RunAnalyser(Code, Sut);
         }
 
@@ -118,9 +128,9 @@ namespace DisFixerTest.Duplicates
 
 
         [Test]
-        public void Then_result_should_contain_one_Diagnostics() {
+        public void Then_result_should_contain_one_Diagnostics()
+        {
             _diagnostics.Length.Should().Be(1);
         }
     }
 }
-

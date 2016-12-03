@@ -2,18 +2,18 @@ using System;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using DisposeableFixer.Extensions;
+using DisposableFixer.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace DisposeableFixer
+namespace DisposableFixer
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class DisposeableFixerAnalyzer : DiagnosticAnalyzer
+    public class DisposableFixerAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "DisposeableFixer";
+        public const string DiagnosticId = "DisposableFixer";
 
         private const string Category = "Wrong Usage";
 

@@ -1,10 +1,10 @@
 ﻿using System.Linq;
-using DisposeableFixer.Extensions;
+using DisposableFixer.Extensions;
 using FluentAssertions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 
-namespace DisposeableFixer.Test.Extensions.SyntaxNodeExtensionsSpecs
+namespace DisposableFixer.Test.Extensions.SyntaxNodeExtensionsSpecs
 {
     [TestFixture]
     internal class If_FindContainingClass_is_called_on_NamespaceDeclaration : Spec
@@ -30,12 +30,13 @@ namespace DisFixerTest.Misc
     }
 }
 ";
+
         protected override void BecauseOf()
         {
             var namespaceDeclarationSyntax = MyHelper.CompileAndRetrieveRootNode(Code)
-               .DescendantNodes()
-               .OfType<NamespaceDeclarationSyntax>()
-               .FirstOrDefault();
+                .DescendantNodes()
+                .OfType<NamespaceDeclarationSyntax>()
+                .FirstOrDefault();
 
             _classDeclarationSyntax = namespaceDeclarationSyntax.FindContainingClass();
         }

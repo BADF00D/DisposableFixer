@@ -5,7 +5,7 @@ using System.Net;
 using System.Threading;
 using NUnit.Framework;
 
-namespace DisposeableFixer.Test
+namespace DisposableFixer.Test
 {
     [DebuggerStepThrough, DebuggerNonUserCode]
     public class Spec {

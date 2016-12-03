@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace DisposeableFixer.Extensions
+namespace DisposableFixer.Extensions
 {
     public static class VariableDeclaratorSyntaxExtensions
     {

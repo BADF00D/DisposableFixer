@@ -13,8 +13,8 @@
     <ProjectGuid>{1C414FAD-F6D3-401B-A882-C0ECB37319AD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DisposeableFixer.Vsix</RootNamespace>
-    <AssemblyName>DisposeableFixer.Vsix</AssemblyName>
+    <RootNamespace>DisposableFixer.Vsix</RootNamespace>
+    <AssemblyName>DisposableFixer.Vsix</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <GeneratePkgDefFile>false</GeneratePkgDefFile>
     <IncludeAssemblyInVSIXContainer>false</IncludeAssemblyInVSIXContainer>
@@ -52,9 +52,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DisposeableFixer\DisposeableFixer.csproj">
+    <ProjectReference Include="..\DisposeableFixer\DisposableFixer.csproj">
       <Project>{38CBBE2A-DA57-4E27-8BCD-24206487BACB}</Project>
-      <Name>DisposeableFixer</Name>
+      <Name>DisposableFixer</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

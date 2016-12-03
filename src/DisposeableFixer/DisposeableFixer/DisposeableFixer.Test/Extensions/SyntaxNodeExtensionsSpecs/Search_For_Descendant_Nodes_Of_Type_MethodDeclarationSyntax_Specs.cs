@@ -1,14 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
-using DisposeableFixer.Extensions;
+using DisposableFixer.Extensions;
 using FluentAssertions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 
-namespace DisposeableFixer.Test.Extensions.SyntaxNodeExtensionsSpecs
+namespace DisposableFixer.Test.Extensions.SyntaxNodeExtensionsSpecs
 {
     [TestFixture]
-    internal class Search_For_Descendant_Nodes_Of_Type_MethodDeclarationSyntax_Specs : Spec {
+    internal class Search_For_Descendant_Nodes_Of_Type_MethodDeclarationSyntax_Specs : Spec
+    {
         private IEnumerable<MethodDeclarationSyntax> _methodDeclarationFromLongVersion;
         private IEnumerable<MethodDeclarationSyntax> _methodDeclarationFromShortVersion;
         private const string Code = @"
@@ -26,6 +27,7 @@ namespace DisFixerTest.Misc
     }
 }
 ";
+
         protected override void BecauseOf()
         {
             var node = MyHelper.CompileAndRetrieveRootNode(Code);

@@ -3,13 +3,15 @@ using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using NUnit.Framework;
 
-namespace DisposeableFixer.Test.DisposeableFixerAnalyzerSpecs
+namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs
 {
     [TestFixture]
-    internal class If_Analyser_runs_on_method_that_returns_a_MemoryStream : DisposeableFixerAnalyzerSpec {
+    internal class If_Analyser_runs_on_method_that_returns_a_MemoryStream : DisposeableFixerAnalyzerSpec
+    {
         private Diagnostic[] _diagnostics;
 
-        protected override void BecauseOf() {
+        protected override void BecauseOf()
+        {
             _diagnostics = MyHelper.RunAnalyser(Code, Sut);
         }
 
@@ -27,14 +29,19 @@ namespace DisFixerTest
 ";
 
         [Test]
-        public void Then_there_should_be_no_Diagnostics() {
+        public void Then_there_should_be_no_Diagnostics()
+        {
             _diagnostics.Length.Should().Be(0);
         }
     }
 }
-namespace DisFixerTest.UsingBlock {
-    public class ClassWithMemoryStreamDeclaredInUsingBlock {
-        public MemoryStream Create() {
+
+namespace DisFixerTest.UsingBlock
+{
+    public class ClassWithMemoryStreamDeclaredInUsingBlock
+    {
+        public MemoryStream Create()
+        {
             return new MemoryStream();
         }
     }
