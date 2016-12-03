@@ -130,6 +130,7 @@
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_class_with_a_MemoryStream_as_field_initialized_in_ctor_that_is_not_disposed.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_class_with_no_Disposables.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_class_with_that_declares_a_MemoryStream_within_an_using_block.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_method_that_returns_a_MemoryStream.cs" />
     <Compile Include="Extensions\ClassDeclarationSyntaxExtensionsSpecs\If_FindFieldNamed_is_called_with_class_that_contains_no_fields.cs" />
     <Compile Include="Extensions\ClassDeclarationSyntaxExtensionsSpecs\If_FindFieldNamed_is_called_with_class_that_contains_searched_field.cs" />
     <Compile Include="Extensions\SyntaxNodeExtensionsSpecs\If_ContainsUsingsOfVariableNamed_is_called_on_Class_without_using.cs" />
