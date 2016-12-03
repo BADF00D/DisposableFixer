@@ -46,6 +46,37 @@ namespace DisposableFixer
             context.RegisterSyntaxNodeAction(AnalyseLocalDeclarationStatement, SyntaxKind.LocalDeclarationStatement);
             context.RegisterSyntaxNodeAction(AnalyseFieldDeclaration, SyntaxKind.FieldDeclaration);
             context.RegisterSyntaxNodeAction(SimpleAssignmentExpression, SyntaxKind.SimpleAssignmentExpression);
+            context.RegisterSyntaxNodeAction(AnalyseExpressionStatement, SyntaxKind.ExpressionStatement);
+        }
+
+        private static void AnalyseExpressionStatement(SyntaxNodeAnalysisContext context)
+        {
+            try
+            {
+                var node = context.Node;
+                var isDisposable = node
+                    .DescendantNodes<ObjectCreationExpressionSyntax>()
+                    .Where(ocr => ocr.Parent is ExpressionStatementSyntax)//all others are analysed by another method
+                    .Select(oc =>
+                    {
+                        var symbolInfo = context.SemanticModel.GetSymbolInfo(oc);
+                        var symbol = symbolInfo.Symbol as IMethodSymbol;
+                        var type = symbol?.ReceiverType as INamedTypeSymbol;
+
+                        return type;
+                    })
+                    .Where(nts => nts != null)
+                    .Any(IsDisposeableOrImplementsDisposable);
+
+                if (!isDisposable) return;
+
+                var diagnostic = Diagnostic.Create(Rule, node.GetLocation());
+                context.ReportDiagnostic(diagnostic);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
         }
 
         private static void AnalyseLocalDeclarationStatement(SyntaxNodeAnalysisContext context)
