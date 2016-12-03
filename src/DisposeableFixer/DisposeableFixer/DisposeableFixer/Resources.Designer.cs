@@ -62,7 +62,7 @@ namespace DisposeableFixer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Type names should be all uppercase..
+        ///   Looks up a localized string similar to Identifies instances of IDisposable that are not disposed..
         /// </summary>
         internal static string AnalyzerDescription {
             get {
@@ -71,7 +71,7 @@ namespace DisposeableFixer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This is not disposed.
+        ///   Looks up a localized string similar to This is an IDisposable that is not disposed..
         /// </summary>
         internal static string AnalyzerMessageFormat {
             get {
@@ -80,7 +80,7 @@ namespace DisposeableFixer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Disposable that is not disposed.
+        ///   Looks up a localized string similar to Undisposed ressource..
         /// </summary>
         internal static string AnalyzerTitle {
             get {

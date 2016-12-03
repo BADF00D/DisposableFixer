@@ -118,15 +118,15 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AnalyzerDescription" xml:space="preserve">
-    <value>Type names should be all uppercase.</value>
+    <value>Identifies instances of IDisposable that are not disposed.</value>
     <comment>An optional longer localizable description of the diagnostic.</comment>
   </data>
   <data name="AnalyzerMessageFormat" xml:space="preserve">
-    <value>This is not disposed</value>
+    <value>This is an IDisposable that is not disposed.</value>
     <comment>The format-able message the diagnostic displays.</comment>
   </data>
   <data name="AnalyzerTitle" xml:space="preserve">
-    <value>Disposable that is not disposed</value>
+    <value>Undisposed ressource.</value>
     <comment>The title of the diagnostic.</comment>
   </data>
 </root>

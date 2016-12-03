@@ -1,10 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="DisposeableFixer.Microsoft.e69d15ad-e40a-412c-a444-cfb06057928c" Version="0.5" Language="en-US" Publisher="David Störmer"/>
+    <Identity Id="DisposeableFixer.Microsoft.e69d15ad-e40a-412c-a444-cfb06057928c" Version="0.6" Language="en-US" Publisher="David Störmer"/>
     <DisplayName>DisposeableFixer</DisplayName>
-    <Description xml:space="preserve">Identifies an fixes issue using IDisposables</Description>
+    <Description xml:space="preserve">Identifies IDisposable instances that are not disposed.</Description>
+    <MoreInfo>https://github.com/BADF00D/DisposableFixer</MoreInfo>
     <License>License.txt</License>
+    <Icon>Icon.png</Icon>
+    <PreviewImage>Preview.png</PreviewImage>
     <Tags>C#, IDisposable</Tags>
   </Metadata>
   <Installation>
