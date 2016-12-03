@@ -36,18 +36,3 @@ namespace DisFixerTest {
         }
     }
 }
-
-namespace DisFixerTest {
-    public class ClassThatUsesFactoyInCtor {
-        public ClassThatUsesFactoyInCtor() {
-            var factory = new Factory();
-
-            var mem = factory.Create();
-        }
-    }
-    class Factory {
-        public MemoryStream Create() {
-            return new MemoryStream();
-        }
-    }
-}
