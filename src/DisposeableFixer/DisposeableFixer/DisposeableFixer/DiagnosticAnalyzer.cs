@@ -110,8 +110,7 @@ namespace DisposeableFixer
             var symanticModel = context.SemanticModel;
 
             var localSymbol = node
-                .DescendantNodes()
-                .OfType<VariableDeclaratorSyntax>()
+                .DescendantNodes<VariableDeclaratorSyntax>()
                 .Select(descendantNode => symanticModel.GetDeclaredSymbol(descendantNode) as ILocalSymbol)
                 .FirstOrDefault(m => m != null);
 

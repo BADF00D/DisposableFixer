@@ -144,6 +144,8 @@
     <Compile Include="Extensions\SyntaxNodeExtensionsSpecs\If_FindContainingClass_is_called_on_FieldDeclaration_of_a_private_Class.cs" />
     <Compile Include="Extensions\SyntaxNodeExtensionsSpecs\If_FindContainingClass_is_called_on_MethodDeclaration.cs" />
     <Compile Include="Extensions\SyntaxNodeExtensionsSpecs\If_FindContainingClass_is_called_on_PropertyDeclaration.cs" />
+    <Compile Include="Extensions\SyntaxNodeExtensionsSpecs\Search_For_Descendant_Nodes_Of_Type_MethodDeclarationSyntax_Specs.cs" />
+    <Compile Include="Extensions\SyntaxNodeExtensionsSpecs\Search_For_Descendant_Nodes_Of_Type_PropertyDeclarationSyntax_Specs.cs" />
     <Compile Include="Extensions\VariableDeclaratorSyntaxExtensionsSpecs\If_FindContainingConstructor_is_called_on_VariableDeclaration_in_Ctor.cs" />
     <Compile Include="Extensions\VariableDeclaratorSyntaxExtensionsSpecs\If_FindContainingMethods_is_called_on_VariableDeclaration_in_Ctor.cs" />
     <Compile Include="Extensions\VariableDeclaratorSyntaxExtensionsSpecs\If_FindMethod_is_called_on_VariableDeclaration_in_Ctor.cs" />

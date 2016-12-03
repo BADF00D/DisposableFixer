@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -45,6 +46,11 @@ namespace DisposeableFixer.Extensions
                         .OfType<VariableDeclaratorSyntax>()
                         .Any(variableDeclaratorSyntax => variableDeclaratorSyntax.Identifier.Text == variableName);
                 });
+        }
+
+        public static IEnumerable<T> DescendantNodes<T>(this SyntaxNode node) where T : SyntaxNode
+        {
+            return node.DescendantNodes().OfType<T>();
         }
     }
 }
