@@ -197,8 +197,11 @@ namespace DisposeableFixer
                 .DescendantNodes<IdentifierNameSyntax>()
                 .FirstOrDefault();
 
-            var typeInfo = symanticModel.GetSymbolInfo(identifierSyntax).Symbol as INamedTypeSymbol;
-            if (typeInfo == null) return;
+            var typeInfo = context.Node
+                .DescendantNodes()
+                .Select(n => symanticModel.GetSymbolInfo(n).Symbol as INamedTypeSymbol)
+                .FirstOrDefault(nts => nts != null);
+
             if (!IsDisposeableOrImplementsDisposable(typeInfo)) return;
 
             var name = identifierSyntax.Identifier.Text;
@@ -215,11 +218,10 @@ namespace DisposeableFixer
                     return id?.Identifier.Text == name && a.Name.Identifier.Text == DisposeMethod;
                 });
 
-            if (!dispose.Any())
-            {
-                var diagnostic = Diagnostic.Create(Rule, location);
-                context.ReportDiagnostic(diagnostic);
-            }
+            if (dispose.Any()) return;
+
+            var diagnostic = Diagnostic.Create(Rule, location);
+            context.ReportDiagnostic(diagnostic);
         }
 
         private static bool IsDisposeableOrImplementsDisposable(INamedTypeSymbol typeInfo)
