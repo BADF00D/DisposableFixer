@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading;
@@ -62,7 +63,12 @@ namespace DisposeableFixer
                     .OfType<VariableDeclaratorSyntax>()
                     .FirstOrDefault(n => n?.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().Any() ?? false);
 
-                if (creation == null) return; //nothing to analyse
+                if (creation == null)
+                {
+                    //here is not creation, but maybe a factory is called that delivers an IDisposable
+                    AnalyseLocalDeclarationStatementForFactoryCall(context);
+                    return;
+                }
                 var identifierNameSyntax = node.DescendantNodes().OfType<IdentifierNameSyntax>().FirstOrDefault();
                 var typeInfo = symanticModel.GetSymbolInfo(identifierNameSyntax).Symbol as INamedTypeSymbol;
                 if (typeInfo == null) return;
@@ -92,6 +98,29 @@ namespace DisposeableFixer
             {
                 Debug.WriteLine("Something went wrong: "+e);
             }
+        }
+
+        private static void AnalyseLocalDeclarationStatementForFactoryCall(SyntaxNodeAnalysisContext context)
+        {
+            var node = context.Node;
+
+            var simpleMemberExpression = node.DescendantNodes().OfType<IdentifierNameSyntax>().Skip(1).FirstOrDefault();
+            if (simpleMemberExpression == null) return;
+            //todo get semantic model of node => waht is the return type????
+            var symanticModel = context.SemanticModel;
+
+            var localSymbol = node
+                .DescendantNodes()
+                .OfType<VariableDeclaratorSyntax>()
+                .Select(descendantNode => symanticModel.GetDeclaredSymbol(descendantNode) as ILocalSymbol)
+                .FirstOrDefault(m => m != null);
+
+            var isDisposable = localSymbol.Type.AllInterfaces.Any(ints => ints.Name == DisposableInterface);
+
+            if (!isDisposable) return;
+
+            var diagnostic = Diagnostic.Create(Rule, node.GetLocation());
+            context.ReportDiagnostic(diagnostic);
         }
 
         private static void AnalyseCreationWithinMethod(SyntaxNode methodOrCtor, SyntaxNodeAnalysisContext context, string name, Location location)
