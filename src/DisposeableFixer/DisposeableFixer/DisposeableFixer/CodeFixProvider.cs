@@ -19,7 +19,10 @@ namespace DisposableFixer
 
         public sealed override ImmutableArray<string> FixableDiagnosticIds
         {
-            get { return ImmutableArray.Create(DisposableFixerAnalyzer.DiagnosticId); }
+            get
+            {
+                return ImmutableArray.Create(DisposableFixerAnalyzer.DiagnosticId);
+            }
         }
 
         public sealed override FixAllProvider GetFixAllProvider()
