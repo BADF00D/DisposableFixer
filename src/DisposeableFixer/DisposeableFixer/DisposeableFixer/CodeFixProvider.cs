@@ -21,7 +21,8 @@ namespace DisposableFixer
         {
             get
             {
-                return ImmutableArray.Create(DisposableFixerAnalyzer.DiagnosticId);
+                //return ImmutableArray.Create(DisposableFixerAnalyzer.DiagnosticId);
+                return ImmutableArray<string>.Empty;
             }
         }
 
