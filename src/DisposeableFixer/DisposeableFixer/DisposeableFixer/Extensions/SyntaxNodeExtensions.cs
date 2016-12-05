@@ -52,5 +52,74 @@ namespace DisposableFixer.Extensions
         {
             return node.DescendantNodes().OfType<T>();
         }
+
+        public static bool IsNodeWithinUsing<T>(this T node) where T : SyntaxNode
+        {
+            var parent = node.FindParent<UsingStatementSyntax, MethodDeclarationSyntax>();
+            return parent != null;
+        }
+
+        public static bool IsPartOfVariableDeclarator(this ObjectCreationExpressionSyntax node)
+        {
+            return node.Parent?.Parent is VariableDeclaratorSyntax;
+        }
+
+        public static bool IsPartOfReturn(this ObjectCreationExpressionSyntax node)
+        {
+            return node.FindParent<ReturnStatementSyntax, MethodDeclarationSyntax>() != null;
+        }
+
+        public static bool IsFieldDeclaration(this ObjectCreationExpressionSyntax node)
+        {
+            var parent = node.FindParent<FieldDeclarationSyntax, ClassDeclarationSyntax>();
+            return parent != null;
+        }
+
+        public static bool IsPropertyDeclaration(this ObjectCreationExpressionSyntax node)
+        {
+            var parent = node.FindParent<PropertyDeclarationSyntax, ClassDeclarationSyntax>();
+            return parent != null;
+        }
+
+        public static bool IsLocalDeclaration(this ObjectCreationExpressionSyntax node) {
+            var parent = node.FindParent<LocalDeclarationStatementSyntax, ClassDeclarationSyntax>();
+            return parent != null;
+        }
+
+        public static bool TryFindContainingMethod(this SyntaxNode node, out MethodDeclarationSyntax method) {
+            method = node.FindParent<MethodDeclarationSyntax, ConstructorDeclarationSyntax>();
+
+            return method != null;
+        }
+
+        public static bool FindContainingConstructor(this SyntaxNode node, out ConstructorDeclarationSyntax ctor) {
+            ctor = node.FindParent<ConstructorDeclarationSyntax, MethodDeclarationSyntax>();
+            return ctor != null;
+        }
+
+        public static bool TryFindContainingConstructorOrMethod(this SyntaxNode node, out SyntaxNode ctorOrMethod)
+        {
+            ctorOrMethod = node;
+            while (ctorOrMethod != null && !(ctorOrMethod is MethodDeclarationSyntax || ctorOrMethod is ConstructorDeclarationSyntax))
+            {
+                ctorOrMethod = ctorOrMethod.Parent;
+            }
+            return ctorOrMethod != null;
+        }
+
+        private static TOut FindParent<TOut, TBreak>(this SyntaxNode node) 
+            where TBreak : SyntaxNode 
+            where TOut : SyntaxNode {
+            var temp = node;
+            while (true) {
+                if (temp.Parent == null) return null;
+                if (temp.Parent is TBreak) return null;
+                var result = temp.Parent as TOut;
+                if (result != null)
+                    return result;
+
+                temp = temp.Parent;
+            }
+        }
     }
 }

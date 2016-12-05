@@ -43,32 +43,92 @@ namespace DisposableFixer
         {
             // TODO: Consider registering other actions that act on syntax instead of or in addition to symbols
             // See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Analyzer%20Actions%20Semantics.md for more information
-            context.RegisterSyntaxNodeAction(AnalyseLocalDeclarationStatement, SyntaxKind.LocalDeclarationStatement);
-            context.RegisterSyntaxNodeAction(AnalyseFieldDeclaration, SyntaxKind.FieldDeclaration);
-            context.RegisterSyntaxNodeAction(SimpleAssignmentExpression, SyntaxKind.SimpleAssignmentExpression);
-            context.RegisterSyntaxNodeAction(AnalyseExpressionStatement, SyntaxKind.ExpressionStatement);
+            //context.RegisterSyntaxNodeAction(AnalyseLocalDeclarationStatement, SyntaxKind.LocalDeclarationStatement);
+            //context.RegisterSyntaxNodeAction(AnalyseFieldDeclaration, SyntaxKind.FieldDeclaration);
+            //context.RegisterSyntaxNodeAction(SimpleAssignmentExpression, SyntaxKind.SimpleAssignmentExpression);
+            context.RegisterSyntaxNodeAction(AnalyseInvokationExpressionStatement, SyntaxKind.InvocationExpression);
+            context.RegisterSyntaxNodeAction(AnalyseObjectCreationExpressionStatement,
+                SyntaxKind.ObjectCreationExpression);
         }
 
-        private static void AnalyseExpressionStatement(SyntaxNodeAnalysisContext context)
+        private static void AnalyseObjectCreationExpressionStatement(SyntaxNodeAnalysisContext context)
         {
             try
             {
-                var node = context.Node;
-                var isDisposable = node
-                    .DescendantNodes<ObjectCreationExpressionSyntax>()
-                    .Where(ocr => ocr.Parent is ExpressionStatementSyntax)//all others are analysed by another method
-                    .Select(oc =>
+                var node = context.Node as ObjectCreationExpressionSyntax;
+                if (node == null) return; //something went wrong
+
+                var symbolInfo = context.SemanticModel.GetSymbolInfo(node);
+                var symbol = symbolInfo.Symbol as IMethodSymbol;
+                var type = symbol?.ReceiverType as INamedTypeSymbol;
+
+                if (type != null && !IsDisposeableOrImplementsDisposable(type)) return;
+
+                //check if instance is Disposed via Dispose() or by include it in using
+                if (node.IsNodeWithinUsing()) return; //using(new MemoryStream()){}
+                if (node.IsPartOfReturn()) return; //return new MemoryStream(),
+                if (node.IsPartOfVariableDeclarator())
+                {
+                    var identifier = (node.Parent.Parent as VariableDeclaratorSyntax)?.Identifier;
+                    if (identifier == null) return;
+                    if (node.IsLocalDeclaration())
                     {
-                        var symbolInfo = context.SemanticModel.GetSymbolInfo(oc);
-                        var symbol = symbolInfo.Symbol as IMethodSymbol;
-                        var type = symbol?.ReceiverType as INamedTypeSymbol;
+                        SyntaxNode ctorOrMethod;
+                        if (!node.TryFindContainingConstructorOrMethod(out ctorOrMethod)) return;
 
-                        return type;
-                    })
-                    .Where(nts => nts != null)
-                    .Any(IsDisposeableOrImplementsDisposable);
+                        if (ctorOrMethod.DescendantNodes<UsingStatementSyntax>()
+                            .SelectMany(@using =>
+                            {
+                                var objectCreationExpressionSyntaxs = @using
+                                    .DescendantNodes<IdentifierNameSyntax>()
+                                    .ToArray();
+                                return objectCreationExpressionSyntaxs;
+                            })
+                            .Any(id => id.Identifier.Value == identifier.Value.Value))
+                        {
+                            return;
+                        }
+                        if (ctorOrMethod.DescendantNodes<InvocationExpressionSyntax>().Any(ies =>
+                        {
+                            var expression = (ies.Expression as MemberAccessExpressionSyntax);
+                            var ids = expression.Expression as IdentifierNameSyntax;
+                            return ids.Identifier.Text == identifier.Value.Text
+                                && expression.Name.Identifier.Text == DisposeMethod;
+                        }))
+                        {
+                            return;
+                        }
 
-                if (!isDisposable) return;
+                        context.ReportDiagnostic(Diagnostic.Create(Rule, node.GetLocation()));
+                        return;
+                    }
+
+                    if (node.IsFieldDeclaration())
+                    {
+                        var disposeMethod = node.FindContainingClass().DescendantNodes<MethodDeclarationSyntax>()
+                            .FirstOrDefault(method => method.Identifier.Text == DisposeMethod);
+                        if (disposeMethod == null)
+                        {
+                            context.ReportDiagnostic(Diagnostic.Create(Rule, node.GetLocation()));
+                            return;
+                        };
+                        var isDisposed = disposeMethod.DescendantNodes<InvocationExpressionSyntax>()
+                            .Select(invo => invo.Expression as MemberAccessExpressionSyntax)
+                            .Any(invo =>
+                            {
+                                var id = invo.Expression as IdentifierNameSyntax;
+                                var member = id.Identifier.Text == identifier.Value.Text;
+                                var callToDispose = invo.Name.Identifier.Text == DisposeMethod;
+
+                                return member && callToDispose;
+                            });
+                        if (isDisposed) return;
+                        context.ReportDiagnostic(Diagnostic.Create(Rule, node.GetLocation()));
+                        return;
+
+                    }
+                }
+
 
                 var diagnostic = Diagnostic.Create(Rule, node.GetLocation());
                 context.ReportDiagnostic(diagnostic);
@@ -79,52 +139,73 @@ namespace DisposableFixer
             }
         }
 
-        private static void AnalyseLocalDeclarationStatement(SyntaxNodeAnalysisContext context)
+        private static void AnalyseInvokationExpressionStatement(SyntaxNodeAnalysisContext context)
         {
             try
             {
                 var node = context.Node;
-                var symanticModel = context.SemanticModel;
-                var creation = node
-                    .DescendantNodes<VariableDeclaratorSyntax>()
-                    .FirstOrDefault(n => n?.DescendantNodes<ObjectCreationExpressionSyntax>().Any() ?? false);
 
-                if (creation == null)
-                {
-                    //here is not creation, but maybe a factory is called that delivers an IDisposable
-                    AnalyseLocalDeclarationStatementForFactoryCall(context);
-                    return;
-                }
-                var identifierNameSyntax = node.DescendantNodes<IdentifierNameSyntax>().FirstOrDefault();
-                var typeInfo = symanticModel.GetSymbolInfo(identifierNameSyntax).Symbol as INamedTypeSymbol;
-                if (typeInfo == null) return;
-                if (!typeInfo.AllInterfaces.Any(i => i.Name == DisposableInterface)) return;
+                var symbolInfo = context.SemanticModel.GetSymbolInfo(node);
+                var symbol = symbolInfo.Symbol as IMethodSymbol;
+                var type = symbol?.ReturnType as INamedTypeSymbol;
 
+                if (type != null && !IsDisposeableOrImplementsDisposable(type)) return;
 
-                var location =
-                    creation.DescendantNodes<ObjectCreationExpressionSyntax>().FirstOrDefault().GetLocation();
-                var name = creation.Identifier.Text;
-
-                //is this instance wrapped into a using
-                var method = creation.FindContainingMethod();
-                if (IsCreationWithinMethod(method))
-                {
-                    AnalyseCreationWithinMethod(method, context, name, location);
-                    return;
-                }
-
-                //sereach using in ctor
-                var ctor = creation.FindContainingConstructor();
-                if (IsCreationWithinCtor(ctor))
-                {
-                    AnalyseCreationWithinMethod(ctor, context, name, location);
-                }
+                var diagnostic = Diagnostic.Create(Rule, node.GetLocation());
+                context.ReportDiagnostic(diagnostic);
             }
             catch (Exception e)
             {
-                Debug.WriteLine("Something went wrong: " + e);
+                Debug.WriteLine(e);
             }
         }
+
+        //private static void AnalyseLocalDeclarationStatement(SyntaxNodeAnalysisContext context)
+        //{
+        //    try
+        //    {
+        //        var node = context.Node;
+        //        var symanticModel = context.SemanticModel;
+        //        var creation = node
+        //            .DescendantNodes<VariableDeclaratorSyntax>()
+        //            .FirstOrDefault(n => n?.DescendantNodes<ObjectCreationExpressionSyntax>().Any() ?? false);
+
+        //        if (creation == null)
+        //        {
+        //            //here is not creation, but maybe a factory is called that delivers an IDisposable
+        //            AnalyseLocalDeclarationStatementForFactoryCall(context);
+        //            return;
+        //        }
+        //        var identifierNameSyntax = node.DescendantNodes<IdentifierNameSyntax>().FirstOrDefault();
+        //        var typeInfo = symanticModel.GetSymbolInfo(identifierNameSyntax).Symbol as INamedTypeSymbol;
+        //        if (typeInfo == null) return;
+        //        if (!typeInfo.AllInterfaces.Any(i => i.Name == DisposableInterface)) return;
+
+
+        //        var location =
+        //            creation.DescendantNodes<ObjectCreationExpressionSyntax>().FirstOrDefault().GetLocation();
+        //        var name = creation.Identifier.Text;
+
+        //        //is this instance wrapped into a using
+        //        var method = creation.TryFindContainingMethod();
+        //        if (IsCreationWithinMethod(method))
+        //        {
+        //            AnalyseCreationWithinMethod(method, context, name, location);
+        //            return;
+        //        }
+
+        //        //sereach using in ctor
+        //        var ctor = creation.FindContainingConstructor();
+        //        if (IsCreationWithinCtor(ctor))
+        //        {
+        //            AnalyseCreationWithinMethod(ctor, context, name, location);
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Debug.WriteLine("Something went wrong: " + e);
+        //    }
+        //}
 
         private static void AnalyseLocalDeclarationStatementForFactoryCall(SyntaxNodeAnalysisContext context)
         {

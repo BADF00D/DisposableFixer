@@ -29,7 +29,7 @@ namespace DisFixerTest.Misc{
                 .OfType<VariableDeclaratorSyntax>()
                 .FirstOrDefault();
 
-            _methodDeclarationSyntax = variableDeclaratorSyntax.FindContainingMethod();
+             variableDeclaratorSyntax.TryFindContainingMethod(out _methodDeclarationSyntax);
         }
 
 

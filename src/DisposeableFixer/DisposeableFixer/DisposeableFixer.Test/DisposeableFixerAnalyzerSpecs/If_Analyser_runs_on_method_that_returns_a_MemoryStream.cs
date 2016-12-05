@@ -35,14 +35,3 @@ namespace DisFixerTest
         }
     }
 }
-
-namespace DisFixerTest.UsingBlock
-{
-    public class ClassWithMemoryStreamDeclaredInUsingBlock
-    {
-        public MemoryStream Create()
-        {
-            return new MemoryStream();
-        }
-    }
-}

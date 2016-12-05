@@ -31,22 +31,9 @@ namespace DisFixerTest {
 ";
 
         [Test]
-        public void Then_there_should_be_one_Diagnostics()
+        public void Then_there_should_be_two_Diagnostics()
         {
-            _diagnostics.Length.Should().Be(1);
-        }
-    }
-}
-
-namespace DisFixerTest
-{
-    internal class ClassWithUndisposedVariableInCtor
-    {
-        private IDisposable _memStream = new MemoryStream();
-
-        public void Method()
-        {
-            _memStream = new MemoryStream();
+            _diagnostics.Length.Should().Be(2);
         }
     }
 }

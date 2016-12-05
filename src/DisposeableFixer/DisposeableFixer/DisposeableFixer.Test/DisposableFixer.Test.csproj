@@ -123,8 +123,10 @@
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_class_that_has_a_using_block_in_its_method_that_is_not_used_for_the_MemoryStream.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_class_that_uses_a_MemoryStream_within_an_using_block_within_a_Ctor.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_class_that_uses_a_MemoryStream_within_an_using_block_within_a_method.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_class_that_uses_a_MemoryStream_within_an_using_block_within_a_method2.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_class_that_uses_IDisposableFactory_in_Ctor.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_class_that_uses_MemoryStreamFactory_in_Ctor.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_class_with_a_field_disposed_in_DisposeMethod.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_class_with_a_field_of_type_IDisposable_that_is_initialized_in_a_method_but_never_disposed.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_class_with_a_field_of_type_MemoryStream_that_is_initialized_in_a_method_but_never_disposed.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_class_with_a_field_of_type_MemoryStream_that_is_initialized_in_Ctor_but_never_disposed.cs" />
@@ -135,6 +137,9 @@
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_class_with_a_MemoryStream_that_is_neither_field_nor_LocalAssignment_that_is_not_disposed.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_class_with_no_Disposables.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_class_with_that_declares_a_MemoryStream_within_an_using_block.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_class_with_two_methods_each_containing_an_disposable_instance_with_the_same_name_but_only_one_is_disposed.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_document_with_two_classes_each_containing_an_disposable_field_with_the_same_name_but_only_one_is_disposed.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_document_with_two_classes_each_containing_an_disposable_instance_with_the_same_name_but_only_one_is_disposed.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_method_that_returns_a_MemoryStream.cs" />
     <Compile Include="Extensions\ClassDeclarationSyntaxExtensionsSpecs\If_FindFieldNamed_is_called_with_class_that_contains_no_fields.cs" />
     <Compile Include="Extensions\ClassDeclarationSyntaxExtensionsSpecs\If_FindFieldNamed_is_called_with_class_that_contains_searched_field.cs" />
