@@ -12,7 +12,4 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs
             Sut = new DisposableFixerAnalyzer();
         }
     }
-
-    namespace DisFixerTest.Duplicates {
-    }
 }
