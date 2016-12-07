@@ -1,0 +1,6 @@
+﻿Release 0.9 
+* Fix issue 11: InvokationExpression where SymbolType could not be determined yield an false positive.
+
+Release 0.8
+* Fix issue 10: Calls to methods that return IDisposable don't got detected.
+* Fix issue 9: Code fix (from template) is no longer offered while pressing Ctrl+.
