@@ -146,7 +146,7 @@ namespace DisposableFixer
                 var symbol = symbolInfo.Symbol as IMethodSymbol;
                 var type = symbol?.ReturnType as INamedTypeSymbol;
 
-                if (type != null && !IsDisposeableOrImplementsDisposable(type)) return;
+                if (type == null || !IsDisposeableOrImplementsDisposable(type)) return;
 
                 var diagnostic = Diagnostic.Create(Rule, node.GetLocation());
                 context.ReportDiagnostic(diagnostic);
