@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
@@ -90,7 +92,7 @@ namespace DisposableFixer
                             var expression = (ies.Expression as MemberAccessExpressionSyntax);
                             var ids = expression.Expression as IdentifierNameSyntax;
                             return ids.Identifier.Text == identifier.Value.Text
-                                && expression.Name.Identifier.Text == DisposeMethod;
+                                   && expression.Name.Identifier.Text == DisposeMethod;
                         }))
                         {
                             return;
@@ -108,7 +110,8 @@ namespace DisposableFixer
                         {
                             context.ReportDiagnostic(Diagnostic.Create(Rule, node.GetLocation()));
                             return;
-                        };
+                        }
+                        ;
                         var isDisposed = disposeMethod.DescendantNodes<InvocationExpressionSyntax>()
                             .Select(invo => invo.Expression as MemberAccessExpressionSyntax)
                             .Any(invo =>
@@ -147,6 +150,8 @@ namespace DisposableFixer
                 var type = symbol?.ReturnType as INamedTypeSymbol;
 
                 if (type == null || !IsDisposeableOrImplementsDisposable(type)) return;
+                if (node.IsNodeWithinUsing()) return; //using(new MemoryStream()){}
+                if (node.IsPartOfReturn()) return; //return new MemoryStream(),
 
                 var diagnostic = Diagnostic.Create(Rule, node.GetLocation());
                 context.ReportDiagnostic(diagnostic);
@@ -156,7 +161,7 @@ namespace DisposableFixer
                 Debug.WriteLine(e);
             }
         }
-        
+
         private static bool IsDisposeableOrImplementsDisposable(INamedTypeSymbol typeInfo)
         {
             return IsIDisposable(typeInfo) || ImplementsIDisposable(typeInfo);

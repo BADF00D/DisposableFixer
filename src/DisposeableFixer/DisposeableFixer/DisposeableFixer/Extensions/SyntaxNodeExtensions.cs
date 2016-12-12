@@ -64,7 +64,7 @@ namespace DisposableFixer.Extensions
             return node.Parent?.Parent is VariableDeclaratorSyntax;
         }
 
-        public static bool IsPartOfReturn(this ObjectCreationExpressionSyntax node)
+        public static bool IsPartOfReturn(this SyntaxNode node)
         {
             return node.FindParent<ReturnStatementSyntax, MethodDeclarationSyntax>() != null;
         }
