@@ -142,6 +142,9 @@
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_document_with_two_classes_each_containing_an_disposable_field_with_the_same_name_but_only_one_is_disposed.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_document_with_two_classes_each_containing_an_disposable_instance_with_the_same_name_but_only_one_is_disposed.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_Invokation_that_is_part_of_a_return_statement_that_returns_an_IDisposable.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_MethodInvokation_that_returns_a_MemoryStream_stored_in_a_field_that_gets_disposed.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_MethodInvokation_that_returns_a_MemoryStream_stored_in_a_local_Variable_that_gets_disposed.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_MethodInvokation_that_returns_a_MemoryStream_stored_in_a_Property_that_gets_disposed.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_method_that_returns_a_MemoryStream.cs" />
     <Compile Include="Extensions\ClassDeclarationSyntaxExtensionsSpecs\If_FindFieldNamed_is_called_with_class_that_contains_no_fields.cs" />
     <Compile Include="Extensions\ClassDeclarationSyntaxExtensionsSpecs\If_FindFieldNamed_is_called_with_class_that_contains_searched_field.cs" />
