@@ -59,7 +59,7 @@ namespace DisposableFixer.Extensions
             return parent != null;
         }
 
-        public static bool IsPartOfVariableDeclarator(this ObjectCreationExpressionSyntax node)
+        public static bool IsPartOfVariableDeclarator(this SyntaxNode node)
         {
             return node.Parent?.Parent is VariableDeclaratorSyntax;
         }
@@ -69,19 +69,24 @@ namespace DisposableFixer.Extensions
             return node.FindParent<ReturnStatementSyntax, MethodDeclarationSyntax>() != null;
         }
 
-        public static bool IsFieldDeclaration(this ObjectCreationExpressionSyntax node)
+        public static bool IsFieldDeclaration(this SyntaxNode node)
         {
             var parent = node.FindParent<FieldDeclarationSyntax, ClassDeclarationSyntax>();
             return parent != null;
         }
 
-        public static bool IsPropertyDeclaration(this ObjectCreationExpressionSyntax node)
+        public static bool IsPartOfAssignmentExpression(this SyntaxNode node) {
+            var parent = node.FindParent<AssignmentExpressionSyntax, ClassDeclarationSyntax>();
+            return parent != null;
+        }
+
+        public static bool IsPropertyDeclaration(this SyntaxNode node)
         {
             var parent = node.FindParent<PropertyDeclarationSyntax, ClassDeclarationSyntax>();
             return parent != null;
         }
 
-        public static bool IsLocalDeclaration(this ObjectCreationExpressionSyntax node) {
+        public static bool IsLocalDeclaration(this SyntaxNode node) {
             var parent = node.FindParent<LocalDeclarationStatementSyntax, ClassDeclarationSyntax>();
             return parent != null;
         }

@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
@@ -152,6 +150,83 @@ namespace DisposableFixer
                 if (type == null || !IsDisposeableOrImplementsDisposable(type)) return;
                 if (node.IsNodeWithinUsing()) return; //using(new MemoryStream()){}
                 if (node.IsPartOfReturn()) return; //return new MemoryStream(),
+                if (node.IsPartOfVariableDeclarator())
+                {
+                    var identifier = (node.Parent.Parent as VariableDeclaratorSyntax)?.Identifier;
+                    if (identifier == null) return;
+                    if (node.IsLocalDeclaration()) {
+                        SyntaxNode ctorOrMethod;
+                        if (!node.TryFindContainingConstructorOrMethod(out ctorOrMethod)) return;
+
+                        if (ctorOrMethod.DescendantNodes<UsingStatementSyntax>()
+                            .SelectMany(@using => {
+                                var objectCreationExpressionSyntaxs = @using
+                                    .DescendantNodes<IdentifierNameSyntax>()
+                                    .ToArray();
+                                return objectCreationExpressionSyntaxs;
+                            })
+                            .Any(id => id.Identifier.Value == identifier.Value.Value)) {
+                            return;
+                        }
+                        if (ctorOrMethod.DescendantNodes<InvocationExpressionSyntax>().Any(ies => {
+                            var expression = (ies.Expression as MemberAccessExpressionSyntax);
+                            var ids = expression.Expression as IdentifierNameSyntax;
+                            return ids.Identifier.Text == identifier.Value.Text
+                                   && expression.Name.Identifier.Text == DisposeMethod;
+                        })) {
+                            return;
+                        }
+
+                        context.ReportDiagnostic(Diagnostic.Create(Rule, node.GetLocation()));
+                        return;
+                    }
+
+                    if (node.IsFieldDeclaration()) {
+                        var disposeMethod = node.FindContainingClass().DescendantNodes<MethodDeclarationSyntax>()
+                            .FirstOrDefault(method => method.Identifier.Text == DisposeMethod);
+                        if (disposeMethod == null) {
+                            context.ReportDiagnostic(Diagnostic.Create(Rule, node.GetLocation()));
+                            return;
+                        }
+                        ;
+                        var isDisposed = disposeMethod.DescendantNodes<InvocationExpressionSyntax>()
+                            .Select(invo => invo.Expression as MemberAccessExpressionSyntax)
+                            .Any(invo => {
+                                var id = invo.Expression as IdentifierNameSyntax;
+                                var member = id.Identifier.Text == identifier.Value.Text;
+                                var callToDispose = invo.Name.Identifier.Text == DisposeMethod;
+
+                                return member && callToDispose;
+                            });
+                        if (isDisposed) return;
+                        context.ReportDiagnostic(Diagnostic.Create(Rule, node.GetLocation()));
+                        return;
+
+                    }
+                }else if (node.IsPartOfAssignmentExpression())
+                {
+                    var identifier = node.Parent.DescendantNodes<IdentifierNameSyntax>().FirstOrDefault()?.Identifier;
+                    var disposeMethod = node.FindContainingClass().DescendantNodes<MethodDeclarationSyntax>()
+                            .FirstOrDefault(method => method.Identifier.Text == DisposeMethod);
+                    if (disposeMethod == null) {
+                        context.ReportDiagnostic(Diagnostic.Create(Rule, node.GetLocation()));
+                        return;
+                    }
+                        ;
+                    var isDisposed = disposeMethod.DescendantNodes<InvocationExpressionSyntax>()
+                        .Select(invo => invo.Expression as MemberAccessExpressionSyntax)
+                        .Any(invo => {
+                            var id = invo.Expression as IdentifierNameSyntax;
+                            var member = id.Identifier.Text == identifier.Value.Text;
+                            var callToDispose = invo.Name.Identifier.Text == DisposeMethod;
+
+                            return member && callToDispose;
+                        });
+                    if (isDisposed) return;
+                    context.ReportDiagnostic(Diagnostic.Create(Rule, node.GetLocation()));
+                    return;
+                }
+
 
                 var diagnostic = Diagnostic.Create(Rule, node.GetLocation());
                 context.ReportDiagnostic(diagnostic);
