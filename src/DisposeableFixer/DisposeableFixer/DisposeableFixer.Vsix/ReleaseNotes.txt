@@ -1,4 +1,8 @@
-﻿Release 0.9 
+﻿Release 0.10
+* Fixed issue 12: InvokationExpression that returned an IDisposable yield a diagnostic.
+* Fixed issue 13: If the return value of an InvokationExpression was stored within a local variable, or field or property and got disposed, is yielded a diagnostic.
+
+Release 0.9 
 * Fix issue 11: InvokationExpression where SymbolType could not be determined yield an false positive.
 
 Release 0.8
