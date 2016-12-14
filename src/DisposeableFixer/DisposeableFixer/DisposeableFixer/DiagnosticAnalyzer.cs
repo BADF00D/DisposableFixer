@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using DisposableFixer.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -19,7 +21,16 @@ namespace DisposableFixer
 
         private const string DisposeMethod = "Dispose";
         private const string DisposableInterface = "IDisposable";
+        private static readonly HashSet<string> IgnoredTypes = new HashSet<string>
+        {
+            "System.Threading.Tasks.Task",
+        };
 
+        private static readonly HashSet<string> IgnoredInterfaces = new HashSet<string>
+        {
+            "System.Collections.Generic.IEnumerator"
+        };
+        
         // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
         // See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Localizing%20Analyzers.md for more on localization
         private static readonly LocalizableString Title = new LocalizableResourceString(
@@ -59,8 +70,9 @@ namespace DisposableFixer
                 var symbol = symbolInfo.Symbol as IMethodSymbol;
                 var type = symbol?.ReceiverType as INamedTypeSymbol;
 
-                if (type != null && !IsDisposeableOrImplementsDisposable(type)) return;
-
+                if (type == null) return;
+                if (!IsDisposeableOrImplementsDisposable(type)) return;
+                if (IsIgnoredType(type)) return;
                 //check if instance is Disposed via Dispose() or by include it in using
                 if (node.IsNodeWithinUsing()) return; //using(new MemoryStream()){}
                 if (node.IsPartOfReturn()) return; //return new MemoryStream(),
@@ -147,7 +159,9 @@ namespace DisposableFixer
                 var symbol = symbolInfo.Symbol as IMethodSymbol;
                 var type = symbol?.ReturnType as INamedTypeSymbol;
 
-                if (type == null || !IsDisposeableOrImplementsDisposable(type)) return;
+                if (type == null) return;
+                if (IsIgnoredType(type)) return;
+                if (!IsDisposeableOrImplementsDisposable(type)) return;
                 if (node.IsNodeWithinUsing()) return; //using(new MemoryStream()){}
                 if (node.IsPartOfReturn()) return; //return new MemoryStream(),
                 if (node.IsPartOfVariableDeclarator())
@@ -235,6 +249,18 @@ namespace DisposableFixer
             {
                 Debug.WriteLine(e);
             }
+        }
+
+        private static bool IsIgnoredType(INamedTypeSymbol type)
+        {
+            var name = type.Name;
+            var @namespace = type.ContainingNamespace.GetFullNamespace();
+            var completeType = $"{@namespace}.{name}";
+
+            if (IgnoredTypes.Any(@if => @if == completeType)) return true;
+
+            var inter = type.AllInterfaces.Select(ai => ai.GetFullNamespace()).ToArray();
+            return inter.Any(@if => IgnoredInterfaces.Contains(@if));
         }
 
         private static bool IsDisposeableOrImplementsDisposable(INamedTypeSymbol typeInfo)
