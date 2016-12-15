@@ -29,10 +29,14 @@ namespace DisposableFixer
         {
             "System.Collections.Generic.IEnumerator"
         };
-        
+        private static readonly HashSet<string> TrackingTypes = new HashSet<string>
+        {
+            "System.IO.StreamReader"
+        };
+
         // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
         // See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Localizing%20Analyzers.md for more on localization
-        
+
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(SyntaxNodeAnalysisContextExtension.NotDisposed);
 
@@ -53,8 +57,7 @@ namespace DisposableFixer
                 if (node == null) return; //something went wrong
 
                 var symbolInfo = context.SemanticModel.GetSymbolInfo(node);
-                var symbol = symbolInfo.Symbol as IMethodSymbol;
-                var type = symbol?.ReceiverType as INamedTypeSymbol;
+                var type = (symbolInfo.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
 
                 if (type == null) return;
                 if (!IsDisposeableOrImplementsDisposable(type)) return;
@@ -63,6 +66,12 @@ namespace DisposableFixer
                 if (node.IsDescendantOfUsingDeclaration()) {
                     if (node.Parent is UsingStatementSyntax) return; //using(new MemoryStream())
                     if (node.IsDescendantOfVariableDeclarator()) return; //using(var mem = new MemoryStream())
+                    if (node.Parent?.Parent?.Parent is ObjectCreationExpressionSyntax)
+                    {
+                        var si = context.SemanticModel.GetSymbolInfo(node.Parent?.Parent?.Parent);
+                        var t2 = (si.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
+                        if (TrackingTypes.Contains(t2.GetFullNamespace())) return;
+                    }
 
                     context.ReportNotDisposed();
                     return;
@@ -88,6 +97,20 @@ namespace DisposableFixer
                             {
                                 return;
                             }
+                            var isTracked = usings
+                                .Select(id => id.Parent?.Parent?.Parent)
+                                .Where(parent => parent is ObjectCreationExpressionSyntax)
+                                .Any(ocs =>
+                                {
+                                    var sym = context.SemanticModel.GetSymbolInfo(ocs);
+                                    var type2 = (sym.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
+
+                                    var fullname = type2.GetFullNamespace();
+
+                                    return TrackingTypes.Contains(fullname);
+                                });
+                            if(isTracked) return;
+
 
                             context.ReportNotDisposedLocalDeclaration();
                             return;
@@ -160,6 +183,11 @@ namespace DisposableFixer
                 {
                     if (node.Parent is UsingStatementSyntax) return; //using(new MemoryStream())
                     if (node.IsDescendantOfVariableDeclarator()) return; //using(var mem = new MemoryStream())
+                    if (node.Parent?.Parent?.Parent is ObjectCreationExpressionSyntax) {
+                        var si = context.SemanticModel.GetSymbolInfo(node.Parent?.Parent?.Parent);
+                        var t2 = (si.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
+                        if (TrackingTypes.Contains(t2.GetFullNamespace())) return;
+                    }
 
                     context.ReportNotDisposed();
                     return;
@@ -182,6 +210,18 @@ namespace DisposableFixer
                             if (usings.Any(id => id.Parent is UsingStatementSyntax)) {
                                 return;
                             }
+                            var isTracked = usings
+                               .Select(id => id.Parent?.Parent?.Parent)
+                               .Where(parent => parent is ObjectCreationExpressionSyntax)
+                               .Any(ocs => {
+                                   var sym = context.SemanticModel.GetSymbolInfo(ocs);
+                                   var type2 = (sym.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
+
+                                   var fullname = type2.GetFullNamespace();
+
+                                   return TrackingTypes.Contains(fullname);
+                               });
+                            if (isTracked) return;
                             context.ReportNotDisposedInvokationExpression();
                             return;
                         }
