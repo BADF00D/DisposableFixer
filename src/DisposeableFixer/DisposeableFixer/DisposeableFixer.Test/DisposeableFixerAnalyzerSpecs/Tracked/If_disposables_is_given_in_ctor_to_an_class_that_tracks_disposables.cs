@@ -17,9 +17,11 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.Tracked
                 yield return new TestCaseData(FactoryCallGivenToNonTrackingInstance, 0)
                     .SetName("Factory call given to a tracking instance");
                 yield return new TestCaseData(ObjectCreationInCallToCtorOfNonTrackingInstance, 0)
-                    .SetName("ObjectCreation in call to ctor of a tracking instance");
+                    .SetName("ObjectCreation in call to ctor of a tracking instance inside of using block");
                 yield return new TestCaseData(FactoryCallWithinCtorCallOfNonTrackingInstance, 0)
                     .SetName("FactoryCall in call to ctor of a tracking instance");
+                yield return new TestCaseData(ObjectCreationInCallToCtorOfNonTrackingInstanceOutsideAUsingBlock, 0)
+                    .SetName("ObjectCreation in call to ctor of a tracking instance outside of using block");
             }
         }
 
@@ -50,6 +52,23 @@ namespace DisFixerTest.Tracking {
     class Tracking : IDisposable {
         public static void Do() {
             using(var nontracking = new StreamReader(new MemoryStream())) { }
+        }
+        public void Dispose() {
+            throw new NotImplementedException();
+        }
+    }
+}
+";
+
+        private const string ObjectCreationInCallToCtorOfNonTrackingInstanceOutsideAUsingBlock = @"
+using System;
+using System.IO;
+
+namespace DisFixerTest.Tracking {
+    class Tracking : IDisposable {
+        public static void Do() {
+            var reader =  new StreamReader(new MemoryStream();
+            using(reader) { }
         }
         public void Dispose() {
             throw new NotImplementedException();
