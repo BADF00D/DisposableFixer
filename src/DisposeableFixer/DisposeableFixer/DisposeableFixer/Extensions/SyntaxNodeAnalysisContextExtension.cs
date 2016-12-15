@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace DisposableFixer.Extensions
 {
+    //todo define correct rules
     public static class SyntaxNodeAnalysisContextExtension
     {
         private static readonly LocalizableString Title = new LocalizableResourceString(
@@ -30,5 +31,18 @@ namespace DisposableFixer.Extensions
 
             context.ReportDiagnostic(Diagnostic.Create(NotDisposed, location));
         }
+        public static void ReportNotDisposedLocalDeclaration(this SyntaxNodeAnalysisContext context) {
+            var location = context.Node.GetLocation();
+
+            context.ReportDiagnostic(Diagnostic.Create(NotDisposed, location));
+        }
+
+        public static void ReportNotDisposedInvokationExpression(this SyntaxNodeAnalysisContext context) {
+            var location = context.Node.GetLocation();
+
+            context.ReportDiagnostic(Diagnostic.Create(NotDisposed, location));
+        }
+        
+
     }
 }

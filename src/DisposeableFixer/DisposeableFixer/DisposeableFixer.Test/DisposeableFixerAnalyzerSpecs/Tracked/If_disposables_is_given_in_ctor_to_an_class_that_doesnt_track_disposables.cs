@@ -26,10 +26,10 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.Tracked
                     .SetName("LocalDeclaration with ObjectCreation given to a non tracking instance");
                 yield return new TestCaseData(FactoryCallGivenToNonTrackingInstance, 1)
                     .SetName("Factory call given to a non tracking instance");
-                yield return new TestCaseData(ObjectCreationGivenToNonTrackingInstance, 1)
-                    .SetName("LocalDeclaration with ObjectCreation given to a non tracking instance");
+                yield return new TestCaseData(ObjectCreationInCallToCtorOfNonTrackingInstance, 1)
+                    .SetName("ObjectCreation in call to ctor of a non tracking instance");
                 yield return new TestCaseData(FactoryCallWithinCtorCallOfNonTrackingInstance, 1)
-                   .SetName("FactoryCall within call to ctor of a non tracking instance");
+                   .SetName("FactoryCall in call to ctor of a non tracking instance");
 
             }
         }
@@ -45,7 +45,7 @@ namespace DisFixerTest.Tracking {
         public static void Do() {
             var mem = new MemoryStream();
 
-            using(var tracking = new NoneTracking(mem)) { }
+            using(var nontracking = new NoneTracking(mem)) { }
         }
 
         public NoneTracking(IDisposable disp) {}
@@ -57,14 +57,14 @@ namespace DisFixerTest.Tracking {
 }
 ";
 
-        private const string ObjectCreationGivenToNonTrackingInstance = @"
+        private const string ObjectCreationInCallToCtorOfNonTrackingInstance = @"
 using System;
 using System.IO;
 
 namespace DisFixerTest.Tracking {
     class NoneTracking : IDisposable {
         public static void Do() {
-            using(var tracking = new NoneTracking(new MemoryStream())) { }
+            using(var nontracking = new NoneTracking(new MemoryStream())) { }
         }
 
         public NoneTracking(IDisposable disp) {}

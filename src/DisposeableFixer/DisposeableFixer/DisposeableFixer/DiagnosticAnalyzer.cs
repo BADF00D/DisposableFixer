@@ -60,7 +60,13 @@ namespace DisposableFixer
                 if (!IsDisposeableOrImplementsDisposable(type)) return;
                 if (IsIgnoredType(type)) return;
                 //check if instance is Disposed via Dispose() or by include it in using
-                if (node.IsDescendantOfUsingDeclaration()) return; //using(new MemoryStream()){}
+                if (node.IsDescendantOfUsingDeclaration()) {
+                    if (node.Parent is UsingStatementSyntax) return; //using(new MemoryStream())
+                    if (node.IsDescendantOfVariableDeclarator()) return; //using(var mem = new MemoryStream())
+
+                    context.ReportNotDisposed();
+                    return;
+                }
                 if (node.IsPartOfReturn()) return; //return new MemoryStream(),
                 if (node.IsDescendantOfVariableDeclarator())
                 {
@@ -71,16 +77,19 @@ namespace DisposableFixer
                         SyntaxNode ctorOrMethod;
                         if (!node.TryFindContainingConstructorOrMethod(out ctorOrMethod)) return;
 
-                        if (ctorOrMethod.DescendantNodes<UsingStatementSyntax>()
-                            .SelectMany(@using =>
-                            {
-                                var objectCreationExpressionSyntaxs = @using
-                                    .DescendantNodes<IdentifierNameSyntax>()
-                                    .ToArray();
-                                return objectCreationExpressionSyntaxs;
-                            })
-                            .Any(id => id.Identifier.Value == identifier.Value.Value))
+                        var usings = ctorOrMethod.DescendantNodes<UsingStatementSyntax>()
+                            .SelectMany(@using => @using.DescendantNodes<IdentifierNameSyntax>())
+                            .Where(id => id.Identifier.Value == identifier.Value.Value)
+                            .ToArray();
+                            
+                        if (usings.Any())
                         {
+                            if (usings.Any(id => id.Parent is UsingStatementSyntax))//using(mem))
+                            {
+                                return;
+                            }
+
+                            context.ReportNotDisposedLocalDeclaration();
                             return;
                         }
                         if (ctorOrMethod.DescendantNodes<InvocationExpressionSyntax>().Any(ies =>
@@ -153,6 +162,7 @@ namespace DisposableFixer
                     if (node.IsDescendantOfVariableDeclarator()) return; //using(var mem = new MemoryStream())
 
                     context.ReportNotDisposed();
+                    return;
                 }
                 if (node.IsPartOfReturn()) return; //return new MemoryStream(),
                 if (node.IsDescendantOfVariableDeclarator())
@@ -163,14 +173,16 @@ namespace DisposableFixer
                         SyntaxNode ctorOrMethod;
                         if (!node.TryFindContainingConstructorOrMethod(out ctorOrMethod)) return;
 
-                        if (ctorOrMethod.DescendantNodes<UsingStatementSyntax>()
-                            .SelectMany(@using => {
-                                var objectCreationExpressionSyntaxs = @using
-                                    .DescendantNodes<IdentifierNameSyntax>()
-                                    .ToArray();
-                                return objectCreationExpressionSyntaxs;
-                            })
-                            .Any(id => id.Identifier.Value == identifier.Value.Value)) {
+                        var usings = ctorOrMethod.DescendantNodes<UsingStatementSyntax>()
+                            .SelectMany(@using => @using .DescendantNodes<IdentifierNameSyntax>())
+                            .Where(id => id.Identifier.Value == identifier.Value.Value)
+                            .ToArray();
+                        if (usings.Any())
+                        {
+                            if (usings.Any(id => id.Parent is UsingStatementSyntax)) {
+                                return;
+                            }
+                            context.ReportNotDisposedInvokationExpression();
                             return;
                         }
                         if (ctorOrMethod.DescendantNodes<InvocationExpressionSyntax>().Any(ies => {
