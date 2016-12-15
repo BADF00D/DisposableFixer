@@ -62,7 +62,7 @@ namespace DisposableFixer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Identifies instances of IDisposable that are not disposed..
+        ///   Looks up a localized string similar to This disposable is not disposed..
         /// </summary>
         internal static string AnalyzerDescription {
             get {

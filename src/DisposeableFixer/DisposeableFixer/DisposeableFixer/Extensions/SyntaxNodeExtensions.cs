@@ -53,13 +53,13 @@ namespace DisposableFixer.Extensions
             return node.DescendantNodes().OfType<T>();
         }
 
-        public static bool IsNodeWithinUsing<T>(this T node) where T : SyntaxNode
+        public static bool IsDescendantOfUsingDeclaration<T>(this T node) where T : SyntaxNode
         {
             var parent = node.FindParent<UsingStatementSyntax, MethodDeclarationSyntax>();
             return parent != null;
         }
 
-        public static bool IsPartOfVariableDeclarator(this SyntaxNode node)
+        public static bool IsDescendantOfVariableDeclarator(this SyntaxNode node)
         {
             return node.Parent?.Parent is VariableDeclaratorSyntax;
         }

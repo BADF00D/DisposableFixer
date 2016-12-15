@@ -76,6 +76,8 @@ namespace DisFixerTest.Tracking {
 }
 ";
         private const string FactoryCallGivenToNonTrackingInstance = @"
+using System;
+using System.IO;
 namespace DisFixerTest.Tracking {
     class NoneTracking : IDisposable {
         public static void Do() {
@@ -102,6 +104,8 @@ namespace DisFixerTest.Tracking {
 }
 ";
         private const string FactoryCallWithinCtorCallOfNonTrackingInstance = @"
+using System;
+using System.IO;
 namespace DisFixerTest.Tracking {
     class NoneTracking : IDisposable {
         public static void Do() {
@@ -126,6 +130,30 @@ namespace DisFixerTest.Tracking {
     }
 }
 ";
+    }
+}
+
+namespace DisFixerTest.Tracking {
+    class NoneTracking : IDisposable {
+        public static void Do() {
+            var factory = new MemStreamFactory();
+
+            using (var tracking = new NoneTracking(factory.Create())) { }
+            using (var tracking = factory.Create()) { }
+            using (factory.Create()) { }
+        }
+
+        public NoneTracking(IDisposable disp) { }
+
+        public void Dispose() {
+            throw new NotImplementedException();
+        }
+    }
+
+    internal class MemStreamFactory {
+        public MemoryStream Create() {
+            return new MemoryStream();
+        }
     }
 }
 
