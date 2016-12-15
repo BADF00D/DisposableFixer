@@ -35,6 +35,7 @@
     <Compile Include="CodeFixProvider.cs" />
     <Compile Include="DiagnosticAnalyzer.cs" />
     <Compile Include="Extensions\ClassDeclarationSyntaxExtensions.cs" />
+    <Compile Include="Extensions\SymanticModelExtension.cs" />
     <Compile Include="Extensions\SyntaxNodeAnalysisContextExtension.cs" />
     <Compile Include="Extensions\SyntaxNodeExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

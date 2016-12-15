@@ -42,7 +42,13 @@ namespace DisposableFixer.Extensions
 
             context.ReportDiagnostic(Diagnostic.Create(NotDisposed, location));
         }
-        
+
+        public static void ReportNotDisposedObjectCreation(this SyntaxNodeAnalysisContext context) {
+            var location = context.Node.GetLocation();
+
+            context.ReportDiagnostic(Diagnostic.Create(NotDisposed, location));
+        }
+
 
     }
 }

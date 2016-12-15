@@ -62,6 +62,14 @@ namespace DisposableFixer
                 if (type == null) return;
                 if (!IsDisposeableOrImplementsDisposable(type)) return;
                 if (IsIgnoredType(type)) return;
+                if (node.IsArgumentInObjectCreation()) {
+                    var objectCreation = node.Parent.Parent.Parent as ObjectCreationExpressionSyntax;
+                    var t = context.SemanticModel.GetReturnTypeOf(objectCreation);
+                    if (TrackingTypes.Contains(t.GetFullNamespace())) return;
+
+                    context.ReportNotDisposedObjectCreation();
+                    return;
+                }
                 //check if instance is Disposed via Dispose() or by include it in using
                 if (node.IsDescendantOfUsingDeclaration()) {
                     if (node.Parent is UsingStatementSyntax) return; //using(new MemoryStream())
@@ -179,6 +187,15 @@ namespace DisposableFixer
                 if (type == null) return;
                 if (IsIgnoredType(type)) return;
                 if (!IsDisposeableOrImplementsDisposable(type)) return;
+                if (node.IsArgumentInObjectCreation())
+                {
+                    var objectCreation = node.Parent.Parent.Parent as ObjectCreationExpressionSyntax;
+                    var t = context.SemanticModel.GetReturnTypeOf(objectCreation);
+                    if (TrackingTypes.Contains(t.GetFullNamespace())) return;
+
+                    context.ReportNotDisposedObjectCreation();
+                    return;
+                }
                 if (node.IsDescendantOfUsingDeclaration())
                 {
                     if (node.Parent is UsingStatementSyntax) return; //using(new MemoryStream())
@@ -211,8 +228,8 @@ namespace DisposableFixer
                                 return;
                             }
                             var isTracked = usings
-                               .Select(id => id.Parent?.Parent?.Parent)
-                               .Where(parent => parent is ObjectCreationExpressionSyntax)
+                               .Where(id => id.IsArgumentInObjectCreation())
+                               .Select(d => d.Parent.Parent.Parent)
                                .Any(ocs => {
                                    var sym = context.SemanticModel.GetSymbolInfo(ocs);
                                    var type2 = (sym.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;

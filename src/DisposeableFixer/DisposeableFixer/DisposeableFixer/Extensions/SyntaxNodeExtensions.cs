@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -46,6 +48,13 @@ namespace DisposableFixer.Extensions
                         .OfType<VariableDeclaratorSyntax>()
                         .Any(variableDeclaratorSyntax => variableDeclaratorSyntax.Identifier.Text == variableName);
                 });
+        }
+
+        public static bool IsArgumentInObjectCreation(this SyntaxNode node)
+        {
+            return node?.Parent is ArgumentSyntax 
+                && node.Parent?.Parent is ArgumentListSyntax 
+                && node.Parent.Parent.Parent is ObjectCreationExpressionSyntax;
         }
 
         public static IEnumerable<T> DescendantNodes<T>(this SyntaxNode node) where T : SyntaxNode
