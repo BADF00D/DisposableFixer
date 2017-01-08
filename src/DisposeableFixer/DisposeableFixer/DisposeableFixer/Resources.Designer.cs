@@ -71,20 +71,38 @@ namespace DisposableFixer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This is an IDisposable that is not disposed..
-        /// </summary>
-        internal static string AnalyzerMessageFormat {
-            get {
-                return ResourceManager.GetString("AnalyzerMessageFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Undisposed ressource..
         /// </summary>
         internal static string AnalyzerTitle {
             get {
                 return ResourceManager.GetString("AnalyzerTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Method returns an anonymous object that is not disposed..
+        /// </summary>
+        internal static string AnonymousObjectFromMethodInvokationMessageFormat {
+            get {
+                return ResourceManager.GetString("AnonymousObjectFromMethodInvokationMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This ObjectCreation return an object that is not disposed..
+        /// </summary>
+        internal static string AnonymousObjectFromObjectCreationMessageFormat {
+            get {
+                return ResourceManager.GetString("AnonymousObjectFromObjectCreationMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This IDisposable is not disposed..
+        /// </summary>
+        internal static string NotDisposedMessageFormat {
+            get {
+                return ResourceManager.GetString("NotDisposedMessageFormat", resourceCulture);
             }
         }
     }

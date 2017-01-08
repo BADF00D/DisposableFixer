@@ -121,12 +121,18 @@
     <value>This disposable is not disposed.</value>
     <comment>An optional longer localizable description of the diagnostic.</comment>
   </data>
-  <data name="AnalyzerMessageFormat" xml:space="preserve">
-    <value>This is an IDisposable that is not disposed.</value>
+  <data name="AnonymousObjectFromObjectCreationMessageFormat" xml:space="preserve">
+    <value>This ObjectCreation return an object that is not disposed.</value>
     <comment>The format-able message the diagnostic displays.</comment>
   </data>
   <data name="AnalyzerTitle" xml:space="preserve">
     <value>Undisposed ressource.</value>
     <comment>The title of the diagnostic.</comment>
+  </data>
+  <data name="AnonymousObjectFromMethodInvokationMessageFormat" xml:space="preserve">
+    <value>Method returns an anonymous object that is not disposed.</value>
+  </data>
+  <data name="NotDisposedMessageFormat" xml:space="preserve">
+    <value>This IDisposable is not disposed.</value>
   </data>
 </root>
