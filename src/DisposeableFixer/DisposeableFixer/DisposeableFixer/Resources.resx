@@ -122,7 +122,7 @@
     <comment>An optional longer localizable description of the diagnostic.</comment>
   </data>
   <data name="AnonymousObjectFromObjectCreationMessageFormat" xml:space="preserve">
-    <value>This ObjectCreation return an object that is not disposed.</value>
+    <value>This ObjectCreation returns an object that is not disposed.</value>
     <comment>The format-able message the diagnostic displays.</comment>
   </data>
   <data name="AnalyzerTitle" xml:space="preserve">
@@ -139,6 +139,6 @@
     <value>Local variable is not disposed</value>
   </data>
   <data name="NotDisposedMessageFormat" xml:space="preserve">
-    <value>This disposbale is not disposed.</value>
+    <value>This disposable is not disposed.</value>
   </data>
 </root>

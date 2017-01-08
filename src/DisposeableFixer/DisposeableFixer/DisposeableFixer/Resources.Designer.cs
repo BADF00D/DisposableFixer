@@ -89,7 +89,7 @@ namespace DisposableFixer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This ObjectCreation return an object that is not disposed..
+        ///   Looks up a localized string similar to This ObjectCreation returns an object that is not disposed..
         /// </summary>
         internal static string AnonymousObjectFromObjectCreationMessageFormat {
             get {
@@ -116,7 +116,7 @@ namespace DisposableFixer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This disposbale is not disposed..
+        ///   Looks up a localized string similar to This disposable is not disposed..
         /// </summary>
         internal static string NotDisposedMessageFormat {
             get {
