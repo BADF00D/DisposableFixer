@@ -1,4 +1,3 @@
-using System.IO;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using NUnit.Framework;
@@ -6,7 +5,9 @@ using NUnit.Framework;
 namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs
 {
     [TestFixture]
-    internal class If_Analyser_runs_on_MethodInvokation_that_returns_a_MemoryStream_stored_in_a_local_Variable_that_gets_disposed : DisposeableFixerAnalyzerSpec
+    internal class
+        If_Analyser_runs_on_MethodInvokation_that_returns_a_MemoryStream_stored_in_a_local_Variable_that_gets_disposed :
+            DisposeableFixerAnalyzerSpec
     {
         private Diagnostic[] _diagnostics;
 

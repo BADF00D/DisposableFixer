@@ -4,7 +4,8 @@ using NUnit.Framework;
 
 namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs
 {
-    internal class If_Analyser_runs_on_class_that_uses_MemoryStreamFactory_used_within_an_using : DisposeableFixerAnalyzerSpec
+    internal class If_Analyser_runs_on_class_that_uses_MemoryStreamFactory_used_within_an_using :
+        DisposeableFixerAnalyzerSpec
     {
         private const string Code = @"
 using System.IO;

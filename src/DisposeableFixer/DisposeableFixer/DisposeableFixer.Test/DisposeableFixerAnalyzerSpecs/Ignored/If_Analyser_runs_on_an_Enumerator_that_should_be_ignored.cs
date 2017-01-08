@@ -7,10 +7,12 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.Ignored
 {
     [TestFixture]
     internal class If_Analyser_runs_on_an_Enumerator_that_should_be_ignored :
-        DisposeableFixerAnalyzerSpec {
+        DisposeableFixerAnalyzerSpec
+    {
         private Diagnostic[] _diagnostics;
 
-        protected override void BecauseOf() {
+        protected override void BecauseOf()
+        {
             _diagnostics = MyHelper.RunAnalyser(Code, Sut);
         }
 
@@ -27,7 +29,8 @@ namespace DisFixerTest.Ignored {
 ";
 
         [Test]
-        public void Then_there_should_be_no_Diagnostics() {
+        public void Then_there_should_be_no_Diagnostics()
+        {
             _diagnostics.Length.Should().Be(0);
 
             var list = new List<int>();

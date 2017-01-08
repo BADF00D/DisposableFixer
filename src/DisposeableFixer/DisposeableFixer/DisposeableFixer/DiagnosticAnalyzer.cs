@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using DisposableFixer.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -20,15 +19,17 @@ namespace DisposableFixer
 
         private const string DisposeMethod = "Dispose";
         private const string DisposableInterface = "IDisposable";
+
         private static readonly HashSet<string> IgnoredTypes = new HashSet<string>
         {
-            "System.Threading.Tasks.Task",
+            "System.Threading.Tasks.Task"
         };
 
         private static readonly HashSet<string> IgnoredInterfaces = new HashSet<string>
         {
             "System.Collections.Generic.IEnumerator"
         };
+
         private static readonly HashSet<string> TrackingTypes = new HashSet<string>
         {
             "System.IO.StreamReader"
@@ -38,7 +39,8 @@ namespace DisposableFixer
         // See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Localizing%20Analyzers.md for more on localization
 
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(SyntaxNodeAnalysisContextExtension.NotDisposed);
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
+            => ImmutableArray.Create(SyntaxNodeAnalysisContextExtension.NotDisposed);
 
         public override void Initialize(AnalysisContext context)
         {
@@ -62,7 +64,8 @@ namespace DisposableFixer
                 if (type == null) return;
                 if (!IsDisposeableOrImplementsDisposable(type)) return;
                 if (IsIgnoredType(type)) return;
-                if (node.IsArgumentInObjectCreation()) {
+                if (node.IsArgumentInObjectCreation())
+                {
                     var objectCreation = node.Parent.Parent.Parent as ObjectCreationExpressionSyntax;
                     var t = context.SemanticModel.GetReturnTypeOf(objectCreation);
                     if (TrackingTypes.Contains(t.GetFullNamespace())) return;
@@ -71,7 +74,8 @@ namespace DisposableFixer
                     return;
                 }
                 //check if instance is Disposed via Dispose() or by include it in using
-                if (node.IsDescendantOfUsingDeclaration()) {
+                if (node.IsDescendantOfUsingDeclaration())
+                {
                     if (node.Parent is UsingStatementSyntax) return; //using(new MemoryStream())
                     if (node.IsDescendantOfVariableDeclarator()) return; //using(var mem = new MemoryStream())
                     if (node.Parent?.Parent?.Parent is ObjectCreationExpressionSyntax)
@@ -98,10 +102,10 @@ namespace DisposableFixer
                             .SelectMany(@using => @using.DescendantNodes<IdentifierNameSyntax>())
                             .Where(id => id.Identifier.Value == identifier.Value.Value)
                             .ToArray();
-                            
+
                         if (usings.Any())
                         {
-                            if (usings.Any(id => id.Parent is UsingStatementSyntax))//using(mem))
+                            if (usings.Any(id => id.Parent is UsingStatementSyntax)) //using(mem))
                             {
                                 return;
                             }
@@ -117,7 +121,7 @@ namespace DisposableFixer
 
                                     return TrackingTypes.Contains(fullname);
                                 });
-                            if(isTracked) return;
+                            if (isTracked) return;
 
 
                             context.ReportNotDisposedLocalDeclaration();
@@ -125,7 +129,7 @@ namespace DisposableFixer
                         }
                         if (ctorOrMethod.DescendantNodes<InvocationExpressionSyntax>().Any(ies =>
                         {
-                            var expression = (ies.Expression as MemberAccessExpressionSyntax);
+                            var expression = ies.Expression as MemberAccessExpressionSyntax;
                             var ids = expression.Expression as IdentifierNameSyntax;
                             return ids.Identifier.Text == identifier.Value.Text
                                    && expression.Name.Identifier.Text == DisposeMethod;
@@ -161,20 +165,23 @@ namespace DisposableFixer
                         if (isDisposed) return;
                         context.ReportNotDisposed();
                         return;
-
                     }
-                } else if (node.IsPartOfAssignmentExpression()) {
+                }
+                else if (node.IsPartOfAssignmentExpression())
+                {
                     var identifier = node.Parent.DescendantNodes<IdentifierNameSyntax>().FirstOrDefault()?.Identifier;
                     var disposeMethod = node.FindContainingClass().DescendantNodes<MethodDeclarationSyntax>()
-                            .FirstOrDefault(method => method.Identifier.Text == DisposeMethod);
-                    if (disposeMethod == null) {
+                        .FirstOrDefault(method => method.Identifier.Text == DisposeMethod);
+                    if (disposeMethod == null)
+                    {
                         context.ReportNotDisposed();
                         return;
                     }
-                         ;
+                    ;
                     var isDisposed = disposeMethod.DescendantNodes<InvocationExpressionSyntax>()
                         .Select(invo => invo.Expression as MemberAccessExpressionSyntax)
-                        .Any(invo => {
+                        .Any(invo =>
+                        {
                             var id = invo.Expression as IdentifierNameSyntax;
                             var member = id.Identifier.Text == identifier.Value.Text;
                             var callToDispose = invo.Name.Identifier.Text == DisposeMethod;
@@ -221,7 +228,8 @@ namespace DisposableFixer
                 {
                     if (node.Parent is UsingStatementSyntax) return; //using(new MemoryStream())
                     if (node.IsDescendantOfVariableDeclarator()) return; //using(var mem = new MemoryStream())
-                    if (node.Parent?.Parent?.Parent is ObjectCreationExpressionSyntax) {
+                    if (node.Parent?.Parent?.Parent is ObjectCreationExpressionSyntax)
+                    {
                         var si = context.SemanticModel.GetSymbolInfo(node.Parent?.Parent?.Parent);
                         var t2 = (si.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
                         if (TrackingTypes.Contains(t2.GetFullNamespace())) return;
@@ -235,40 +243,45 @@ namespace DisposableFixer
                 {
                     var identifier = (node.Parent.Parent as VariableDeclaratorSyntax)?.Identifier;
                     if (identifier == null) return;
-                    if (node.IsLocalDeclaration()) {
+                    if (node.IsLocalDeclaration())
+                    {
                         SyntaxNode ctorOrMethod;
                         if (!node.TryFindContainingConstructorOrMethod(out ctorOrMethod)) return;
 
                         var usings = ctorOrMethod.DescendantNodes<UsingStatementSyntax>()
-                            .SelectMany(@using => @using .DescendantNodes<IdentifierNameSyntax>())
+                            .SelectMany(@using => @using.DescendantNodes<IdentifierNameSyntax>())
                             .Where(id => id.Identifier.Value == identifier.Value.Value)
                             .ToArray();
                         if (usings.Any())
                         {
-                            if (usings.Any(id => id.Parent is UsingStatementSyntax)) {
+                            if (usings.Any(id => id.Parent is UsingStatementSyntax))
+                            {
                                 return;
                             }
                             var isTracked = usings
-                               .Where(id => id.IsArgumentInObjectCreation())
-                               .Select(d => d.Parent.Parent.Parent)
-                               .Any(ocs => {
-                                   var sym = context.SemanticModel.GetSymbolInfo(ocs);
-                                   var type2 = (sym.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
+                                .Where(id => id.IsArgumentInObjectCreation())
+                                .Select(d => d.Parent.Parent.Parent)
+                                .Any(ocs =>
+                                {
+                                    var sym = context.SemanticModel.GetSymbolInfo(ocs);
+                                    var type2 = (sym.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
 
-                                   var fullname = type2.GetFullNamespace();
+                                    var fullname = type2.GetFullNamespace();
 
-                                   return TrackingTypes.Contains(fullname);
-                               });
+                                    return TrackingTypes.Contains(fullname);
+                                });
                             if (isTracked) return;
                             context.ReportNotDisposedInvokationExpression();
                             return;
                         }
-                        if (ctorOrMethod.DescendantNodes<InvocationExpressionSyntax>().Any(ies => {
-                            var expression = (ies.Expression as MemberAccessExpressionSyntax);
+                        if (ctorOrMethod.DescendantNodes<InvocationExpressionSyntax>().Any(ies =>
+                        {
+                            var expression = ies.Expression as MemberAccessExpressionSyntax;
                             var ids = expression.Expression as IdentifierNameSyntax;
                             return ids.Identifier.Text == identifier.Value.Text
                                    && expression.Name.Identifier.Text == DisposeMethod;
-                        })) {
+                        }))
+                        {
                             return;
                         }
 
@@ -276,17 +289,20 @@ namespace DisposableFixer
                         return;
                     }
 
-                    if (node.IsFieldDeclaration()) {
+                    if (node.IsFieldDeclaration())
+                    {
                         var disposeMethod = node.FindContainingClass().DescendantNodes<MethodDeclarationSyntax>()
                             .FirstOrDefault(method => method.Identifier.Text == DisposeMethod);
-                        if (disposeMethod == null) {
+                        if (disposeMethod == null)
+                        {
                             context.ReportNotDisposed();
                             return;
                         }
                         ;
                         var isDisposed = disposeMethod.DescendantNodes<InvocationExpressionSyntax>()
                             .Select(invo => invo.Expression as MemberAccessExpressionSyntax)
-                            .Any(invo => {
+                            .Any(invo =>
+                            {
                                 var id = invo.Expression as IdentifierNameSyntax;
                                 var member = id.Identifier.Text == identifier.Value.Text;
                                 var callToDispose = invo.Name.Identifier.Text == DisposeMethod;
@@ -296,21 +312,23 @@ namespace DisposableFixer
                         if (isDisposed) return;
                         context.ReportNotDisposed();
                         return;
-
                     }
-                }else if (node.IsPartOfAssignmentExpression())
+                }
+                else if (node.IsPartOfAssignmentExpression())
                 {
                     var identifier = node.Parent.DescendantNodes<IdentifierNameSyntax>().FirstOrDefault()?.Identifier;
                     var disposeMethod = node.FindContainingClass().DescendantNodes<MethodDeclarationSyntax>()
-                            .FirstOrDefault(method => method.Identifier.Text == DisposeMethod);
-                    if (disposeMethod == null) {
+                        .FirstOrDefault(method => method.Identifier.Text == DisposeMethod);
+                    if (disposeMethod == null)
+                    {
                         context.ReportNotDisposed();
                         return;
                     }
-                        ;
+                    ;
                     var isDisposed = disposeMethod.DescendantNodes<InvocationExpressionSyntax>()
                         .Select(invo => invo.Expression as MemberAccessExpressionSyntax)
-                        .Any(invo => {
+                        .Any(invo =>
+                        {
                             var id = invo.Expression as IdentifierNameSyntax;
                             var member = id.Identifier.Text == identifier.Value.Text;
                             var callToDispose = invo.Name.Identifier.Text == DisposeMethod;

@@ -17,17 +17,18 @@ namespace DisposableFixer.Test.IssueTests
                 }
             }
         }";
-        
+
         private Diagnostic[] _diagnostics;
 
 
-        protected override void BecauseOf() {
+        protected override void BecauseOf()
+        {
             _diagnostics = MyHelper.RunAnalyser(_code, Sut);
-            
         }
 
         [Test]
-        public void Then_there_should_be_no_Diagnostics() {
+        public void Then_there_should_be_no_Diagnostics()
+        {
             _diagnostics.Length.Should().Be(0);
         }
     }

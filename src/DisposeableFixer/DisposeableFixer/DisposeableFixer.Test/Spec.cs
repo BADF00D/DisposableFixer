@@ -8,25 +8,30 @@ using NUnit.Framework;
 namespace DisposableFixer.Test
 {
     [DebuggerStepThrough, DebuggerNonUserCode]
-    public class Spec {
+    public class Spec
+    {
         private readonly List<Action> _dispose_actions = new List<Action>();
 
-        public Spec() {
+        public Spec()
+        {
             ServicePointManager.Expect100Continue = false;
             SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
         }
 
         [DebuggerStepThrough]
         [TestFixtureSetUp]
-        public void TestFixtureSetUp() {
+        public void TestFixtureSetUp()
+        {
             EstablishContext();
             BecauseOf();
         }
 
         [DebuggerStepThrough]
         [TestFixtureTearDown]
-        public void TearDown() {
-            foreach (var dispose_action in _dispose_actions) {
+        public void TearDown()
+        {
+            foreach (var dispose_action in _dispose_actions)
+            {
                 dispose_action();
             }
             Cleanup();
@@ -36,30 +41,38 @@ namespace DisposableFixer.Test
         ///     Test setup. Place your initialization code here.
         /// </summary>
         [DebuggerStepThrough]
-        protected virtual void EstablishContext() { }
+        protected virtual void EstablishContext()
+        {
+        }
 
         /// <summary>
         ///     Test run. Place the tested method / action here.
         /// </summary>
         [DebuggerStepThrough]
-        protected virtual void BecauseOf() { }
+        protected virtual void BecauseOf()
+        {
+        }
 
         /// <summary>
         ///     Test clean. Close/delete files, close database connections ..
         /// </summary>
         [DebuggerStepThrough]
-        protected virtual void Cleanup() { }
+        protected virtual void Cleanup()
+        {
+        }
 
         /// <summary>
         ///     Creates an Action delegate.
         /// </summary>
         /// <param name="func">Method the shall be created as delegate.</param>
         /// <returns>A delegate of type <see cref="Action" /></returns>
-        protected Action Invoking(Action func) {
+        protected Action Invoking(Action func)
+        {
             return func;
         }
 
-        protected void DisposeOnTearDown(IDisposable disposable) {
+        protected void DisposeOnTearDown(IDisposable disposable)
+        {
             _dispose_actions.Add(() => disposable?.Dispose());
         }
     }

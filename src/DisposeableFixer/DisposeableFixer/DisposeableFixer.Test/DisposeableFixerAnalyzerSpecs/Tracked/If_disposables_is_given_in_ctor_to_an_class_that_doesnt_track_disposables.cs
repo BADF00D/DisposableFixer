@@ -1,23 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using FluentAssertions;
-using Microsoft.CodeAnalysis;
 using NUnit.Framework;
 
 namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.Tracked
 {
-    internal class If_disposables_is_given_in_ctor_to_an_class_that_doesnt_track_disposables : DisposeableFixerAnalyzerSpec {
-        
-
-
-        [Test, TestCaseSource(nameof(TestCases))]
-        public void Then_there_should_be_no_Diagnostics(string code, int numberOfDisgnostics)
-        {
-            var diagnostics = MyHelper.RunAnalyser(code, Sut);
-            diagnostics.Length.Should().Be(numberOfDisgnostics);
-        }
-
+    internal class If_disposables_is_given_in_ctor_to_an_class_that_doesnt_track_disposables :
+        DisposeableFixerAnalyzerSpec
+    {
         public static IEnumerable<TestCaseData> TestCases
         {
             get
@@ -29,11 +18,9 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.Tracked
                 yield return new TestCaseData(ObjectCreationInCallToCtorOfNonTrackingInstance, 1)
                     .SetName("ObjectCreation in call to ctor of a non tracking instance");
                 yield return new TestCaseData(FactoryCallWithinCtorCallOfNonTrackingInstance, 1)
-                   .SetName("FactoryCall in call to ctor of a non tracking instance");
-
+                    .SetName("FactoryCall in call to ctor of a non tracking instance");
             }
         }
-
 
 
         private const string LocalDeclarationWithObjectCreation = @"
@@ -130,6 +117,13 @@ namespace DisFixerTest.Tracking {
     }
 }
 ";
+
+
+        [Test, TestCaseSource(nameof(TestCases))]
+        public void Then_there_should_be_no_Diagnostics(string code, int numberOfDisgnostics)
+        {
+            var diagnostics = MyHelper.RunAnalyser(code, Sut);
+            diagnostics.Length.Should().Be(numberOfDisgnostics);
+        }
     }
 }
-

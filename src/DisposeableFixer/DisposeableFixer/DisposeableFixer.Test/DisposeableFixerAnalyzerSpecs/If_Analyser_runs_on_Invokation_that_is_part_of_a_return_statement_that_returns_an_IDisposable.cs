@@ -5,10 +5,13 @@ using NUnit.Framework;
 namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs
 {
     [TestFixture]
-    internal class If_Analyser_runs_on_Invokation_that_is_part_of_a_return_statement_that_returns_an_IDisposable : DisposeableFixerAnalyzerSpec {
+    internal class If_Analyser_runs_on_Invokation_that_is_part_of_a_return_statement_that_returns_an_IDisposable :
+        DisposeableFixerAnalyzerSpec
+    {
         private Diagnostic[] _diagnostics;
 
-        protected override void BecauseOf() {
+        protected override void BecauseOf()
+        {
             _diagnostics = MyHelper.RunAnalyser(Code, Sut);
         }
 
@@ -31,7 +34,8 @@ namespace DisFixerTest.Misc {
 }";
 
         [Test]
-        public void Then_there_should_be_no_Diagnostics() {
+        public void Then_there_should_be_no_Diagnostics()
+        {
             _diagnostics.Length.Should().Be(0);
         }
     }

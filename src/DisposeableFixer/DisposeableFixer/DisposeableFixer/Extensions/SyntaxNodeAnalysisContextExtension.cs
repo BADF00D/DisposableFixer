@@ -7,19 +7,19 @@ namespace DisposableFixer.Extensions
     public static class SyntaxNodeAnalysisContextExtension
     {
         private static readonly LocalizableString Title = new LocalizableResourceString(
-            nameof(Resources.AnalyzerTitle), Resources.ResourceManager, typeof(Resources));
+            nameof(Resources.AnalyzerTitle), Resources.ResourceManager, typeof (Resources));
 
         private static readonly LocalizableString MessageFormat =
             new LocalizableResourceString(nameof(Resources.AnalyzerMessageFormat), Resources.ResourceManager,
-                typeof(Resources));
+                typeof (Resources));
 
         private static readonly LocalizableString Description =
             new LocalizableResourceString(nameof(Resources.AnalyzerDescription), Resources.ResourceManager,
-                typeof(Resources));
+                typeof (Resources));
 
         public static readonly DiagnosticDescriptor NotDisposed = new DiagnosticDescriptor(
-            DisposableFixerAnalyzer.DiagnosticId, 
-            Title, 
+            DisposableFixerAnalyzer.DiagnosticId,
+            Title,
             MessageFormat,
             DisposableFixerAnalyzer.Category,
             DiagnosticSeverity.Warning, true, Description);
@@ -31,24 +31,26 @@ namespace DisposableFixer.Extensions
 
             context.ReportDiagnostic(Diagnostic.Create(NotDisposed, location));
         }
-        public static void ReportNotDisposedLocalDeclaration(this SyntaxNodeAnalysisContext context) {
+
+        public static void ReportNotDisposedLocalDeclaration(this SyntaxNodeAnalysisContext context)
+        {
             var location = context.Node.GetLocation();
 
             context.ReportDiagnostic(Diagnostic.Create(NotDisposed, location));
         }
 
-        public static void ReportNotDisposedInvokationExpression(this SyntaxNodeAnalysisContext context) {
+        public static void ReportNotDisposedInvokationExpression(this SyntaxNodeAnalysisContext context)
+        {
             var location = context.Node.GetLocation();
 
             context.ReportDiagnostic(Diagnostic.Create(NotDisposed, location));
         }
 
-        public static void ReportNotDisposedObjectCreation(this SyntaxNodeAnalysisContext context) {
+        public static void ReportNotDisposedObjectCreation(this SyntaxNodeAnalysisContext context)
+        {
             var location = context.Node.GetLocation();
 
             context.ReportDiagnostic(Diagnostic.Create(NotDisposed, location));
         }
-
-
     }
 }

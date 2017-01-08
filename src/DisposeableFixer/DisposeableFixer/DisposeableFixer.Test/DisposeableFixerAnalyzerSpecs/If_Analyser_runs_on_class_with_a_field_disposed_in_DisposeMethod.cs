@@ -6,10 +6,12 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs
 {
     [TestFixture]
     internal class If_Analyser_runs_on_class_with_a_field_disposed_in_DisposeMethod :
-        DisposeableFixerAnalyzerSpec {
+        DisposeableFixerAnalyzerSpec
+    {
         private Diagnostic[] _diagnostics;
 
-        protected override void BecauseOf() {
+        protected override void BecauseOf()
+        {
             _diagnostics = MyHelper.RunAnalyser(Code, Sut);
         }
 
@@ -29,8 +31,9 @@ namespace DisFixerTest.Duplicates {
 
 
         [Test]
-        public void Then_result_should_contain_no_Diagnostics() {
+        public void Then_result_should_contain_no_Diagnostics()
+        {
             _diagnostics.Length.Should().Be(0);
         }
-        }
+    }
 }

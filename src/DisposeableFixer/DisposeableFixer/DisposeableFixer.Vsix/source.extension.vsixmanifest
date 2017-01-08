@@ -1,7 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011"
+                 xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="DisposableFixer.Microsoft.e69d15ad-e40a-412c-a444-cfb06057928c" Version="0.11" Language="en-US" Publisher="David Störmer"/>
+    <Identity Id="DisposableFixer.Microsoft.e69d15ad-e40a-412c-a444-cfb06057928c" Version="0.11" Language="en-US"
+              Publisher="David Störmer" />
     <DisplayName>DisposableFixer</DisplayName>
     <Description xml:space="preserve">Identifies IDisposable instances that are not disposed.</Description>
     <MoreInfo>https://github.com/BADF00D/DisposableFixer</MoreInfo>
@@ -18,7 +21,9 @@
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
   </Dependencies>
   <Assets>
-    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="DisposableFixer" Path="|DisposableFixer|"/>
-    <Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="DisposableFixer" Path="|DisposableFixer|"/>
+    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="DisposableFixer"
+           Path="|DisposableFixer|" />
+    <Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="DisposableFixer"
+           Path="|DisposableFixer|" />
   </Assets>
 </PackageManifest>

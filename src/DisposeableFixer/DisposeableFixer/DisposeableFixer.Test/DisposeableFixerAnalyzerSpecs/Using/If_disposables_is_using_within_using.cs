@@ -4,21 +4,16 @@ using NUnit.Framework;
 
 namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.Using
 {
-    internal class If_disposables_is_using_within_using : DisposeableFixerAnalyzerSpec {
-
-        [Test, TestCaseSource(nameof(TestCases))]
-        public void Then_there_should_be_no_Diagnostics(string code, int numberOfDisgnostics)
-        {
-            var diagnostics = MyHelper.RunAnalyser(code, Sut);
-            diagnostics.Length.Should().Be(numberOfDisgnostics);
-        }
-
+    internal class If_disposables_is_using_within_using : DisposeableFixerAnalyzerSpec
+    {
         public static IEnumerable<TestCaseData> TestCases
         {
             get
             {
                 yield return new TestCaseData(LocalDeclarationWithObjectCreationThatIsCorrectlyDisposed, 0)
-                    .SetName("LocalDeclaration with ObjectCreation given to a non tracking instance that is correctly disposed");
+                    .SetName(
+                        "LocalDeclaration with ObjectCreation given to a non tracking instance that is correctly disposed")
+                    ;
                 yield return new TestCaseData(FactoryCallThatIsCorrectlyDisposed, 0)
                     .SetName("FactoryCall that is correctly disposed");
                 yield return new TestCaseData(ObjectCreationInUsingThatIsCorrectlyDisposed, 0)
@@ -95,7 +90,12 @@ namespace DisFixerTest.Tracking {
     }
 }
 ";
+
+        [Test, TestCaseSource(nameof(TestCases))]
+        public void Then_there_should_be_no_Diagnostics(string code, int numberOfDisgnostics)
+        {
+            var diagnostics = MyHelper.RunAnalyser(code, Sut);
+            diagnostics.Length.Should().Be(numberOfDisgnostics);
+        }
     }
 }
-
-

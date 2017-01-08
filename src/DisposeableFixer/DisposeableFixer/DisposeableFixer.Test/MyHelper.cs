@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -76,8 +75,8 @@ namespace DisposableFixer.Test
         }
 
 
-
-        public static void Verify(IEnumerable<Diagnostic> actualResults, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expectedResults)
+        public static void Verify(IEnumerable<Diagnostic> actualResults, DiagnosticAnalyzer analyzer,
+            params DiagnosticResult[] expectedResults)
         {
             var expectedCount = expectedResults.Count();
             var actualCount = actualResults.Count();
