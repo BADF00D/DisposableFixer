@@ -77,33 +77,38 @@ namespace DisposableFixer
                 if (node.IsPartOfReturn()) return; //return new MemoryStream(),
                 if (node.IsDescendantOfVariableDeclarator())
                 {
-                    var identifier = (node.Parent.Parent as VariableDeclaratorSyntax)?.Identifier;
-                    if (identifier == null) return;
-                    if (node.IsLocalDeclaration())
-                    {
-                        AnalyseObjectCreationWithinLocalDeclaration(context, node, identifier);
-                        return;
-                    }
-
-                    if (node.IsFieldDeclaration())
-                    {
-                        AnalyseObjectCreationInFieldDeclaration(context, node, identifier);
-                        return;
-                    }
+                    AnalyseObjectCreationWithinVariableDeclarator(context, node);
+                    return;
                 }
-                else if (node.IsPartOfAssignmentExpression())
+                if (node.IsPartOfAssignmentExpression())
                 {
                     AnalyseObjectCreationInAssignmentExpression(context, node);
                     return;
                 }
 
-
-                context.ReportNotDisposed();
+                //new MemoryStream();
+                context.ReportNotDisposedAnonymousObjectFromObjectCreation();
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
             }
+        }
+
+        private static void AnalyseObjectCreationWithinVariableDeclarator(SyntaxNodeAnalysisContext context,
+            ObjectCreationExpressionSyntax node)
+        {
+            var identifier = (node.Parent.Parent as VariableDeclaratorSyntax)?.Identifier;
+            if (identifier == null) return;
+            if (node.IsLocalDeclaration()) //var m = new MemoryStream();
+            {
+                AnalyseObjectCreationWithinLocalDeclaration(context, node, identifier);
+            }
+            else if (node.IsFieldDeclaration()) //_field = new MemoryStream();
+            {
+                AnalyseObjectCreationInFieldDeclaration(context, node, identifier);
+            }
+            return;
         }
 
         private static void AnalyseObjectCreationWithinLocalDeclaration(SyntaxNodeAnalysisContext context,
