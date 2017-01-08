@@ -16,6 +16,13 @@ namespace DisposableFixer.Extensions
         private static readonly LocalizableString AnonymousObjectFromMethodInvokationMessageFormat =
             new LocalizableResourceString(nameof(Resources.AnonymousObjectFromMethodInvokationMessageFormat), Resources.ResourceManager,
                 typeof(Resources));
+        private static readonly LocalizableString NotDisposedLocalVariableMessageFormat =
+            new LocalizableResourceString(nameof(Resources.NotDisposedLocalVariableMessageFormat), Resources.ResourceManager,
+                typeof(Resources));
+
+        private static readonly LocalizableString FieldMessageFormat =
+            new LocalizableResourceString(nameof(Resources.NotDisposedFieldMessageFormat), Resources.ResourceManager,
+                typeof(Resources));
 
         private static readonly LocalizableString NotDisposedMessageFormat =
             new LocalizableResourceString(nameof(Resources.NotDisposedMessageFormat), Resources.ResourceManager,
@@ -39,22 +46,35 @@ namespace DisposableFixer.Extensions
             DisposableFixerAnalyzer.Category,
             DiagnosticSeverity.Warning, true, Description);
 
-        public static readonly DiagnosticDescriptor NotDisposedDescriptor = new DiagnosticDescriptor(
+        public static readonly DiagnosticDescriptor NotDisposedLocalVariable = new DiagnosticDescriptor(
             DisposableFixerAnalyzer.DiagnosticId,
             Title,
-            AnonymousObjectFromMethodInvokationMessageFormat,
+            NotDisposedLocalVariableMessageFormat,
             DisposableFixerAnalyzer.Category,
             DiagnosticSeverity.Warning, true, Description);
 
+        public static readonly DiagnosticDescriptor NotDisposedDescriptor = new DiagnosticDescriptor(
+            DisposableFixerAnalyzer.DiagnosticId,
+            Title,
+            NotDisposedMessageFormat,
+            DisposableFixerAnalyzer.Category,
+            DiagnosticSeverity.Warning, true, Description);
 
-        public static void ReportNotDisposed(this SyntaxNodeAnalysisContext context, DisposableSource source)//todo
-        {
+        public static readonly DiagnosticDescriptor FieldNotDisposedDescriptor = new DiagnosticDescriptor(
+           DisposableFixerAnalyzer.DiagnosticId,
+           Title,
+           FieldMessageFormat,
+           DisposableFixerAnalyzer.Category,
+           DiagnosticSeverity.Warning, true, Description);
+
+
+        public static void ReportNotDisposedField(this SyntaxNodeAnalysisContext context, DisposableSource source) {
             var location = context.Node.GetLocation();
 
-            context.ReportDiagnostic(Diagnostic.Create(NotDisposedDescriptor, location));
+            context.ReportDiagnostic(Diagnostic.Create(FieldNotDisposedDescriptor, location));
         }
 
-        public static void ReportNotDisposedField(this SyntaxNodeAnalysisContext context, DisposableSource source) {//todo
+        public static void ReportNotDisposedAssignmentToFieldOrProperty(this SyntaxNodeAnalysisContext context, DisposableSource source) {
             var location = context.Node.GetLocation();
 
             context.ReportDiagnostic(Diagnostic.Create(NotDisposedDescriptor, location));
@@ -64,33 +84,16 @@ namespace DisposableFixer.Extensions
         {
             var location = context.Node.GetLocation();
 
-            context.ReportDiagnostic(Diagnostic.Create(NotDisposedDescriptor, location));
+            context.ReportDiagnostic(Diagnostic.Create(NotDisposedLocalVariable, location));
         }
 
-        public static void ReportNotDisposedLocalObject(this SyntaxNodeAnalysisContext context, DisposableSource source) {//todo
-            var location = context.Node.GetLocation();
-
-            context.ReportDiagnostic(Diagnostic.Create(NotDisposedDescriptor, location));
-        }
-
-        public static void ReportNotDisposedInvokationExpression(this SyntaxNodeAnalysisContext context)
+        public static void ReportNotDisposedAnonymousObject(this SyntaxNodeAnalysisContext context, DisposableSource source)
         {
             var location = context.Node.GetLocation();
 
-            context.ReportDiagnostic(Diagnostic.Create(NotDisposedDescriptor, location));
-        }
-
-        public static void ReportNotDisposedObjectCreation(this SyntaxNodeAnalysisContext context)
-        {
-            var location = context.Node.GetLocation();
-
-            context.ReportDiagnostic(Diagnostic.Create(NotDisposedDescriptor, location));
-        }
-
-        public static void ReportNotDisposedAnonymousObjectFromObjectCreation(this SyntaxNodeAnalysisContext context, DisposableSource source) {//todo
-            var location = context.Node.GetLocation();
-
-            context.ReportDiagnostic(Diagnostic.Create(NotDisposedDescriptor, location));
+            context.ReportDiagnostic(source == DisposableSource.InvokationExpression
+                ? Diagnostic.Create(AnonymousObjectFromMethodInvokationDescriptor, location)
+                : Diagnostic.Create(AnonymousObjectFromObjectCreationDescriptor, location));
         }
     }
 }

@@ -132,7 +132,13 @@
   <data name="AnonymousObjectFromMethodInvokationMessageFormat" xml:space="preserve">
     <value>Method returns an anonymous object that is not disposed.</value>
   </data>
+  <data name="NotDisposedFieldMessageFormat" xml:space="preserve">
+    <value>Field is not disposed.</value>
+  </data>
+  <data name="NotDisposedLocalVariableMessageFormat" xml:space="preserve">
+    <value>Local variable is not disposed</value>
+  </data>
   <data name="NotDisposedMessageFormat" xml:space="preserve">
-    <value>This IDisposable is not disposed.</value>
+    <value>This disposbale is not disposed.</value>
   </data>
 </root>

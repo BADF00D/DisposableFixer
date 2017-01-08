@@ -68,7 +68,7 @@ namespace DisposableFixer
                 else if (node.IsDescendantOfUsingDeclaration()) { }//this have to be checked after IsArgumentInObjectCreation
                 else if (node.IsDescendantOfVariableDeclarator()) AnalyseNodeWithinVariableDeclarator(context, node, DisposableSource.ObjectCreation);
                 else if (node.IsPartOfAssignmentExpression()) AnalyseNodeInAssignmentExpression(context, node, DisposableSource.ObjectCreation);
-                else context.ReportNotDisposedAnonymousObjectFromObjectCreation(DisposableSource.ObjectCreation); //new MemoryStream();
+                else context.ReportNotDisposedAnonymousObject(DisposableSource.ObjectCreation); //new MemoryStream();
             }
             catch (Exception e)
             {
@@ -122,8 +122,7 @@ namespace DisposableFixer
                     });
                 if (isTracked) return;
 
-
-                context.ReportNotDisposedLocalObject(source);
+                context.ReportNotDisposedLocalDeclaration();
                 return;
             }
             if (ctorOrMethod.DescendantNodes<InvocationExpressionSyntax>().Any(ies =>
@@ -137,7 +136,7 @@ namespace DisposableFixer
                 return;
             }
 
-            context.ReportNotDisposed(source);//todo
+            context.ReportNotDisposedLocalDeclaration();
         }
 
         private static void AnalyseNodeInFieldDeclaration(SyntaxNodeAnalysisContext context,
@@ -165,33 +164,17 @@ namespace DisposableFixer
             if (isDisposed) return;
             //there is a dispose method in this class, but ObjectCreation is not disposed
             context.ReportNotDisposedField(source);
-            return;
         }
 
         private static void AnalyseNodeInAssignmentExpression(SyntaxNodeAnalysisContext context,
             SyntaxNode node, DisposableSource source)
         {
-            var identifier = node.Parent.DescendantNodes<IdentifierNameSyntax>().FirstOrDefault()?.Identifier;
             var disposeMethod = node.FindContainingClass().DescendantNodes<MethodDeclarationSyntax>()
                 .FirstOrDefault(method => method.Identifier.Text == DisposeMethod);
             if (disposeMethod == null)
             {
-                context.ReportNotDisposedField(source); //this can also be a property
-                return;
+                context.ReportNotDisposedAssignmentToFieldOrProperty(source); //this can also be a property
             }
-            ;
-            var isDisposed = disposeMethod.DescendantNodes<InvocationExpressionSyntax>()
-                .Select(invo => invo.Expression as MemberAccessExpressionSyntax)
-                .Any(invo =>
-                {
-                    var id = invo.Expression as IdentifierNameSyntax;
-                    var member = id.Identifier.Text == identifier.Value.Text;
-                    var callToDispose = invo.Name.Identifier.Text == DisposeMethod;
-
-                    return member && callToDispose;
-                });
-            if (isDisposed) return;
-            context.ReportNotDisposedField(source);
         }
         
         private static void AnalyseNodeInArgumentList(SyntaxNodeAnalysisContext context,
@@ -201,7 +184,7 @@ namespace DisposableFixer
             var t = context.SemanticModel.GetReturnTypeOf(objectCreation);
             if (TrackingTypes.Contains(t.GetFullNamespace())) return;
 
-            context.ReportNotDisposedAnonymousObjectFromObjectCreation(source);
+            context.ReportNotDisposedAnonymousObject(source);
         }
 
         private static void AnalyseInvokationExpressionStatement(SyntaxNodeAnalysisContext context)
@@ -222,7 +205,7 @@ namespace DisposableFixer
                 else if (node.IsDescendantOfUsingDeclaration()) {}
                 else if (node.IsDescendantOfVariableDeclarator()) AnalyseNodeWithinVariableDeclarator(context, node, DisposableSource.InvokationExpression);
                 else if (node.IsPartOfAssignmentExpression()) AnalyseNodeInAssignmentExpression(context, node, DisposableSource.InvokationExpression);
-                else context.ReportNotDisposed(DisposableSource.InvokationExpression);//todo
+                //else context.ReportNotDisposed(DisposableSource.InvokationExpression);//todo
             }
             catch (Exception e)
             {
