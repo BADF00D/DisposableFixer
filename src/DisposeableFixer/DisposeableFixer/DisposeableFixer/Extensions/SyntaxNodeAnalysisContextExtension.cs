@@ -54,7 +54,7 @@ namespace DisposableFixer.Extensions
             context.ReportDiagnostic(Diagnostic.Create(NotDisposedDescriptor, location));
         }
 
-        public static void ReportNotDisposedFieldFromObjectCreation(this SyntaxNodeAnalysisContext context, DisposableSource source) {//todo
+        public static void ReportNotDisposedField(this SyntaxNodeAnalysisContext context, DisposableSource source) {//todo
             var location = context.Node.GetLocation();
 
             context.ReportDiagnostic(Diagnostic.Create(NotDisposedDescriptor, location));
@@ -67,7 +67,7 @@ namespace DisposableFixer.Extensions
             context.ReportDiagnostic(Diagnostic.Create(NotDisposedDescriptor, location));
         }
 
-        public static void ReportNotDisposedLocalObjectFromObjectCreation(this SyntaxNodeAnalysisContext context, DisposableSource source) {//todo
+        public static void ReportNotDisposedLocalObject(this SyntaxNodeAnalysisContext context, DisposableSource source) {//todo
             var location = context.Node.GetLocation();
 
             context.ReportDiagnostic(Diagnostic.Create(NotDisposedDescriptor, location));
