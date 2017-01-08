@@ -172,6 +172,7 @@
     <Compile Include="Extensions\VariableDeclaratorSyntaxExtensionsSpecs\If_FindMethod_is_called_on_VariableDeclaration_in_Ctor.cs" />
     <Compile Include="Extensions\VariableDeclaratorSyntaxExtensionsSpecs\If_FindContainingMethods_is_called_on_VariableDeclaration_in_Method.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_11.cs" />
+    <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_17.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_12.cs" />
     <Compile Include="IssueTests\IssueSpec.cs" />
     <Compile Include="MyHelper.cs" />
