@@ -1,4 +1,4 @@
-﻿Release .12
+﻿Release 0.12
 * Fixed issue 17: ObjectCreations that assign an IDisposable to a field, not get correctly marked as undisposed.
 * Fixed issue 18: Defined more descriptive error messages.
 
