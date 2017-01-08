@@ -163,6 +163,27 @@ namespace DisposableFixer
                         return;
 
                     }
+                } else if (node.IsPartOfAssignmentExpression()) {
+                    var identifier = node.Parent.DescendantNodes<IdentifierNameSyntax>().FirstOrDefault()?.Identifier;
+                    var disposeMethod = node.FindContainingClass().DescendantNodes<MethodDeclarationSyntax>()
+                            .FirstOrDefault(method => method.Identifier.Text == DisposeMethod);
+                    if (disposeMethod == null) {
+                        context.ReportNotDisposed();
+                        return;
+                    }
+                         ;
+                    var isDisposed = disposeMethod.DescendantNodes<InvocationExpressionSyntax>()
+                        .Select(invo => invo.Expression as MemberAccessExpressionSyntax)
+                        .Any(invo => {
+                            var id = invo.Expression as IdentifierNameSyntax;
+                            var member = id.Identifier.Text == identifier.Value.Text;
+                            var callToDispose = invo.Name.Identifier.Text == DisposeMethod;
+
+                            return member && callToDispose;
+                        });
+                    if (isDisposed) return;
+                    context.ReportNotDisposed();
+                    return;
                 }
 
 
