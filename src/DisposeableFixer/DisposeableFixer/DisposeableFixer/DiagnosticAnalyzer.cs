@@ -77,7 +77,7 @@ namespace DisposableFixer
         }
 
         private static void AnalyseObjectCreationWithinVariableDeclarator(SyntaxNodeAnalysisContext context,
-            ObjectCreationExpressionSyntax node)
+            SyntaxNode node)
         {
             var identifier = (node.Parent.Parent as VariableDeclaratorSyntax)?.Identifier;
             if (identifier == null) return;
@@ -93,7 +93,7 @@ namespace DisposableFixer
         }
 
         private static void AnalyseObjectCreationWithinLocalDeclaration(SyntaxNodeAnalysisContext context,
-            ObjectCreationExpressionSyntax node, SyntaxToken? identifier)
+            SyntaxNode node, SyntaxToken? identifier)
         {
             SyntaxNode ctorOrMethod;
             if (!node.TryFindContainingConstructorOrMethod(out ctorOrMethod)) return;
@@ -143,13 +143,13 @@ namespace DisposableFixer
         }
 
         private static void AnalyseObjectCreationInFieldDeclaration(SyntaxNodeAnalysisContext context,
-            ObjectCreationExpressionSyntax node, SyntaxToken? identifier)
+            SyntaxNode node, SyntaxToken? identifier)
         {
             var disposeMethod = node.FindContainingClass().DescendantNodes<MethodDeclarationSyntax>()
                 .FirstOrDefault(method => method.Identifier.Text == DisposeMethod);
             if (disposeMethod == null)
             {
-//there is no dispose method in this class
+                //there is no dispose method in this class
                 context.ReportNotDisposedFieldFromObjectCreation();
                 return;
             }
@@ -171,7 +171,7 @@ namespace DisposableFixer
         }
 
         private static void AnalyseObjectCreationInAssignmentExpression(SyntaxNodeAnalysisContext context,
-            ObjectCreationExpressionSyntax node)
+            SyntaxNode node)
         {
             var identifier = node.Parent.DescendantNodes<IdentifierNameSyntax>().FirstOrDefault()?.Identifier;
             var disposeMethod = node.FindContainingClass().DescendantNodes<MethodDeclarationSyntax>()
@@ -198,7 +198,7 @@ namespace DisposableFixer
         }
 
         private static void AnalyseObjectCreationWithinUsing(SyntaxNodeAnalysisContext context,
-            ObjectCreationExpressionSyntax node)
+            SyntaxNode node)
         {
             if (node.Parent is UsingStatementSyntax) return; //using(new MemoryStream())
             if (node.IsDescendantOfVariableDeclarator()) return; //using(var mem = new MemoryStream())
@@ -212,7 +212,7 @@ namespace DisposableFixer
         }
 
         private static void AnalyseObjectCreationInArgumentList(SyntaxNodeAnalysisContext context,
-            ObjectCreationExpressionSyntax node)
+            SyntaxNode node)
         {
             var objectCreation = node.Parent.Parent.Parent as ObjectCreationExpressionSyntax;
             var t = context.SemanticModel.GetReturnTypeOf(objectCreation);
