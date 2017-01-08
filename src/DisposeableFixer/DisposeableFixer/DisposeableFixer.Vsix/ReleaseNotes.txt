@@ -1,5 +1,9 @@
-﻿Release 0.11
-* Fixed issue 14: Task and IEnumerator`1 are not ignored during analysis.
+﻿Release .12
+* Fixed issue 17: ObjectCreations that assign an IDisposable to a field, not get correctly marked as undisposed.
+* Fixed issue 18: Defined more descriptive error messages.
+
+Release 0.11
+* Fixed issue 14: Task and IEnumerator`1 are now ignored during analysis.
 
 Release 0.10
 * Fixed issue 12: InvokationExpression that returned an IDisposable yield a diagnostic.
