@@ -34,6 +34,7 @@
   <ItemGroup>
     <Compile Include="CodeFixProvider.cs" />
     <Compile Include="DiagnosticAnalyzer.cs" />
+    <Compile Include="DisposableSource.cs" />
     <Compile Include="Extensions\ClassDeclarationSyntaxExtensions.cs" />
     <Compile Include="Extensions\SymanticModelExtension.cs" />
     <Compile Include="Extensions\SyntaxNodeAnalysisContextExtension.cs" />

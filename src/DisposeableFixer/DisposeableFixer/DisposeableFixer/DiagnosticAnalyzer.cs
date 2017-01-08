@@ -64,11 +64,11 @@ namespace DisposableFixer
                 else if (IsIgnoredType(type)) {}
                 else if (node.IsPartOfReturn()) {}
                 else if (!IsDisposeableOrImplementsDisposable(type)) { }
-                else if (node.IsArgumentInObjectCreation()) AnalyseObjectCreationInArgumentList(context, node);
-                else if (node.IsDescendantOfUsingDeclaration()) AnalyseObjectCreationWithinUsing(context, node);
-                else if (node.IsDescendantOfVariableDeclarator()) AnalyseObjectCreationWithinVariableDeclarator(context, node);
-                else if (node.IsPartOfAssignmentExpression()) AnalyseObjectCreationInAssignmentExpression(context, node);
-                else context.ReportNotDisposedAnonymousObjectFromObjectCreation(); //new MemoryStream();
+                else if (node.IsArgumentInObjectCreation()) AnalyseObjectCreationInArgumentList(context, node, DisposableSource.ObjectCreation);
+                else if (node.IsDescendantOfUsingDeclaration()) AnalyseObjectCreationWithinUsing(context, node, DisposableSource.ObjectCreation);
+                else if (node.IsDescendantOfVariableDeclarator()) AnalyseObjectCreationWithinVariableDeclarator(context, node, DisposableSource.ObjectCreation);
+                else if (node.IsPartOfAssignmentExpression()) AnalyseObjectCreationInAssignmentExpression(context, node, DisposableSource.ObjectCreation);
+                else context.ReportNotDisposedAnonymousObjectFromObjectCreation(DisposableSource.ObjectCreation); //new MemoryStream();
             }
             catch (Exception e)
             {
@@ -77,22 +77,22 @@ namespace DisposableFixer
         }
 
         private static void AnalyseObjectCreationWithinVariableDeclarator(SyntaxNodeAnalysisContext context,
-            SyntaxNode node)
+            SyntaxNode node, DisposableSource source)
         {
             var identifier = (node.Parent.Parent as VariableDeclaratorSyntax)?.Identifier;
             if (identifier == null) return;
             if (node.IsLocalDeclaration()) //var m = new MemoryStream();
             {
-                AnalyseObjectCreationWithinLocalDeclaration(context, node, identifier);
+                AnalyseObjectCreationWithinLocalDeclaration(context, node, identifier, source);
             }
             else if (node.IsFieldDeclaration()) //_field = new MemoryStream();
             {
-                AnalyseObjectCreationInFieldDeclaration(context, node, identifier);
+                AnalyseObjectCreationInFieldDeclaration(context, node, identifier, source);
             }
         }
 
         private static void AnalyseObjectCreationWithinLocalDeclaration(SyntaxNodeAnalysisContext context,
-            SyntaxNode node, SyntaxToken? identifier)
+            SyntaxNode node, SyntaxToken? identifier, DisposableSource source)
         {
             SyntaxNode ctorOrMethod;
             if (!node.TryFindContainingConstructorOrMethod(out ctorOrMethod)) return;
@@ -123,7 +123,7 @@ namespace DisposableFixer
                 if (isTracked) return;
 
 
-                context.ReportNotDisposedLocalObjectFromObjectCreation();
+                context.ReportNotDisposedLocalObjectFromObjectCreation(source);
                 return;
             }
             if (ctorOrMethod.DescendantNodes<InvocationExpressionSyntax>().Any(ies =>
@@ -137,19 +137,18 @@ namespace DisposableFixer
                 return;
             }
 
-            context.ReportNotDisposed();
-            return;
+            context.ReportNotDisposed(source);//todo
         }
 
         private static void AnalyseObjectCreationInFieldDeclaration(SyntaxNodeAnalysisContext context,
-            SyntaxNode node, SyntaxToken? identifier)
+            SyntaxNode node, SyntaxToken? identifier, DisposableSource source)
         {
             var disposeMethod = node.FindContainingClass().DescendantNodes<MethodDeclarationSyntax>()
                 .FirstOrDefault(method => method.Identifier.Text == DisposeMethod);
             if (disposeMethod == null)
             {
                 //there is no dispose method in this class
-                context.ReportNotDisposedFieldFromObjectCreation();
+                context.ReportNotDisposedFieldFromObjectCreation(source);
                 return;
             }
             ;
@@ -165,19 +164,19 @@ namespace DisposableFixer
                 });
             if (isDisposed) return;
             //there is a dispose method in this class, but ObjectCreation is not disposed
-            context.ReportNotDisposedFieldFromObjectCreation();
+            context.ReportNotDisposedFieldFromObjectCreation(source);
             return;
         }
 
         private static void AnalyseObjectCreationInAssignmentExpression(SyntaxNodeAnalysisContext context,
-            SyntaxNode node)
+            SyntaxNode node, DisposableSource source)
         {
             var identifier = node.Parent.DescendantNodes<IdentifierNameSyntax>().FirstOrDefault()?.Identifier;
             var disposeMethod = node.FindContainingClass().DescendantNodes<MethodDeclarationSyntax>()
                 .FirstOrDefault(method => method.Identifier.Text == DisposeMethod);
             if (disposeMethod == null)
             {
-                context.ReportNotDisposedFieldFromObjectCreation(); //this can also be a property
+                context.ReportNotDisposedFieldFromObjectCreation(source); //this can also be a property
                 return;
             }
             ;
@@ -192,12 +191,12 @@ namespace DisposableFixer
                     return member && callToDispose;
                 });
             if (isDisposed) return;
-            context.ReportNotDisposedFieldFromObjectCreation();
+            context.ReportNotDisposedFieldFromObjectCreation(source);
             return;
         }
 
         private static void AnalyseObjectCreationWithinUsing(SyntaxNodeAnalysisContext context,
-            SyntaxNode node)
+            SyntaxNode node, DisposableSource source)
         {
             if (node.Parent is UsingStatementSyntax) return; //using(new MemoryStream())
             if (node.IsDescendantOfVariableDeclarator()) return; //using(var mem = new MemoryStream())
@@ -207,18 +206,17 @@ namespace DisposableFixer
                 if (TrackingTypes.Contains(t2.GetFullNamespace())) return;
             }
 
-            context.ReportNotDisposed();
+            context.ReportNotDisposed(source);//todo
         }
 
         private static void AnalyseObjectCreationInArgumentList(SyntaxNodeAnalysisContext context,
-            SyntaxNode node)
+            SyntaxNode node, DisposableSource source)
         {
             var objectCreation = node.Parent.Parent.Parent as ObjectCreationExpressionSyntax;
             var t = context.SemanticModel.GetReturnTypeOf(objectCreation);
             if (TrackingTypes.Contains(t.GetFullNamespace())) return;
 
-            context.ReportNotDisposedAnonymousObjectFromObjectCreation();
-            return;
+            context.ReportNotDisposedAnonymousObjectFromObjectCreation(source);
         }
 
         private static void AnalyseInvokationExpressionStatement(SyntaxNodeAnalysisContext context)
@@ -231,33 +229,15 @@ namespace DisposableFixer
                 var symbol = symbolInfo.Symbol as IMethodSymbol;
                 var type = symbol?.ReturnType as INamedTypeSymbol;
 
-                if (type == null) return;
-                if (IsIgnoredType(type)) return;
-                if (!IsDisposeableOrImplementsDisposable(type)) return;
-                if (node.IsArgumentInObjectCreation())
-                {
-                    AnalyseObjectCreationInArgumentList(context, node);
-                    return;
-                }
-                if (node.IsDescendantOfUsingDeclaration())
-                {
-                    AnalyseObjectCreationWithinUsing(context, node);
-                    return;
-                }
-                if (node.IsPartOfReturn()) return; //return new MemoryStream(),
-                if (node.IsDescendantOfVariableDeclarator())
-                {
-                    AnalyseObjectCreationWithinVariableDeclarator(context, node);
-                    return;
-                }
-                else if (node.IsPartOfAssignmentExpression())
-                {
-                    AnalyseObjectCreationInAssignmentExpression(context, node);
-                    return;
-                }
-
-
-                context.ReportNotDisposed();
+                if (type == null) {}
+                else if (IsIgnoredType(type)) {}
+                else if (!IsDisposeableOrImplementsDisposable(type)) {}
+                else if (node.IsPartOfReturn()) {}
+                else if (node.IsArgumentInObjectCreation()) AnalyseObjectCreationInArgumentList(context, node, DisposableSource.InvokationExpression);
+                else if (node.IsDescendantOfUsingDeclaration()) AnalyseObjectCreationWithinUsing(context, node, DisposableSource.InvokationExpression);
+                else if (node.IsDescendantOfVariableDeclarator()) AnalyseObjectCreationWithinVariableDeclarator(context, node, DisposableSource.InvokationExpression);
+                else if (node.IsPartOfAssignmentExpression()) AnalyseObjectCreationInAssignmentExpression(context, node, DisposableSource.InvokationExpression);
+                else context.ReportNotDisposed(DisposableSource.InvokationExpression);//todo
             }
             catch (Exception e)
             {

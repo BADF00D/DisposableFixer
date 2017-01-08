@@ -47,14 +47,14 @@ namespace DisposableFixer.Extensions
             DiagnosticSeverity.Warning, true, Description);
 
 
-        public static void ReportNotDisposed(this SyntaxNodeAnalysisContext context)
+        public static void ReportNotDisposed(this SyntaxNodeAnalysisContext context, DisposableSource source)//todo
         {
             var location = context.Node.GetLocation();
 
             context.ReportDiagnostic(Diagnostic.Create(NotDisposedDescriptor, location));
         }
 
-        public static void ReportNotDisposedFieldFromObjectCreation(this SyntaxNodeAnalysisContext context) {
+        public static void ReportNotDisposedFieldFromObjectCreation(this SyntaxNodeAnalysisContext context, DisposableSource source) {//todo
             var location = context.Node.GetLocation();
 
             context.ReportDiagnostic(Diagnostic.Create(NotDisposedDescriptor, location));
@@ -67,7 +67,7 @@ namespace DisposableFixer.Extensions
             context.ReportDiagnostic(Diagnostic.Create(NotDisposedDescriptor, location));
         }
 
-        public static void ReportNotDisposedLocalObjectFromObjectCreation(this SyntaxNodeAnalysisContext context) {
+        public static void ReportNotDisposedLocalObjectFromObjectCreation(this SyntaxNodeAnalysisContext context, DisposableSource source) {//todo
             var location = context.Node.GetLocation();
 
             context.ReportDiagnostic(Diagnostic.Create(NotDisposedDescriptor, location));
@@ -87,7 +87,7 @@ namespace DisposableFixer.Extensions
             context.ReportDiagnostic(Diagnostic.Create(NotDisposedDescriptor, location));
         }
 
-        public static void ReportNotDisposedAnonymousObjectFromObjectCreation(this SyntaxNodeAnalysisContext context) {
+        public static void ReportNotDisposedAnonymousObjectFromObjectCreation(this SyntaxNodeAnalysisContext context, DisposableSource source) {//todo
             var location = context.Node.GetLocation();
 
             context.ReportDiagnostic(Diagnostic.Create(NotDisposedDescriptor, location));
