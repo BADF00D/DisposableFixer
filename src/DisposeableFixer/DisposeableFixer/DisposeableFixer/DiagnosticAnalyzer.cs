@@ -61,33 +61,15 @@ namespace DisposableFixer
                 var symbolInfo = context.SemanticModel.GetSymbolInfo(node);
                 var type = (symbolInfo.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
 
-                if (type == null) return;
-                if (!IsDisposeableOrImplementsDisposable(type)) return;
-                if (IsIgnoredType(type)) return;
-                if (node.IsArgumentInObjectCreation())
-                {
-                    AnalyseObjectCreationInArgumentList(context, node);
-                    return;
-                }
-                if (node.IsDescendantOfUsingDeclaration())
-                {
-                    AnalyseObjectCreationWithinUsing(context, node);
-                    return;
-                }
-                if (node.IsPartOfReturn()) return; //return new MemoryStream(),
-                if (node.IsDescendantOfVariableDeclarator())
-                {
-                    AnalyseObjectCreationWithinVariableDeclarator(context, node);
-                    return;
-                }
-                if (node.IsPartOfAssignmentExpression())
-                {
-                    AnalyseObjectCreationInAssignmentExpression(context, node);
-                    return;
-                }
-
-                //new MemoryStream();
-                context.ReportNotDisposedAnonymousObjectFromObjectCreation();
+                if (type == null) { }
+                else if (!IsDisposeableOrImplementsDisposable(type)) { }
+                else if (IsIgnoredType(type)) {}
+                else if (node.IsArgumentInObjectCreation()) AnalyseObjectCreationInArgumentList(context, node);
+                else if (node.IsDescendantOfUsingDeclaration()) AnalyseObjectCreationWithinUsing(context, node);
+                else if (node.IsPartOfReturn()) {}
+                else if (node.IsDescendantOfVariableDeclarator()) AnalyseObjectCreationWithinVariableDeclarator(context, node);
+                else if (node.IsPartOfAssignmentExpression()) AnalyseObjectCreationInAssignmentExpression(context, node);
+                else context.ReportNotDisposedAnonymousObjectFromObjectCreation(); //new MemoryStream();
             }
             catch (Exception e)
             {
