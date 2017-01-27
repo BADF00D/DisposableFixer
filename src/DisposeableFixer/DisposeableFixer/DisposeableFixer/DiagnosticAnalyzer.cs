@@ -20,7 +20,7 @@ namespace DisposableFixer
         private const string DisposeMethod = "Dispose";
         private const string DisposableInterface = "IDisposable";
 
-	    private static IConfiguration _configuration = ConfigurationManager.Instance;
+	    private static IDetector _detector = new Detector();
 
 	    // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
         // See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Localizing%20Analyzers.md for more on localization
@@ -49,7 +49,7 @@ namespace DisposableFixer
                 var symbolInfo = context.SemanticModel.GetSymbolInfo(node);
                 var type = (symbolInfo.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
                 if (type == null) { }
-                else if (IsIgnoredType(type)) {}
+                else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) {}
                 else if (node.IsPartOfReturn()) {}
                 else if (!IsDisposeableOrImplementsDisposable(type)) { }
                 else if (node.IsArgumentInObjectCreation()) AnalyseNodeInArgumentList(context, node, DisposableSource.ObjectCreation);
@@ -104,9 +104,7 @@ namespace DisposableFixer
                         var sym = context.SemanticModel.GetSymbolInfo(ocs);
                         var type2 = (sym.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
 
-                        var fullname = type2.GetFullNamespace();
-
-                        return _configuration.TrackingTypes.Contains(fullname);
+                        return _detector.IsTrackedType(type2);
                     });
                 if (isTracked) return;
 
@@ -170,7 +168,7 @@ namespace DisposableFixer
         {
             var objectCreation = node.Parent.Parent.Parent as ObjectCreationExpressionSyntax;
             var t = context.SemanticModel.GetReturnTypeOf(objectCreation);
-            if (_configuration.TrackingTypes.Contains(t.GetFullNamespace())) return;
+            if (_detector.IsTrackedType(t)) return;
 
             context.ReportNotDisposedAnonymousObject(source);
         }
@@ -186,7 +184,7 @@ namespace DisposableFixer
                 var type = symbol?.ReturnType as INamedTypeSymbol;
 
                 if (type == null) {}
-                else if (IsIgnoredType(type)) {}
+                else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) {}
                 else if (!IsDisposeableOrImplementsDisposable(type)) {}
                 else if (node.IsPartOfReturn()) {}
                 else if (node.IsArgumentInObjectCreation()) AnalyseNodeInArgumentList(context, node, DisposableSource.InvokationExpression);
@@ -201,16 +199,12 @@ namespace DisposableFixer
             }
         }
 
-        private static bool IsIgnoredType(INamedTypeSymbol type)
+        private static bool IsIgnoredTypeOrImplementsIgnoredInterface(INamedTypeSymbol type)
         {
-            var name = type.Name;
-            var @namespace = type.ContainingNamespace.GetFullNamespace();
-            var completeType = $"{@namespace}.{name}";
+            if (_detector.IsIgnoredType(type)) return true;
 
-            if (_configuration.IgnoredTypes.Any(@if => @if == completeType)) return true;
-
-            var inter = type.AllInterfaces.Select(ai => ai.GetFullNamespace()).ToArray();
-            return inter.Any(@if => _configuration.IgnoredInterfaces.Contains(@if));
+            var inter = type.AllInterfaces.Select(ai => ai);
+            return inter.Any(@if => _detector.IsIgnoredInterface(@if));
         }
 
         private static bool IsDisposeableOrImplementsDisposable(INamedTypeSymbol typeInfo)
