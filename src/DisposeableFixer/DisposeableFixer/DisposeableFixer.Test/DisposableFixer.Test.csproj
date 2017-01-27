@@ -152,8 +152,10 @@
     <Compile Include="DisposeableFixerAnalyzerSpecs\Ignored\If_Analyser_runs_on_an_Enumerator_that_should_be_ignored.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\Ignored\If_Analyser_runs_on_an_Task_that_should_be_ignored.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\ObjectCreations\If_Analyser_runs_on_code_from_issue_17.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\Tracked\If_running_on_Tracking_instaces.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\Tracked\If_disposables_is_given_in_ctor_to_an_class_that_tracks_disposables.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\Tracked\If_disposables_is_given_in_ctor_to_an_class_that_doesnt_track_disposables.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\Tracked\TrackingClasses.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\Using\If_disposables_is_using_within_using.cs" />
     <Compile Include="Extensions\ClassDeclarationSyntaxExtensionsSpecs\If_FindFieldNamed_is_called_with_class_that_contains_no_fields.cs" />
     <Compile Include="Extensions\ClassDeclarationSyntaxExtensionsSpecs\If_FindFieldNamed_is_called_with_class_that_contains_searched_field.cs" />
