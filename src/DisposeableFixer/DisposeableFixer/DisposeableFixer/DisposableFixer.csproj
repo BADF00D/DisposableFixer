@@ -33,6 +33,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CodeFixProvider.cs" />
+    <Compile Include="Configuration\ConfigurationManager.cs" />
+    <Compile Include="Configuration\DefaultConfiguration.cs" />
+    <Compile Include="Configuration\IConfiguration.cs" />
     <Compile Include="DiagnosticAnalyzer.cs" />
     <Compile Include="DisposableSource.cs" />
     <Compile Include="Extensions\ClassDeclarationSyntaxExtensions.cs" />

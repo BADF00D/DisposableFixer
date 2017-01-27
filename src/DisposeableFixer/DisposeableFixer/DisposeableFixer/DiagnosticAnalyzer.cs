@@ -1,8 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+using DisposableFixer.Configuration;
 using DisposableFixer.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -20,30 +20,9 @@ namespace DisposableFixer
         private const string DisposeMethod = "Dispose";
         private const string DisposableInterface = "IDisposable";
 
-        private static readonly HashSet<string> IgnoredTypes = new HashSet<string>
-        {
-            "System.Threading.Tasks.Task"
-        };
+	    private static IConfiguration _configuration = ConfigurationManager.Instance;
 
-        private static readonly HashSet<string> IgnoredInterfaces = new HashSet<string>
-        {
-            "System.Collections.Generic.IEnumerator"
-        };
-
-        private static readonly HashSet<string> TrackingTypes = new HashSet<string>
-        {
-            "System.IO.StreamReader",
-            "System.IO.StreamWriter",
-            "System.IO.BinaryReader",
-            "System.IO.BinaryWriter",
-			"System.IO.BufferedStream",
-			"System.Security.Cryptography.CryptoStream",
-			"System.Resources.ResourceReader",
-			"System.Resources.ResourceSet",
-			"System.Resources.ResourceWriter",
-        };
-
-        // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
+	    // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
         // See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Localizing%20Analyzers.md for more on localization
 
 
@@ -63,6 +42,7 @@ namespace DisposableFixer
         {
             try
             {
+				
                 var node = context.Node as ObjectCreationExpressionSyntax;
                 if (node == null) return; //something went wrong
 
@@ -126,7 +106,7 @@ namespace DisposableFixer
 
                         var fullname = type2.GetFullNamespace();
 
-                        return TrackingTypes.Contains(fullname);
+                        return _configuration.TrackingTypes.Contains(fullname);
                     });
                 if (isTracked) return;
 
@@ -190,7 +170,7 @@ namespace DisposableFixer
         {
             var objectCreation = node.Parent.Parent.Parent as ObjectCreationExpressionSyntax;
             var t = context.SemanticModel.GetReturnTypeOf(objectCreation);
-            if (TrackingTypes.Contains(t.GetFullNamespace())) return;
+            if (_configuration.TrackingTypes.Contains(t.GetFullNamespace())) return;
 
             context.ReportNotDisposedAnonymousObject(source);
         }
@@ -227,10 +207,10 @@ namespace DisposableFixer
             var @namespace = type.ContainingNamespace.GetFullNamespace();
             var completeType = $"{@namespace}.{name}";
 
-            if (IgnoredTypes.Any(@if => @if == completeType)) return true;
+            if (_configuration.IgnoredTypes.Any(@if => @if == completeType)) return true;
 
             var inter = type.AllInterfaces.Select(ai => ai.GetFullNamespace()).ToArray();
-            return inter.Any(@if => IgnoredInterfaces.Contains(@if));
+            return inter.Any(@if => _configuration.IgnoredInterfaces.Contains(@if));
         }
 
         private static bool IsDisposeableOrImplementsDisposable(INamedTypeSymbol typeInfo)
