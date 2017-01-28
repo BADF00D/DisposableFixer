@@ -104,7 +104,7 @@ namespace DisposableFixer
                         var sym = context.SemanticModel.GetSymbolInfo(ocs);
                         var type2 = (sym.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
 
-                        return _detector.IsTrackedType(type2);
+                        return _detector.IsTrackedType(type2, ocs as ObjectCreationExpressionSyntax, context.SemanticModel);
                     });
                 if (isTracked) return;
 
@@ -168,7 +168,7 @@ namespace DisposableFixer
         {
             var objectCreation = node.Parent.Parent.Parent as ObjectCreationExpressionSyntax;
             var t = context.SemanticModel.GetReturnTypeOf(objectCreation);
-            if (_detector.IsTrackedType(t)) return;
+            if (_detector.IsTrackedType(t, objectCreation, context.SemanticModel)) return;
 
             context.ReportNotDisposedAnonymousObject(source);
         }

@@ -32,7 +32,7 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.Tracked
 				yield return new TestCaseData(CodeWith("ResourceWriter"), 0)
 					.SetName("mscorelib ResourceWriter");
 				yield return new TestCaseData(CodeForCryptoStream(), 0)
-					.SetName("mscorelib CryptoStream");//filestream is missing
+					.SetName("mscorelib CryptoStream");//todo filestream is missing
 			}
         }
 

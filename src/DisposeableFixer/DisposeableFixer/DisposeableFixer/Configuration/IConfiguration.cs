@@ -9,5 +9,6 @@ namespace DisposableFixer.Configuration {
 		HashSet<string> IgnoredTypes { get; }
 		HashSet<string> IgnoredInterfaces { get; }
 		HashSet<string> TrackingTypes { get; }
+		Dictionary<string, IReadOnlyCollection<CtorCall>> IgnoredTrackingTypeCtorCalls { get; }
 	}
 }
