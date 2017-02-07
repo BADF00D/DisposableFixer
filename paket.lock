@@ -1,0 +1,30 @@
+NUGET
+  remote: https://www.nuget.org/api/v2
+    FakeItEasy (2.3.1) - framework: >= net452
+    FluentAssertions (4.16) - framework: >= net452
+    JetBrains.DotMemoryUnit (2.3.20160517.113140) - framework: >= net452
+    Microsoft.CodeAnalysis.Analyzers (1.0)
+    Microsoft.CodeAnalysis.Common (1.0)
+      Microsoft.CodeAnalysis.Analyzers (1.0)
+      System.Collections.Immutable (>= 1.1.36)
+      System.Reflection.Metadata (>= 1.0.21)
+    Microsoft.CodeAnalysis.CSharp (1.0)
+      Microsoft.CodeAnalysis.Common (1.0)
+    Microsoft.CodeAnalysis.CSharp.Workspaces (1.0)
+      Microsoft.CodeAnalysis.CSharp (1.0)
+      Microsoft.CodeAnalysis.Workspaces.Common (1.0)
+    Microsoft.CodeAnalysis.VisualBasic (1.0) - framework: >= net452
+      Microsoft.CodeAnalysis.Common (>= 1.0)
+    Microsoft.CodeAnalysis.VisualBasic.Workspaces (1.0) - framework: >= net452
+      Microsoft.CodeAnalysis.VisualBasic (1.0)
+      Microsoft.CodeAnalysis.Workspaces.Common (1.0)
+    Microsoft.CodeAnalysis.Workspaces.Common (1.0)
+      Microsoft.CodeAnalysis.Common (1.0)
+      Microsoft.Composition (>= 1.0.27)
+    Microsoft.Composition (1.0.27)
+    NuGet.CommandLine (2.8.5) - framework: portable45-net45+win8
+    NUnit (2.6.4) - framework: >= net452
+    NUnit.Runners (2.6.4) - framework: >= net452
+    System.Collections.Immutable (1.1.36)
+    System.Reflection.Metadata (1.0.21)
+      System.Collections.Immutable (>= 1.1.36)
