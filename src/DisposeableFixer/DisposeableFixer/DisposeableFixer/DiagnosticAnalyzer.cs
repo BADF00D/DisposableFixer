@@ -121,6 +121,24 @@ namespace DisposableFixer
             {
                 return;
             }
+            if (ctorOrMethod.DescendantNodes<ObjectCreationExpressionSyntax>().Any(oce =>
+            {
+                return oce.ArgumentList.Arguments.Any(arg =>
+                {
+                    var expression = arg.Expression as IdentifierNameSyntax;
+                    var isPartOfObjectcreation = expression?.Identifier.Text == identifier.Value.Text;
+                    if (!isPartOfObjectcreation) return false;
+
+                    //check if is tracking instance
+                    var sym = context.SemanticModel.GetSymbolInfo(oce);
+                    var type2 = (sym.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
+
+                    return _detector.IsTrackedType(type2, oce, context.SemanticModel);
+                });
+            }))
+            {
+                return;
+            }
 
             context.ReportNotDisposedLocalDeclaration();
         }

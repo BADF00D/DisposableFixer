@@ -13,7 +13,7 @@ namespace GivenToNonDisposedTrackingInstance {
 	internal class Program {
 		private static void Main(string[] args) {
 			var memoryStream = new MemoryStream();
-			var reader = new StreamReader(memoryStream);
+			var reader = new StreamReader(memoryStream));
 		}
 	}
 }";
