@@ -42,6 +42,7 @@
     <Compile Include="DiagnosticAnalyzer.cs" />
     <Compile Include="DisposableSource.cs" />
     <Compile Include="Extensions\ClassDeclarationSyntaxExtensions.cs" />
+    <Compile Include="Extensions\InvocationExpressionSyntaxExtension.cs" />
     <Compile Include="Extensions\SymanticModelExtension.cs" />
     <Compile Include="Extensions\SyntaxNodeAnalysisContextExtension.cs" />
     <Compile Include="Extensions\SyntaxNodeExtensions.cs" />

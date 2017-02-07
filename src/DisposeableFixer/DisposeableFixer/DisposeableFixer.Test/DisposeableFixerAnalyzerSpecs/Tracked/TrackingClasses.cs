@@ -17,11 +17,18 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.Tracked {
 			using (var bla = new ResourceReader(new MemoryStream())) { }
 			using (var bla = new ResourceWriter(new MemoryStream())) { }
 
-			using (var bla = new BinaryReader(new MemoryStream(), Encoding.UTF8, true)) { } //no diagnostics
-			using (var bla = new BinaryWriter(new MemoryStream(), Encoding.UTF8, true)) { } //no diagnostics
-			using (var bla = new StreamWriter(new MemoryStream(), Encoding.UTF8, 1024, true)) { } //no diagnostics
-			using (var bla = new StreamReader(new MemoryStream(), Encoding.UTF8, true, 1024, true)) { } //no diagnostics
-		}
+            //not dispoed MemoryStream
+			using (var bla = new BinaryReader(new MemoryStream(), Encoding.UTF8, true)) { } 
+			using (var bla = new BinaryWriter(new MemoryStream(), Encoding.UTF8, true)) { } 
+			using (var bla = new StreamWriter(new MemoryStream(), Encoding.UTF8, 1024, true)) { } 
+			using (var bla = new StreamReader(new MemoryStream(), Encoding.UTF8, true, 1024, true)) { }
+
+            //no diagnostics
+            using (var bla = new BinaryReader(new MemoryStream(), Encoding.UTF8, false)) { }
+            using (var bla = new BinaryWriter(new MemoryStream(), Encoding.UTF8, false)) { }
+            using (var bla = new StreamWriter(new MemoryStream(), Encoding.UTF8, 1024, false)) { }
+            using (var bla = new StreamReader(new MemoryStream(), Encoding.UTF8, true, 1024, false)) { }
+        }
 
 		
 	}

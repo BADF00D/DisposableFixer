@@ -6,12 +6,9 @@ using NUnit.Framework;
 
 namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.Tracked
 {
-    internal class If_running_on_Tracking_instaces : DisposeableFixerAnalyzerSpec
+    internal class If_created_in_CtorCall_of_Tracking_instances : DisposeableFixerAnalyzerSpec
     {
-
-
-
-        public static IEnumerable<TestCaseData> TestCases
+        private static IEnumerable<TestCaseData> TestCases
         {
             get
             {
@@ -59,9 +56,7 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.Tracked {
 ";
 
 		private static string CodeWith(string className) {
-		    return _CODE_1
-					+ className
-					+ _CODE_2;
+		    return _CODE_1 + className + _CODE_2;
 	    }
 
 		private static string CodeForCryptoStream() {

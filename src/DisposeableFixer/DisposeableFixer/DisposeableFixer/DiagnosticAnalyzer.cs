@@ -40,28 +40,16 @@ namespace DisposableFixer
 
         private static void AnalyseObjectCreationExpressionStatement(SyntaxNodeAnalysisContext context)
         {
-            try
-            {
-				
-                var node = context.Node as ObjectCreationExpressionSyntax;
-                if (node == null) return; //something went wrong
+            var node = context.Node as ObjectCreationExpressionSyntax;
+            if (node == null) return; //something went wrong
 
-                var symbolInfo = context.SemanticModel.GetSymbolInfo(node);
-                var type = (symbolInfo.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
-                if (type == null) { }
-                else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) {}
-                else if (node.IsPartOfReturn()) {}
-                else if (!IsDisposeableOrImplementsDisposable(type)) { }
-                else if (node.IsArgumentInObjectCreation()) AnalyseNodeInArgumentList(context, node, DisposableSource.ObjectCreation);
-                else if (node.IsDescendantOfUsingDeclaration()) { }//this have to be checked after IsArgumentInObjectCreation
-                else if (node.IsDescendantOfVariableDeclarator()) AnalyseNodeWithinVariableDeclarator(context, node, DisposableSource.ObjectCreation);
-                else if (node.IsPartOfAssignmentExpression()) AnalyseNodeInAssignmentExpression(context, node, DisposableSource.ObjectCreation);
-                else context.ReportNotDisposedAnonymousObject(DisposableSource.ObjectCreation); //new MemoryStream();
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e);
-            }
+            var symbolInfo = context.SemanticModel.GetSymbolInfo(node);
+            var type = (symbolInfo.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
+            if (type == null) { } else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } else if (node.IsPartOfReturn()) { } else if (!IsDisposeableOrImplementsDisposable(type)) { } else if (node.IsArgumentInObjectCreation()) AnalyseNodeInArgumentList(context, node, DisposableSource.ObjectCreation);
+            else if (node.IsDescendantOfUsingDeclaration()) { }//this have to be checked after IsArgumentInObjectCreation
+            else if (node.IsDescendantOfVariableDeclarator()) AnalyseNodeWithinVariableDeclarator(context, node, DisposableSource.ObjectCreation);
+            else if (node.IsPartOfAssignmentExpression()) AnalyseNodeInAssignmentExpression(context, node, DisposableSource.ObjectCreation);
+            else context.ReportNotDisposedAnonymousObject(DisposableSource.ObjectCreation); //new MemoryStream();
         }
 
         private static void AnalyseNodeWithinVariableDeclarator(SyntaxNodeAnalysisContext context,
@@ -111,20 +99,12 @@ namespace DisposableFixer
                 context.ReportNotDisposedLocalDeclaration();
                 return;
             }
-            if (ctorOrMethod.DescendantNodes<InvocationExpressionSyntax>().Any(ies =>
-            {
-                var expression = ies.Expression as MemberAccessExpressionSyntax;
-                var ids = expression.Expression as IdentifierNameSyntax;
-                return ids.Identifier.Text == identifier.Value.Text
-                       && expression.Name.Identifier.Text == DisposeMethod;
-            }))
+            if (ctorOrMethod.DescendantNodes<InvocationExpressionSyntax>().Any(ies => ies.IsCallToDispose(identifier.Value.Text)))
             {
                 return;
             }
-            if (ctorOrMethod.DescendantNodes<ObjectCreationExpressionSyntax>().Any(oce =>
-            {
-                return oce.ArgumentList.Arguments.Any(arg =>
-                {
+            if (ctorOrMethod.DescendantNodes<ObjectCreationExpressionSyntax>().Any(oce => {
+                return oce.ArgumentList.Arguments.Any(arg => {
                     var expression = arg.Expression as IdentifierNameSyntax;
                     var isPartOfObjectcreation = expression?.Identifier.Text == identifier.Value.Text;
                     if (!isPartOfObjectcreation) return false;
@@ -135,8 +115,7 @@ namespace DisposableFixer
 
                     return _detector.IsTrackedType(type2, oce, context.SemanticModel);
                 });
-            }))
-            {
+            })) {
                 return;
             }
 
@@ -193,28 +172,16 @@ namespace DisposableFixer
 
         private static void AnalyseInvokationExpressionStatement(SyntaxNodeAnalysisContext context)
         {
-            try
-            {
-                var node = context.Node;
+            var node = context.Node;
 
-                var symbolInfo = context.SemanticModel.GetSymbolInfo(node);
-                var symbol = symbolInfo.Symbol as IMethodSymbol;
-                var type = symbol?.ReturnType as INamedTypeSymbol;
+            var symbolInfo = context.SemanticModel.GetSymbolInfo(node);
+            var symbol = symbolInfo.Symbol as IMethodSymbol;
+            var type = symbol?.ReturnType as INamedTypeSymbol;
 
-                if (type == null) {}
-                else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) {}
-                else if (!IsDisposeableOrImplementsDisposable(type)) {}
-                else if (node.IsPartOfReturn()) {}
-                else if (node.IsArgumentInObjectCreation()) AnalyseNodeInArgumentList(context, node, DisposableSource.InvokationExpression);
-                else if (node.IsDescendantOfUsingDeclaration()) {}
-                else if (node.IsDescendantOfVariableDeclarator()) AnalyseNodeWithinVariableDeclarator(context, node, DisposableSource.InvokationExpression);
-                else if (node.IsPartOfAssignmentExpression()) AnalyseNodeInAssignmentExpression(context, node, DisposableSource.InvokationExpression);
-                //else context.ReportNotDisposed(DisposableSource.InvokationExpression);//todo
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e);
-            }
+            if (type == null) { } else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } else if (!IsDisposeableOrImplementsDisposable(type)) { } else if (node.IsPartOfReturn()) { } else if (node.IsArgumentInObjectCreation()) AnalyseNodeInArgumentList(context, node, DisposableSource.InvokationExpression);
+            else if (node.IsDescendantOfUsingDeclaration()) { } else if (node.IsDescendantOfVariableDeclarator()) AnalyseNodeWithinVariableDeclarator(context, node, DisposableSource.InvokationExpression);
+            else if (node.IsPartOfAssignmentExpression()) AnalyseNodeInAssignmentExpression(context, node, DisposableSource.InvokationExpression);
+            //else context.ReportNotDisposed(DisposableSource.InvokationExpression);//todo
         }
 
         private static bool IsIgnoredTypeOrImplementsIgnoredInterface(INamedTypeSymbol type)
