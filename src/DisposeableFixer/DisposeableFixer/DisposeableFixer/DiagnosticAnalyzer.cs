@@ -165,6 +165,7 @@ namespace DisposableFixer
         {
             var objectCreation = node.Parent.Parent.Parent as ObjectCreationExpressionSyntax;
             var t = context.SemanticModel.GetReturnTypeOf(objectCreation);
+            if (t == null) return;//return type could not be determind
             if (_detector.IsTrackedType(t, objectCreation, context.SemanticModel)) return;
 
             context.ReportNotDisposedAnonymousObject(source);
