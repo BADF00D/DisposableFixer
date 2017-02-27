@@ -20,7 +20,7 @@ namespace DisposableFixer
         private const string DisposeMethod = "Dispose";
         private const string DisposableInterface = "IDisposable";
 
-	    private static IDetector _detector = new Detector();
+	    private static readonly IDetector Detector = new TrackingTypeDetector();
 
 	    // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
         // See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Localizing%20Analyzers.md for more on localization
@@ -59,7 +59,7 @@ namespace DisposableFixer
             if (identifier == null) return;
             if (node.IsLocalDeclaration()) //var m = new MemoryStream();
             {
-                AnalyseNodeWithinLocalDeclaration(context, node, identifier, source);
+                AnalyseNodeWithinLocalDeclaration(context, node, identifier);
             }
             else if (node.IsFieldDeclaration()) //_field = new MemoryStream();
             {
@@ -68,14 +68,14 @@ namespace DisposableFixer
         }
 
         private static void AnalyseNodeWithinLocalDeclaration(SyntaxNodeAnalysisContext context,
-            SyntaxNode node, SyntaxToken? identifier, DisposableSource source)
+            SyntaxNode node, SyntaxToken? identifier)
         {
             SyntaxNode ctorOrMethod;
             if (!node.TryFindContainingConstructorOrMethod(out ctorOrMethod)) return;
 
             var usings = ctorOrMethod.DescendantNodes<UsingStatementSyntax>()
                 .SelectMany(@using => @using.DescendantNodes<IdentifierNameSyntax>())
-                .Where(id => id.Identifier.Value == identifier.Value.Value)
+                .Where(id => identifier != null && id.Identifier.Value == identifier.Value.Value)
                 .ToArray();
 
             if (usings.Any())
@@ -92,14 +92,14 @@ namespace DisposableFixer
                         var sym = context.SemanticModel.GetSymbolInfo(ocs);
                         var type2 = (sym.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
 
-                        return _detector.IsTrackedType(type2, ocs as ObjectCreationExpressionSyntax, context.SemanticModel);
+                        return Detector.IsTrackedType(type2, ocs as ObjectCreationExpressionSyntax, context.SemanticModel);
                     });
                 if (isTracked) return;
 
                 context.ReportNotDisposedLocalDeclaration();
                 return;
             }
-            if (ctorOrMethod.DescendantNodes<InvocationExpressionSyntax>().Any(ies => ies.IsCallToDispose(identifier.Value.Text)))
+            if (ctorOrMethod.DescendantNodes<InvocationExpressionSyntax>().Any(ies => identifier != null && ies.IsCallToDispose(identifier.Value.Text)))
             {
                 return;
             }
@@ -113,7 +113,7 @@ namespace DisposableFixer
                     var sym = context.SemanticModel.GetSymbolInfo(oce);
                     var type2 = (sym.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
 
-                    return _detector.IsTrackedType(type2, oce, context.SemanticModel);
+                    return Detector.IsTrackedType(type2, oce, context.SemanticModel);
                 });
             })) {
                 return;
@@ -166,7 +166,7 @@ namespace DisposableFixer
             var objectCreation = node.Parent.Parent.Parent as ObjectCreationExpressionSyntax;
             var t = context.SemanticModel.GetReturnTypeOf(objectCreation);
             if (t == null) return;//return type could not be determind
-            if (_detector.IsTrackedType(t, objectCreation, context.SemanticModel)) return;
+            if (Detector.IsTrackedType(t, objectCreation, context.SemanticModel)) return;
 
             context.ReportNotDisposedAnonymousObject(source);
         }
@@ -187,10 +187,10 @@ namespace DisposableFixer
 
         private static bool IsIgnoredTypeOrImplementsIgnoredInterface(INamedTypeSymbol type)
         {
-            if (_detector.IsIgnoredType(type)) return true;
+            if (Detector.IsIgnoredType(type)) return true;
 
             var inter = type.AllInterfaces.Select(ai => ai);
-            return inter.Any(@if => _detector.IsIgnoredInterface(@if));
+            return inter.Any(@if => Detector.IsIgnoredInterface(@if));
         }
 
         private static bool IsDisposeableOrImplementsDisposable(INamedTypeSymbol typeInfo)

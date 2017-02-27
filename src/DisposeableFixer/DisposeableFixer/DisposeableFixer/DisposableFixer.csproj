@@ -35,7 +35,7 @@
     <Compile Include="CodeFixProvider.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Configuration\DefaultConfiguration.cs" />
-    <Compile Include="Configuration\Detector.cs" />
+    <Compile Include="Configuration\TrackingTypeDetector.cs" />
     <Compile Include="Configuration\IConfiguration.cs" />
     <Compile Include="Configuration\IDetector.cs" />
     <Compile Include="Configuration\CtorCall.cs" />

@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DisposableFixer.Configuration {
-	internal sealed class Detector : IDetector {
+	internal sealed class TrackingTypeDetector : IDetector {
 		private readonly IConfiguration _configuration = ConfigurationManager.Instance;
 		public bool IsIgnoredInterface(INamedTypeSymbol named_type) {
 			var name = named_type.GetFullNamespace();
@@ -51,12 +51,11 @@ namespace DisposableFixer.Configuration {
 		    var token = node.GetContentArgumentAtPosition(nonTrackingCtorUsed.PositionOfFlagParameter);
 		    var literal = token as LiteralExpressionSyntax;
 		    if (literal.IsKind(SyntaxKind.TrueLiteralExpression))return !nonTrackingCtorUsed.FlagIndicationNonDisposedResource;
-		    if (literal.IsKind(SyntaxKind.FalseLiteralExpression))
-		        return nonTrackingCtorUsed.FlagIndicationNonDisposedResource;
-		    return true;
+		    return !literal.IsKind(SyntaxKind.FalseLiteralExpression) 
+                || nonTrackingCtorUsed.FlagIndicationNonDisposedResource;
 		}
 
-	    private CtorCall GetCtorConfiguration(IMethodSymbol ctorInUse, CtorCall[] nonTrackingCtorsWithSameParameterCount) {
+	    private static CtorCall GetCtorConfiguration(IMethodSymbol ctorInUse, CtorCall[] nonTrackingCtorsWithSameParameterCount) {
 	        foreach (var ctorCall in nonTrackingCtorsWithSameParameterCount)
 	        {
 	            for (var i = 0; i < ctorCall.Parameter.Length; i++)
@@ -69,14 +68,6 @@ namespace DisposableFixer.Configuration {
 	        }
 
 	        return null;
-	    }
-
-	    private static ArgumentSyntax GetArgumentOfDefault(SyntaxNode node, int positionOfFlagParameter)
-	    {
-	        var argumentsList = node.DescendantNodes<ArgumentListSyntax>().FirstOrDefault();
-	        var arguments = argumentsList?.DescendantNodes<ArgumentSyntax>().Where(arg => arg.Parent == argumentsList);
-
-	        return arguments?.Skip(positionOfFlagParameter - 1).FirstOrDefault();
 	    }
 	}
 }
