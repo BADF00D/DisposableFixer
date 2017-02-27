@@ -2,10 +2,10 @@ using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using NUnit.Framework;
 
-namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.ObjectCreations
+namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.InvokationExpression
 {
     [TestFixture]
-    internal class If_analyser_runs_on_an_disposable_local_variable_created_by_an_ObjectCreation : DisposeableFixerAnalyzerSpec
+    internal class If_analyser_runs_on_an_disposable_local_variable_created_by_factory_method : DisposeableFixerAnalyzerSpec
     {
         private readonly string _code = @"
 using System;
@@ -17,9 +17,14 @@ namespace GivenToNonDisposedTrackingInstance {
 
             public IDisposable SomeMethod()
             {
-                var memoryStream = new MemoryStream();
-                var reader = new StreamReader(memoryStream);
+                var reader = Create();
                 return reader;
+            }
+
+            private static StreamReader Create()
+            {
+                var memoryStream = new MemoryStream();
+                return new StreamReader(memoryStream);
             }
         }
     }

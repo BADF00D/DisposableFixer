@@ -90,6 +90,9 @@
   </Target>
   -->
   <ItemGroup>
+    <Reference Include="Microsoft.CodeAnalysis.VisualBasic">
+      <HintPath>..\..\..\..\packages\Microsoft.CodeAnalysis.VisualBasic\lib\net45\Microsoft.CodeAnalysis.VisualBasic.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Paket>True</Paket>
     </Reference>

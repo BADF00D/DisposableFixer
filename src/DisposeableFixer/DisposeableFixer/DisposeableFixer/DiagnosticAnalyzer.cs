@@ -45,7 +45,7 @@ namespace DisposableFixer
 
             var symbolInfo = context.SemanticModel.GetSymbolInfo(node);
             var type = (symbolInfo.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
-            if (type == null) { } else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } else if (node.IsPartOfReturn()) { } else if (!IsDisposeableOrImplementsDisposable(type)) { } else if (node.IsArgumentInObjectCreation()) AnalyseNodeInArgumentList(context, node, DisposableSource.ObjectCreation);
+            if (type == null) { } else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } else if (node.IsPartOfReturnStatement()) { } else if (!IsDisposeableOrImplementsDisposable(type)) { } else if (node.IsArgumentInObjectCreation()) AnalyseNodeInArgumentList(context, node, DisposableSource.ObjectCreation);
             else if (node.IsDescendantOfUsingDeclaration()) { }//this have to be checked after IsArgumentInObjectCreation
             else if (node.IsDescendantOfVariableDeclarator()) AnalyseNodeWithinVariableDeclarator(context, node, DisposableSource.ObjectCreation);
             else if (node.IsPartOfAssignmentExpression()) AnalyseNodeInAssignmentExpression(context, node, DisposableSource.ObjectCreation);
@@ -173,14 +173,21 @@ namespace DisposableFixer
 
         private static void AnalyseInvokationExpressionStatement(SyntaxNodeAnalysisContext context)
         {
-            var node = context.Node;
+            var node = context.Node as InvocationExpressionSyntax;
+            if (node == null) return;
 
             var symbolInfo = context.SemanticModel.GetSymbolInfo(node);
             var symbol = symbolInfo.Symbol as IMethodSymbol;
             var type = symbol?.ReturnType as INamedTypeSymbol;
 
-            if (type == null) { } else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } else if (!IsDisposeableOrImplementsDisposable(type)) { } else if (node.IsPartOfReturn()) { } else if (node.IsArgumentInObjectCreation()) AnalyseNodeInArgumentList(context, node, DisposableSource.InvokationExpression);
-            else if (node.IsDescendantOfUsingDeclaration()) { } else if (node.IsDescendantOfVariableDeclarator()) AnalyseNodeWithinVariableDeclarator(context, node, DisposableSource.InvokationExpression);
+            if (type == null) { } 
+            else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } 
+            else if (!IsDisposeableOrImplementsDisposable(type)) { } 
+            else if (node.IsPartOfReturnStatement()) { } //return new StreamReader()
+            else if (node.IsReturnedLaterWithinMethod()) { }
+            else if (node.IsArgumentInObjectCreation()) AnalyseNodeInArgumentList(context, node, DisposableSource.InvokationExpression);
+            else if (node.IsDescendantOfUsingDeclaration()) { } 
+            else if (node.IsDescendantOfVariableDeclarator()) AnalyseNodeWithinVariableDeclarator(context, node, DisposableSource.InvokationExpression);
             else if (node.IsPartOfAssignmentExpression()) AnalyseNodeInAssignmentExpression(context, node, DisposableSource.InvokationExpression);
             //else context.ReportNotDisposed(DisposableSource.InvokationExpression);//todo
         }
