@@ -7,9 +7,9 @@ namespace DisposableFixer.Extensions
         public static bool IsCallToDispose(this InvocationExpressionSyntax node, string identifier)
         {
             var expression = node.Expression as MemberAccessExpressionSyntax;
-            if (expression == null) return false;
 
-            var identifierSyntax = expression.Expression as IdentifierNameSyntax;
+            var identifierSyntax = expression?.Expression as IdentifierNameSyntax;
+            if (identifierSyntax == null) return false;
 
             return identifierSyntax.Identifier.Text == identifier
                    && expression.Name.Identifier.Text == "Dispose";
