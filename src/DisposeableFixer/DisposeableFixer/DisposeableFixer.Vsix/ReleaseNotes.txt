@@ -1,7 +1,12 @@
-﻿Release 0.14
-* Fixed issue 23: Disposables stored in local variables are no longer marked when given totracking types.
+﻿Release 0.15
+* Fixed issue 24: Disposables stored in local variables are no longer marked when returned.
+
+Release 0.14
+* Fixed issue 23: Disposables stored in local variables are no longer marked when given to tracking types.
+
 Release 0.13
 * Fixed issue 22: All tracking instances from mscorlib are correctly identified, now.
+
 Release 0.12
 * Fixed issue 17: ObjectCreations that assign an IDisposable to a field, not get correctly marked as undisposed.
 * Fixed issue 18: Defined more descriptive error messages.
