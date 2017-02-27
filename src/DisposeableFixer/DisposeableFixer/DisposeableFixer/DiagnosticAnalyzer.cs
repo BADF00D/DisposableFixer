@@ -45,7 +45,12 @@ namespace DisposableFixer
 
             var symbolInfo = context.SemanticModel.GetSymbolInfo(node);
             var type = (symbolInfo.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
-            if (type == null) { } else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } else if (node.IsPartOfReturnStatement()) { } else if (!IsDisposeableOrImplementsDisposable(type)) { } else if (node.IsArgumentInObjectCreation()) AnalyseNodeInArgumentList(context, node, DisposableSource.ObjectCreation);
+            if (type == null) { } 
+            else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } 
+            else if (node.IsPartOfReturnStatement()) { } 
+            else if (node.IsReturnedLaterWithinMethod()) { }
+            else if (!IsDisposeableOrImplementsDisposable(type)) { } 
+            else if (node.IsArgumentInObjectCreation()) AnalyseNodeInArgumentList(context, node, DisposableSource.ObjectCreation);
             else if (node.IsDescendantOfUsingDeclaration()) { }//this have to be checked after IsArgumentInObjectCreation
             else if (node.IsDescendantOfVariableDeclarator()) AnalyseNodeWithinVariableDeclarator(context, node, DisposableSource.ObjectCreation);
             else if (node.IsPartOfAssignmentExpression()) AnalyseNodeInAssignmentExpression(context, node, DisposableSource.ObjectCreation);

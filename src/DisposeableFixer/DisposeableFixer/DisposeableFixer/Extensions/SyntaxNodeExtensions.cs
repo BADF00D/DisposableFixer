@@ -88,20 +88,19 @@ namespace DisposableFixer.Extensions
         }
 
         /// <summary>
-        /// Checks if value the invokationexression is assigned to, is returned later in method body.
+        /// Checks if node is part of a VariableDeclaratorSyntax that is return later within method body.
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        public static bool IsReturnedLaterWithinMethod(this InvocationExpressionSyntax node) {
-            var method =  node.FindParent<MethodDeclarationSyntax, ClassDeclarationSyntax>();
+        public static bool IsReturnedLaterWithinMethod(this SyntaxNode node) {
+            var method = node.FindParent<MethodDeclarationSyntax, ClassDeclarationSyntax>();
             if (method?.ReturnType == null) return false; // no method or ReturnType found
 
             var identifier = node.GetIdentifier();
             if (identifier == null) return false;// no identifier found (should no happen) -> error
 
             return method.DescendantNodes<ReturnStatementSyntax>()
-                .Any(rss =>
-                {
+                .Any(rss => {
                     return rss.DescendantNodes<IdentifierNameSyntax>().Any(ins => ins.Identifier.Text == identifier);
                 });
         }
@@ -110,8 +109,8 @@ namespace DisposableFixer.Extensions
         /// Gets the identifier of the VariableDeclaratorSyntax, where given InvocationExpressionSyntax stores its value.
         /// </summary>
         /// <param name="node"></param>
-        /// <returns></returns>
-        public static string GetIdentifier(this InvocationExpressionSyntax node)
+        /// <returns>Identfier if parent is EqualsValueClauseSyntax and parent of parent is VariableDeclaratorSyntax</returns>
+        public static string GetIdentifier(this SyntaxNode node)
         {
             if (!(node.Parent is EqualsValueClauseSyntax)) return null;
             var variableDeclaratorSyntax = node.Parent?.Parent as VariableDeclaratorSyntax;
