@@ -96,7 +96,7 @@ namespace DisposableFixer.Extensions
             var method = node.FindParent<MethodDeclarationSyntax, ClassDeclarationSyntax>();
             if (method?.ReturnType == null) return false; // no method or ReturnType found
 
-            var identifier = node.GetIdentifier();
+            var identifier = node.GetIdentifierIfIsPartOfVariableDeclarator();
             if (identifier == null) return false;// no identifier found (should no happen) -> error
 
             return method.DescendantNodes<ReturnStatementSyntax>()
@@ -110,7 +110,7 @@ namespace DisposableFixer.Extensions
         /// </summary>
         /// <param name="node"></param>
         /// <returns>Identfier if parent is EqualsValueClauseSyntax and parent of parent is VariableDeclaratorSyntax</returns>
-        public static string GetIdentifier(this SyntaxNode node)
+        public static string GetIdentifierIfIsPartOfVariableDeclarator(this SyntaxNode node)
         {
             if (!(node.Parent is EqualsValueClauseSyntax)) return null;
             var variableDeclaratorSyntax = node.Parent?.Parent as VariableDeclaratorSyntax;

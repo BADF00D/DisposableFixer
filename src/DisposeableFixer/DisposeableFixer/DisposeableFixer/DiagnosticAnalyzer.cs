@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 using DisposableFixer.Configuration;
 using DisposableFixer.Extensions;
@@ -60,7 +58,7 @@ namespace DisposableFixer
         private static void AnalyseNodeWithinVariableDeclarator(SyntaxNodeAnalysisContext context,
             SyntaxNode node, DisposableSource source)
         {
-            var identifier = (node.Parent.Parent as VariableDeclaratorSyntax)?.Identifier;
+            var identifier = node.GetIdentifierIfIsPartOfVariableDeclarator();//getIdentifier
             if (identifier == null) return;
             if (node.IsLocalDeclaration()) //var m = new MemoryStream();
             {
@@ -73,14 +71,14 @@ namespace DisposableFixer
         }
 
         private static void AnalyseNodeWithinLocalDeclaration(SyntaxNodeAnalysisContext context,
-            SyntaxNode node, SyntaxToken? identifier)
+            SyntaxNode node, string identifier)
         {
             SyntaxNode ctorOrMethod;
             if (!node.TryFindContainingConstructorOrMethod(out ctorOrMethod)) return;
 
             var usings = ctorOrMethod.DescendantNodes<UsingStatementSyntax>()
                 .SelectMany(@using => @using.DescendantNodes<IdentifierNameSyntax>())
-                .Where(id => identifier != null && id.Identifier.Value == identifier.Value.Value)
+                .Where(id => identifier != null && (string) id.Identifier.Value == identifier)
                 .ToArray();
 
             if (usings.Any())
@@ -104,14 +102,14 @@ namespace DisposableFixer
                 context.ReportNotDisposedLocalDeclaration();
                 return;
             }
-            if (ctorOrMethod.DescendantNodes<InvocationExpressionSyntax>().Any(ies => identifier != null && ies.IsCallToDispose(identifier.Value.Text)))
+            if (ctorOrMethod.DescendantNodes<InvocationExpressionSyntax>().Any(ies => identifier != null && ies.IsCallToDispose(identifier)))
             {
                 return;
             }
             if (ctorOrMethod.DescendantNodes<ObjectCreationExpressionSyntax>().Any(oce => {
                 return oce.ArgumentList.Arguments.Any(arg => {
                     var expression = arg.Expression as IdentifierNameSyntax;
-                    var isPartOfObjectcreation = expression?.Identifier.Text == identifier.Value.Text;
+                    var isPartOfObjectcreation = expression?.Identifier.Text == identifier;
                     if (!isPartOfObjectcreation) return false;
 
                     //check if is tracking instance
@@ -128,7 +126,7 @@ namespace DisposableFixer
         }
 
         private static void AnalyseNodeInFieldDeclaration(SyntaxNodeAnalysisContext context,
-            SyntaxNode node, SyntaxToken? identifier, DisposableSource source)
+            SyntaxNode node, string identifier, DisposableSource source)
         {
             var disposeMethod = node.FindContainingClass().DescendantNodes<MethodDeclarationSyntax>()
                 .FirstOrDefault(method => method.Identifier.Text == DisposeMethod);
@@ -138,13 +136,13 @@ namespace DisposableFixer
                 context.ReportNotDisposedField(source);
                 return;
             }
-            ;
+            
             var isDisposed = disposeMethod.DescendantNodes<InvocationExpressionSyntax>()
                 .Select(invo => invo.Expression as MemberAccessExpressionSyntax)
                 .Any(invo =>
                 {
                     var id = invo.Expression as IdentifierNameSyntax;
-                    var member = id.Identifier.Text == identifier.Value.Text;
+                    var member = id?.Identifier.Text == identifier;
                     var callToDispose = invo.Name.Identifier.Text == DisposeMethod;
 
                     return member && callToDispose;
@@ -205,17 +203,17 @@ namespace DisposableFixer
             return inter.Any(@if => Detector.IsIgnoredInterface(@if));
         }
 
-        private static bool IsDisposeableOrImplementsDisposable(INamedTypeSymbol typeInfo)
+        private static bool IsDisposeableOrImplementsDisposable(ITypeSymbol typeInfo)
         {
             return IsIDisposable(typeInfo) || ImplementsIDisposable(typeInfo);
         }
 
-        private static bool IsIDisposable(INamedTypeSymbol typeInfo)
+        private static bool IsIDisposable(ISymbol typeInfo)
         {
             return typeInfo.Name == DisposableInterface;
         }
 
-        private static bool ImplementsIDisposable(INamedTypeSymbol typeInfo)
+        private static bool ImplementsIDisposable(ITypeSymbol typeInfo)
         {
             return typeInfo.AllInterfaces.Any(i => i.Name == DisposableInterface);
         }
