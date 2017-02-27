@@ -1,4 +1,7 @@
 ﻿Release 0.15
+* Fixed issue 25: Problem if InvokationExpression called on ObjectCreation returns an IDisposable was fixed.
+
+Release 0.15
 * Fixed issue 24: Disposables stored in local variables are no longer marked when returned.
 
 Release 0.14
