@@ -75,7 +75,8 @@
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_method_that_returns_a_MemoryStream.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\Ignored\If_Analyser_runs_on_an_Enumerator_that_should_be_ignored.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\Ignored\If_Analyser_runs_on_an_Task_that_should_be_ignored.cs" />
-    <Compile Include="DisposeableFixerAnalyzerSpecs\ObjectCreations\If_Analyser_runs_on_code_from_issue_17.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\ObjectCreations\If_analyser_runs_on_an_disposable_local_variable_created_by_factory_method.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\ObjectCreations\If_Analyser_runs_ObjectCreation_assigned_to_a_field.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\Tracked\If_a_stream_delivered_by_a_factory_is_stored_local_and_given_to_ctor_of_tracking_class_that_id_not_disposed.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\Tracked\If_a_stream_is_created_and_stored_local_and_given_to_ctor_of_tracking_class_that_is_not_disposed.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\Tracked\If_a_stream_is_created_and_stored_local_and_given_to_ctor_of_tracking_class_within_using.cs" />
@@ -109,6 +110,7 @@
     <Compile Include="Extensions\VariableDeclaratorSyntaxExtensionsSpecs\If_FindMethod_is_called_on_VariableDeclaration_in_Ctor.cs" />
     <Compile Include="Extensions\VariableDeclaratorSyntaxExtensionsSpecs\If_FindContainingMethods_is_called_on_VariableDeclaration_in_Method.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_11.cs" />
+    <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_24.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_23.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_17.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_12.cs" />
