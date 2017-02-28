@@ -1,0 +1,26 @@
+#!/bin/bash
+
+root=$(dirname "$0")
+paketDir=$root/.paket
+bootstrapperExe=$paketDir/paket.bootstrapper.exe
+paketExe=$paketDir/paket.exe
+
+maybe_mono=mono
+if [ "$OS" == "Windows_NT" ]; then
+  # Use .NET on Windows
+  maybe_mono=
+fi
+
+if [ ! -f "$paketExe" ]; then
+  $maybe_mono "$bootstrapperExe"
+  exit_code=$?
+  if [ $exit_code -ne 0 ]; then
+    exit $exit_code
+  fi
+fi
+
+$maybe_mono "$paketExe" $*
+exit_code=$?
+if [ $exit_code -ne 0 ]; then
+  exit $exit_code
+fi
