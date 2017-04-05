@@ -72,8 +72,7 @@ namespace DisposableFixer.Extensions
 
         public static bool IsDescendantOfUsingDeclaration<T>(this T node) where T : SyntaxNode
         {
-            var parent = node.FindParent<UsingStatementSyntax, MethodDeclarationSyntax>();
-            return parent != null;
+            return node?.Parent is UsingStatementSyntax;
         }
 
         public static bool IsDescendantOfVariableDeclarator(this SyntaxNode node)
