@@ -30,7 +30,7 @@ namespace DisFixerTest.Ignored {
         [Test]
         public void Then_there_should_be_no_Diagnostics()
         {
-            _diagnostics.Length.Should().Be(0);
+            _diagnostics.Length.Should().Be(1);
         }
     }
 }

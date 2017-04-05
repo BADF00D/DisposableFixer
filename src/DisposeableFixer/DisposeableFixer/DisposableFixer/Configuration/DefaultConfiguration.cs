@@ -19,7 +19,6 @@ namespace DisposableFixer.Configuration {
 			};
 			IgnoredTypes = new HashSet<string> {
 				"System.Threading.Tasks.Task",
-                "System.Threading.CancellationTokenRegistration",
             };
 			IgnoredTrackingTypeCtorCalls = new Dictionary<string, IReadOnlyCollection<CtorCall>> {
 					["System.IO.BinaryReader"] =  new [] {
