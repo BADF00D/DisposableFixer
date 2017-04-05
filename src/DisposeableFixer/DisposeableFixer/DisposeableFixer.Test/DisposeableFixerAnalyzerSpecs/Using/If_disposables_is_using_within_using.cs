@@ -20,6 +20,8 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.Using
                     .SetName("ObjectCreation in using that is correctly disposed");
                 yield return new TestCaseData(FactoryCallInUsingThatIsCorrectlyDisposed, 0)
                     .SetName("FactoryCall in using that is correctly disposed");
+                yield return new TestCaseData(ThreeDisablesInsideUsingBlock, 3)
+                    .SetName("Three disposable inside using block");
             }
         }
 
@@ -52,6 +54,8 @@ namespace DisFixerTest.Tracking {
 ";
 
         private const string FactoryCallThatIsCorrectlyDisposed = @"
+using System;
+using System.IO;
 namespace DisFixerTest.Tracking {
     class Test : IDisposable {
         public static void Do() {
@@ -73,6 +77,8 @@ namespace DisFixerTest.Tracking {
 ";
 
         private const string FactoryCallInUsingThatIsCorrectlyDisposed = @"
+using System;
+using System.IO;
 namespace DisFixerTest.Tracking {
     class NoneTracking : IDisposable {
         public static void Do() {
@@ -91,11 +97,31 @@ namespace DisFixerTest.Tracking {
 }
 ";
 
+        private const string ThreeDisablesInsideUsingBlock = @"
+using System;
+using System.IO;
+namespace DisFixerTest.ObjectCreation {
+    class ObjectCreationInUsingBlock {
+        public ObjectCreationInUsingBlock() {
+            using(var memStream = new MemoryStream()) 
+            {
+                new MemoryStream(); //this should be marked as not disposed
+                var tmp = new MemoryStream(); //this should be marked as not disposed
+                var tmp2 = Create();//this should be marked as not disposed
+            }
+        }
+        private IDisposable Create() {
+            return new MemoryStream();
+        }
+    }
+}
+";
+
         [Test, TestCaseSource(nameof(TestCases))]
-        public void Then_there_should_be_no_Diagnostics(string code, int numberOfDisgnostics)
+        public void Then_there_should_be_no_Diagnostics(string code, int numberOfDiagnostics)
         {
             var diagnostics = MyHelper.RunAnalyser(code, Sut);
-            diagnostics.Length.Should().Be(numberOfDisgnostics);
+            diagnostics.Length.Should().Be(numberOfDiagnostics);
         }
     }
 }
