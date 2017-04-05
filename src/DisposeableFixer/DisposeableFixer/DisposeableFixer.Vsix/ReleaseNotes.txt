@@ -1,4 +1,4 @@
-﻿Release 0.15
+﻿Release 0.17
 * Fixed issue 27: Disposables within a using Block are now correctly marked as not disposed.
 + Closed issue 29: Disposing CancellationTokenRegistration should be part of your cleanup.
 
