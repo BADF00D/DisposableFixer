@@ -12,14 +12,15 @@ namespace DisposableFixer.Configuration {
 				"System.Security.Cryptography.CryptoStream",
 				"System.Resources.ResourceReader",
 				"System.Resources.ResourceSet",
-				"System.Resources.ResourceWriter"
-			};
+				"System.Resources.ResourceWriter",
+            };
 			IgnoredInterfaces = new HashSet<string> {
 				"System.Collections.Generic.IEnumerator"
 			};
 			IgnoredTypes = new HashSet<string> {
-				"System.Threading.Tasks.Task"
-			};
+				"System.Threading.Tasks.Task",
+                "System.Threading.CancellationTokenRegistration",
+            };
 			IgnoredTrackingTypeCtorCalls = new Dictionary<string, IReadOnlyCollection<CtorCall>> {
 					["System.IO.BinaryReader"] =  new [] {
 						new CtorCall(new [] {"Stream","Encoding","Boolean"}, 2, true)
