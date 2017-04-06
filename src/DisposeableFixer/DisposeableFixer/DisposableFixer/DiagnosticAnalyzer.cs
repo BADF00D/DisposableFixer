@@ -192,7 +192,7 @@ namespace DisposableFixer
             else if (node.IsDescendantOfUsingDeclaration()) { } 
             else if (node.IsDescendantOfVariableDeclarator()) AnalyseNodeWithinVariableDeclarator(context, node, DisposableSource.InvokationExpression);
             else if (node.IsPartOfAssignmentExpression()) AnalyseNodeInAssignmentExpression(context, node, DisposableSource.InvokationExpression);
-            //else context.ReportNotDisposed(DisposableSource.InvokationExpression);//todo
+            else context.ReportNotDisposedAnonymousObject(DisposableSource.InvokationExpression); //call to Create(): MemeoryStream
         }
 
         private static bool IsIgnoredTypeOrImplementsIgnoredInterface(INamedTypeSymbol type)
