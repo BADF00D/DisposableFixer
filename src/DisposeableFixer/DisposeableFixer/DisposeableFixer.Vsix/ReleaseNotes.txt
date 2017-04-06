@@ -1,5 +1,6 @@
 ﻿Release 0.18
 * Fixed issue 26: Anonymous objects that are not disposed are not marked as not disposed.
+* Fixed issue 30: Support for VS 2017 Community Edition, Professional and Enterprise.
 
 Release 0.17
 * Fixed issue 27: Disposables within a using Block are now correctly marked as not disposed.
