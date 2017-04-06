@@ -75,6 +75,7 @@
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_method_that_returns_a_MemoryStream.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\Ignored\If_Analyser_runs_on_an_Enumerator_that_should_be_ignored.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\Ignored\If_Analyser_runs_on_an_Task_that_should_be_ignored - Copy.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\InvokationExpression\If_analyser_runs_on_an_disposable_local_variable_created_by_factory_method2.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\InvokationExpression\If_analyser_runs_on_an_disposable_local_variable_created_by_factory_method.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\ObjectCreations\If_Analyser_runs_ObjectCreation_assigned_to_a_field.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\ObjectCreations\If_analyser_runs_on_an_disposable_local_variable_created_by_factory_method.cs" />
@@ -111,6 +112,7 @@
     <Compile Include="Extensions\VariableDeclaratorSyntaxExtensionsSpecs\If_FindMethod_is_called_on_VariableDeclaration_in_Ctor.cs" />
     <Compile Include="Extensions\VariableDeclaratorSyntaxExtensionsSpecs\If_FindContainingMethods_is_called_on_VariableDeclaration_in_Method.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_11.cs" />
+    <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_26.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_27.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_29.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_25.cs" />
