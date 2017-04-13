@@ -1,4 +1,7 @@
-﻿Release 0.18
+﻿Release 0.20
+* Fixed issue 31: If using await on IDisposables, these are now correct recognized.
+
+Release 0.18
 * Fixed issue 26: Anonymous objects that are not disposed are not marked as not disposed.
 * Fixed issue 30: Support for VS 2017 Community Edition, Professional and Enterprise.
 
