@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.Async
 {
     [TestFixture]
-    internal class If_Analyser_runs_on_class_that_opens_a_filestream_async :
+    internal class If_Analyser_runs_on_class_that_opens_a_filestream_async_using_configure_await :
         DisposeableFixerAnalyzerSpec
     {
         private Diagnostic[] _diagnostics;
@@ -24,7 +24,7 @@ namespace DisFixerTest.Async
     {
         public async Task<bool> Data()
         {
-            var stream = await FileAsync.OpenReadAsync();
+            var stream = await FileAsync.OpenReadAsync().ConfigureAwait(false);
 
             return false;
         }

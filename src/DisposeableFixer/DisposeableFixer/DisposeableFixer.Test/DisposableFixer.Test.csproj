@@ -46,6 +46,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DisposeableFixerAnalyzerSpecs\Async\If_Analyser_runs_on_class_that_opens_a_filestream_async_using_configure_await.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\Async\If_Analyser_runs_on_class_that_opens_a_filestream_async.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\DisposeableFixerAnalyzerSpec.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_class_that_has_a_using_block_in_its_ctor_that_is_not_used_for_the_MemoryStream.cs" />
