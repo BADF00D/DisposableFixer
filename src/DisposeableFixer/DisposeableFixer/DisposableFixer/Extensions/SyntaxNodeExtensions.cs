@@ -85,6 +85,11 @@ namespace DisposableFixer.Extensions
             return node.FindParent<ReturnStatementSyntax, MethodDeclarationSyntax>() != null;
         }
 
+        public static bool IsPartOfAwaitExpression(this SyntaxNode node)
+        {
+            return node.Parent is AwaitExpressionSyntax;
+        }
+
         /// <summary>
         /// Checks if node is part of a VariableDeclaratorSyntax that is return later within method body.
         /// </summary>

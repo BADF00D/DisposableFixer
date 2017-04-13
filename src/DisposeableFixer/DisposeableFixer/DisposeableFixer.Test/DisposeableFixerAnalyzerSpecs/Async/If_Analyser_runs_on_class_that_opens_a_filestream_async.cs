@@ -1,3 +1,5 @@
+using System.IO;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using NUnit.Framework;
@@ -45,6 +47,21 @@ namespace DisFixerTest.Async
         public void Then_there_should_be_one_Diagnostics()
         {
             _diagnostics.Length.Should().Be(1);
+        }
+    }
+
+    class AsyncFileStream {
+        public async Task<bool> Data() {
+            var stream = await FileAsync.OpenReadAsync();
+
+            return false;
+        }
+        public class FileAsync {
+            public static async Task<MemoryStream> OpenReadAsync() {
+                var memStream = new MemoryStream();
+
+                return memStream;
+            }
         }
     }
 }

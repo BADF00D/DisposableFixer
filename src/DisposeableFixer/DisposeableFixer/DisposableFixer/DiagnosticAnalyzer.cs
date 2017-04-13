@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using DisposableFixer.Configuration;
 using DisposableFixer.Extensions;
@@ -184,6 +186,7 @@ namespace DisposableFixer
             var type = symbol?.ReturnType as INamedTypeSymbol;
 
             if (type == null) { } 
+            else if (node.IsPartOfAwaitExpression()) AnalyseInvokationExpressionInsideAwaitExpression(context, node);
             else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } 
             else if (!IsDisposeableOrImplementsDisposable(type)) { } 
             else if (node.IsPartOfReturnStatement()) { } //return new StreamReader()
@@ -193,6 +196,18 @@ namespace DisposableFixer
             else if (node.IsDescendantOfVariableDeclarator()) AnalyseNodeWithinVariableDeclarator(context, node, DisposableSource.InvokationExpression);
             else if (node.IsPartOfAssignmentExpression()) AnalyseNodeInAssignmentExpression(context, node, DisposableSource.InvokationExpression);
             else context.ReportNotDisposedAnonymousObject(DisposableSource.InvokationExpression); //call to Create(): MemeoryStream
+        }
+
+        private static void AnalyseInvokationExpressionInsideAwaitExpression(SyntaxNodeAnalysisContext context,
+            InvocationExpressionSyntax node)
+        {
+            var awaitExpression = node.Parent as AwaitExpressionSyntax;
+            var awaitExpressionInfo = context.SemanticModel.GetAwaitExpressionInfo(awaitExpression);
+            var returnType = awaitExpressionInfo.GetResultMethod.ReturnType as INamedTypeSymbol;
+            if (IsDisposeableOrImplementsDisposable(returnType) && !IsIgnoredTypeOrImplementsIgnoredInterface(returnType))
+            {
+                context.ReportNotDisposedAnonymousObject(DisposableSource.InvokationExpression);
+            }
         }
 
         private static bool IsIgnoredTypeOrImplementsIgnoredInterface(INamedTypeSymbol type)
