@@ -46,6 +46,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DisposeableFixerAnalyzerSpecs\Async\If_Analyser_runs_on_class_that_opens_a_filestream_async.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\DisposeableFixerAnalyzerSpec.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_class_that_has_a_using_block_in_its_ctor_that_is_not_used_for_the_MemoryStream.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_class_that_has_a_using_block_in_its_method_that_is_not_used_for_the_MemoryStream.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_11.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_26.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_27.cs" />
+    <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_31.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_29.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_25.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_24.cs" />
