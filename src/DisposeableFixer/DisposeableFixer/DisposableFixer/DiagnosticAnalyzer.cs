@@ -204,7 +204,17 @@ namespace DisposableFixer
             var awaitExpression = node.Parent as AwaitExpressionSyntax;
             var awaitExpressionInfo = context.SemanticModel.GetAwaitExpressionInfo(awaitExpression);
             var returnType = awaitExpressionInfo.GetResultMethod.ReturnType as INamedTypeSymbol;
-            if (IsDisposeableOrImplementsDisposable(returnType) && !IsIgnoredTypeOrImplementsIgnoredInterface(returnType))
+            if (!IsDisposeableOrImplementsDisposable(returnType)) return;
+            if (IsIgnoredTypeOrImplementsIgnoredInterface(returnType)) return;
+            if (awaitExpression.IsDescendantOfUsingDeclaration()) return;
+            if (awaitExpression.IsPartOfVariableDeclaratorInsideAUsingDeclaration()) return;
+            if (awaitExpression.IsPartOfReturnStatement()) return;
+            if (awaitExpression.IsReturnedLaterWithinMethod()) return;
+            if (awaitExpression.IsDescendantOfVariableDeclarator())
+            {
+                AnalyseNodeWithinVariableDeclarator(context, awaitExpression, DisposableSource.InvokationExpression);
+            }
+            else
             {
                 context.ReportNotDisposedAnonymousObject(DisposableSource.InvokationExpression);
             }

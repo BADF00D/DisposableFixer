@@ -75,6 +75,14 @@ namespace DisposableFixer.Extensions
             return node?.Parent is UsingStatementSyntax;
         }
 
+        public static bool IsPartOfVariableDeclaratorInsideAUsingDeclaration<T>(this T node) where T : SyntaxNode
+        {
+            return node?.Parent is EqualsValueClauseSyntax
+                && node?.Parent?.Parent is VariableDeclaratorSyntax
+                && node?.Parent?.Parent?.Parent is VariableDeclarationSyntax
+                && node?.Parent?.Parent?.Parent?.Parent is UsingStatementSyntax;
+        }
+
         public static bool IsDescendantOfVariableDeclarator(this SyntaxNode node)
         {
             return node.Parent?.Parent is VariableDeclaratorSyntax;
