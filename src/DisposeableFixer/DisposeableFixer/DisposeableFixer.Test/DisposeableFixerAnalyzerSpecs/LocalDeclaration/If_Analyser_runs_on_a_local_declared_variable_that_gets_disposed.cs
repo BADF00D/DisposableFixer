@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.LocalDeclaration
 {
     [TestFixture]
-    internal class If_Analyser_runs_on_a_local_declared_variable_not_disposed :
+    internal class If_Analyser_runs_on_a_local_declared_variable_that_gets_disposed :
         DisposeableFixerAnalyzerSpec
     {
         private Diagnostic[] _diagnostics;
@@ -24,6 +24,7 @@ namespace DisFixerTest.Async
     {
         public async Task<MemoryStream> Test(){
             var m = new MemoryStream();
+            m.Dispose();
             return null;
         }
     }
@@ -31,9 +32,9 @@ namespace DisFixerTest.Async
 ";
 
         [Test]
-        public void Then_there_should_be_one_Diagnostics()
+        public void Then_there_should_be_no_Diagnostics()
         {
-            _diagnostics.Length.Should().Be(1);
+            _diagnostics.Length.Should().Be(0);
         }
     }
 }

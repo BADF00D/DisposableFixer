@@ -104,10 +104,16 @@ namespace DisposableFixer
                 context.ReportNotDisposedLocalDeclaration();
                 return;
             }
-            if (ctorOrMethod.DescendantNodes<InvocationExpressionSyntax>().Any(ies => identifier != null && ies.IsCallToDispose(identifier)))
+            var invokationExpression = ctorOrMethod.DescendantNodes<InvocationExpressionSyntax>().ToArray();
+            if (invokationExpression.Any(ies => identifier != null && ies.IsCallToDispose(identifier))) return;
+            foreach (var ies in invokationExpression)
             {
-                return;
+                if (identifier != null && ies.IsCallToDispose(identifier))
+                {
+                    return;
+                }
             }
+
             if (ctorOrMethod.DescendantNodes<ObjectCreationExpressionSyntax>().Any(oce => {
                 return oce.ArgumentList.Arguments.Any(arg => {
                     var expression = arg.Expression as IdentifierNameSyntax;
@@ -123,7 +129,7 @@ namespace DisposableFixer
             })) {
                 return;
             }
-
+            
             context.ReportNotDisposedLocalDeclaration();
         }
 
