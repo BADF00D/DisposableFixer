@@ -15,8 +15,9 @@ namespace DisposableFixer.Configuration {
 				"System.Resources.ResourceWriter",
             };
 			IgnoredInterfaces = new HashSet<string> {
-				"System.Collections.Generic.IEnumerator"
-			};
+				"System.Collections.Generic.IEnumerator",
+                "Microsoft.Extensions.Logging.ILoggerFactory"
+            };
 			IgnoredTypes = new HashSet<string> {
 				"System.Threading.Tasks.Task",
             };
