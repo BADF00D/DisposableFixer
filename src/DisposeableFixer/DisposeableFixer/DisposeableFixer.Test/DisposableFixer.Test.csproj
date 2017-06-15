@@ -83,9 +83,10 @@
     <Compile Include="DisposeableFixerAnalyzerSpecs\Ignored\If_Analyser_runs_on_an_Task_that_should_be_ignored - Copy.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\InvokationExpression\If_analyser_runs_on_an_disposable_local_variable_created_by_factory_method2.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\InvokationExpression\If_analyser_runs_on_an_disposable_local_variable_created_by_factory_method.cs" />
-    <Compile Include="DisposeableFixerAnalyzerSpecs\LocalDeclaration\If_Analyser_runs_on_a_local_declared_variable_that_gets_disposed.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\LocalDeclaration\If_Analyser_runs_on_a_local_declared_variable_that_gets_disposed_via_null_conditional_operator.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\LocalDeclaration\If_Analyser_runs_on_a_local_declared_variable_that_gets_not_disposed.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\LocalDeclaration\If_Analyser_runs_on_a_local_declared_variable_that_gets_returned.cs" />
-    <Compile Include="DisposeableFixerAnalyzerSpecs\LocalDeclaration\If_Analyser_runs_on_a_local_declared_variable_not_disposed.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\LocalDeclaration\If_Analyser_runs_on_a_local_declared_variable_that_gets_disposed.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\ObjectCreations\If_Analyser_runs_ObjectCreation_assigned_to_a_field.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\ObjectCreations\If_analyser_runs_on_an_disposable_local_variable_created_by_factory_method.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\Tracked\If_a_stream_delivered_by_a_factory_is_stored_local_and_given_to_ctor_of_tracking_class_that_id_not_disposed.cs" />
