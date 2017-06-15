@@ -33,8 +33,6 @@ namespace DisFixerTest.Async
         [Test]
         public void Then_there_should_be_no_Diagnostics()
         {
-            var m = new MemoryStream();
-            m?.Dispose();
             _diagnostics.Length.Should().Be(0);
         }
     }

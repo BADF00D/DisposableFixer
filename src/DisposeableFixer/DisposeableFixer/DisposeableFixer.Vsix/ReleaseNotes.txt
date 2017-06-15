@@ -1,4 +1,9 @@
-﻿Release 0.20
+﻿Release 0.21
+* Fixed issue 33: Dispose via Null-conditional operator is now recognized correctly.
+* Fixed issue 37: await within using statements are now recognized correctly.
+* Fixed issue 38: Microsoft.Extensions.Logging.ILoggerFactory is now an ignored interface.
+
+Release 0.20
 * Fixed issue 31: If using await on IDisposables, these are now correct recognized.
 
 Release 0.18
