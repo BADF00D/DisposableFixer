@@ -8,17 +8,26 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.InvokationExpressio
     internal class If_analyser_runs_on_an_disposable_created_by_factory_method_but_is_not_stored : DisposeableFixerAnalyzerSpec
     {
         private readonly string _code = @"
+using System;
 using System.IO;
-namespace DisFixerTest.MethodCall {
-    class MethodCallWithoutSavingReturnValue {
-        public MethodCallWithoutSavingReturnValue() {
-            Create();
-        }
-        private MemoryStream Create() {
-            return new MemoryStream();
+
+using System.IO;
+namespace GivenToNonDisposedTrackingInstance {
+	internal class Program {
+
+            public IDisposable SomeMethod()
+            {
+                var reader = Create();
+                return reader;
+            }
+
+            private static StreamReader Create()
+            {
+                var memoryStream = new MemoryStream();
+                return new StreamReader(memoryStream);
+            }
         }
     }
-
 }";
 
         private Diagnostic[] _diagnostics;
@@ -30,9 +39,9 @@ namespace DisFixerTest.MethodCall {
         }
 
         [Test]
-        public void Then_there_should_be_one_Diagnostics()
+        public void Then_there_should_be_no_Diagnostics()
         {
-            _diagnostics.Length.Should().Be(1);
+            _diagnostics.Length.Should().Be(0);
         }
     }
 }
