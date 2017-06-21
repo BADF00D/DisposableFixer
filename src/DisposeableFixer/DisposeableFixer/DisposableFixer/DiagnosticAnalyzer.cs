@@ -46,7 +46,8 @@ namespace DisposableFixer
 
             var symbolInfo = context.SemanticModel.GetSymbolInfo(node);
             var type = (symbolInfo.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
-            if (type == null) { } 
+            if (type == null) { }
+            else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new MemoryStream()).Dispose()
             else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } 
             else if (node.IsPartOfReturnStatement()) { } 
             else if (node.IsReturnedLaterWithinMethod()) { }
@@ -243,6 +244,7 @@ namespace DisposableFixer
             var type = symbol?.ReturnType as INamedTypeSymbol;
 
             if (type == null) { } 
+            else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new object()).AsDisposable().Dispose()
             else if (node.IsPartOfAwaitExpression()) AnalyseInvokationExpressionInsideAwaitExpression(context, node);
             else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } 
             else if (!IsDisposeableOrImplementsDisposable(type)) { } 

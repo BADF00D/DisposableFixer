@@ -135,6 +135,11 @@ namespace DisposableFixer.Extensions
         {
             var memberAccessExpressionSyntax = invocationExpressionSyntax.Expression as MemberAccessExpressionSyntax;
 
+            return memberAccessExpressionSyntax != null && memberAccessExpressionSyntax.IsDisposeCallFor(name);
+        }
+
+        public static bool IsDisposeCallFor(this MemberAccessExpressionSyntax memberAccessExpressionSyntax, string name)
+        {
             var identifierNameSyntax = memberAccessExpressionSyntax?.Expression as IdentifierNameSyntax;
             return identifierNameSyntax?.Identifier.Text == name
                    && memberAccessExpressionSyntax?.Name.Identifier.Text == "Dispose";
@@ -170,6 +175,31 @@ namespace DisposableFixer.Extensions
         {
             var parent = node.FindParent<FieldDeclarationSyntax, ClassDeclarationSyntax>();
             return parent != null;
+        }
+
+        public static bool IsParentADisposeCallIgnoringParenthesis(this SyntaxNode node)
+        {
+            var parent = node.Parent;
+            while (true)
+            {
+                if (parent == null
+                    || parent is MethodDeclarationSyntax 
+                    || parent is PropertyDeclarationSyntax 
+                    || parent is ConstructorDeclarationSyntax)
+                    return false;
+                if (parent is ParenthesizedExpressionSyntax)
+                {
+                    parent = parent.Parent;
+                    continue;
+                }
+                var memberAccessExpressionSyntax = parent as MemberAccessExpressionSyntax;
+                if (memberAccessExpressionSyntax != null)
+                    return memberAccessExpressionSyntax.Name.Identifier.Text == "Dispose";
+
+                parent = parent.Parent;
+            }
+
+            
         }
 
         public static bool IsPartOfAssignmentExpression(this SyntaxNode node)
