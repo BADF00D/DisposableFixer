@@ -1,4 +1,8 @@
-﻿Release 0.21
+﻿Release 0.22
+* Fixed issue 39: If variable/field assignment of IDisposables is splitted, this is now correctly analysed.
+* Fixed issue 40: If an disposable is created and disposed in one step (e.g. (new MemoryStream).Dispose()), this is now correctly analysed.
+
+Release 0.21
 * Fixed issue 33: Dispose via Null-conditional operator is now recognized correctly.
 * Fixed issue 37: await within using statements are now recognized correctly.
 * Fixed issue 38: Microsoft.Extensions.Logging.ILoggerFactory is now an ignored interface.
