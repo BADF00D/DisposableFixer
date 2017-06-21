@@ -108,12 +108,49 @@ namespace DisposableFixer.Extensions
             if (method?.ReturnType == null) return false; // no method or ReturnType found
 
             var identifier = node.GetIdentifierIfIsPartOfVariableDeclarator();
-            if (identifier == null) return false;// no identifier found (should no happen) -> error
+            return method.Returns(identifier);
+        }
 
+        public static bool Returns(this MethodDeclarationSyntax method, string name)
+        {
+            if (name == null) return false;
             return method.DescendantNodes<ReturnStatementSyntax>()
-                .Any(rss => {
-                    return rss.DescendantNodes<IdentifierNameSyntax>().Any(ins => ins.Identifier.Text == identifier);
-                });
+                .Select(rss => rss.DescendantNodes<IdentifierNameSyntax>())
+                .Any(inss => inss.Any(ins => ins.Identifier.Text == name));
+        }
+
+        public static bool IsDisposedInDisposedMethod(this SyntaxNode nodeInClass, string nameOfVariable)
+        {
+            var classDeclarationSyntax = nodeInClass.FindContainingClass();
+            if (classDeclarationSyntax == null) return false;
+
+            return classDeclarationSyntax
+                .DescendantNodes<MethodDeclarationSyntax>()
+                .Where(mds => mds.IsDisposeMethod())
+                .SelectMany(disposeMethod => disposeMethod.DescendantNodes<InvocationExpressionSyntax>())
+                .Any(mes => mes.IsDisposeCallFor(nameOfVariable));
+        }
+
+        public static bool IsDisposeCallFor(this InvocationExpressionSyntax invocationExpressionSyntax, string name)
+        {
+            var memberAccessExpressionSyntax = invocationExpressionSyntax.Expression as MemberAccessExpressionSyntax;
+
+            var identifierNameSyntax = memberAccessExpressionSyntax?.Expression as IdentifierNameSyntax;
+            return identifierNameSyntax?.Identifier.Text == name
+                   && memberAccessExpressionSyntax?.Name.Identifier.Text == "Dispose";
+        }
+
+        public static bool ContainsDisposeCallFor(this SyntaxNode node, string name)
+        {
+            return node
+                .DescendantNodes<InvocationExpressionSyntax>()
+                .Any(ies => ies.IsDisposeCallFor(name));
+        }
+
+        public static bool IsDisposeMethod(this MethodDeclarationSyntax method)
+        {
+            return method.Identifier.Text == "Dispose"
+                   && method.ParameterList.Parameters.Count == 0;
         }
 
         /// <summary>
@@ -155,10 +192,26 @@ namespace DisposableFixer.Extensions
 
         public static bool TryFindContainingMethod(this SyntaxNode node, out MethodDeclarationSyntax method)
         {
-            method = node.FindParent<MethodDeclarationSyntax, ConstructorDeclarationSyntax>();
+            method = node.FindParent<MethodDeclarationSyntax, ClassDeclarationSyntax>();
 
             return method != null;
         }
+
+        public static bool TryFindContainingCtor(this SyntaxNode node, out ConstructorDeclarationSyntax ctor)
+        {
+            ctor = node.FindParent<ConstructorDeclarationSyntax, ClassDeclarationSyntax>();
+
+            return ctor != null;
+        }
+
+        public static bool HasDecendentVariableDeclaratorFor(this SyntaxNode node, string name)
+        {
+            return node.DescendantNodes<VariableDeclaratorSyntax>()
+                .Select(vds => vds.Identifier.Value as string)
+                .Any(identifier => identifier == name);
+        }
+
+        
 
         public static bool FindContainingConstructor(this SyntaxNode node, out ConstructorDeclarationSyntax ctor)
         {

@@ -1,4 +1,5 @@
 using System;
+using System.CodeDom;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
@@ -163,12 +164,62 @@ namespace DisposableFixer
         private static void AnalyseNodeInAssignmentExpression(SyntaxNodeAnalysisContext context,
             SyntaxNode node, DisposableSource source)
         {
-            var disposeMethod = node.FindContainingClass().DescendantNodes<MethodDeclarationSyntax>()
-                .FirstOrDefault(method => method.Identifier.Text == DisposeMethod);
-            if (disposeMethod == null)
+            //is local or global variable
+            var assignmentExrepssion = node.Parent as AssignmentExpressionSyntax;
+            var variableName = (assignmentExrepssion?.Left as IdentifierNameSyntax)?.Identifier.Text;
+            
+            MethodDeclarationSyntax containingMethod;
+            if (node.TryFindContainingMethod(out containingMethod))
             {
-                context.ReportNotDisposedAssignmentToFieldOrProperty(source); //this can also be a property
+                if (containingMethod.ContainsDisposeCallFor(variableName)) return;
+
+                if (containingMethod.HasDecendentVariableDeclaratorFor(variableName))
+                {
+                    //local declaration in method
+                    if (containingMethod.Returns(variableName)) return;
+                    if (node.IsDescendantOfUsingDeclaration()) return;
+                    if (node.IsArgumentInObjectCreation())
+                    {
+                        AnalyseNodeInArgumentList(context, node, source);
+                        return;
+                    }
+                    //is part of tracking call
+                    context.ReportNotDisposedLocalDeclaration();
+                    return;
+                }
+                //field declaration
+                if (node.IsDisposedInDisposedMethod(variableName)) return;
+                if (node.IsArgumentInObjectCreation())
+                {
+                    AnalyseNodeInArgumentList(context, node, source);
+                    return;
+                }
+                context.ReportNotDisposedField(source);
+                return;
             }
+            ConstructorDeclarationSyntax ctor;
+            if (node.TryFindContainingCtor(out ctor))
+            {
+                if (ctor.HasDecendentVariableDeclaratorFor(variableName))
+                {
+                    //local variable in ctor
+                    if (node.IsDescendantOfUsingDeclaration()) return;
+                    if (node.IsArgumentInObjectCreation())
+                    {
+                        AnalyseNodeInArgumentList(context, node, source);
+                        return;
+                    }
+                    if (ctor.ContainsDisposeCallFor(variableName)) return;
+                    context.ReportNotDisposedLocalDeclaration();
+                }
+                else //field
+                {
+                    if (node.IsDisposedInDisposedMethod(variableName)) return;
+                    context.ReportNotDisposedField(source);
+                    return;
+                }
+            }
+            //part of a property?
         }
         
         private static void AnalyseNodeInArgumentList(SyntaxNodeAnalysisContext context,
