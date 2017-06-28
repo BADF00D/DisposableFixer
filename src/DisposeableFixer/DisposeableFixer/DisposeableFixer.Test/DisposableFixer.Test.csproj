@@ -53,6 +53,10 @@
     <Compile Include="DisposeableFixerAnalyzerSpecs\Async\If_Analyser_runs_on_class_that_opens_a_filestream_async_using_configure_await.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\Async\If_Analyser_runs_on_class_that_opens_a_filestream_async.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\DisposeableFixerAnalyzerSpec.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\FuncAndActions\If_analyser_runs_on_an_MethodInvokation_in_ParenthesizedLambdaExpression.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\FuncAndActions\If_analyser_runs_on_an_ObjectCreation_in_ParenthesizedLambdaExpression.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\FuncAndActions\If_analyser_runs_on_an_MethodInvokation_in_SimpleLambdaExpression.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\FuncAndActions\If_analyser_runs_on_an_ObjectCreation_in_SimpleLambdaExpression.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_class_that_has_a_using_block_in_its_ctor_that_is_not_used_for_the_MemoryStream.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_class_that_has_a_using_block_in_its_method_that_is_not_used_for_the_MemoryStream.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_class_that_uses_a_MemoryStream_within_an_using_block_within_a_Ctor.cs" />
@@ -129,6 +133,7 @@
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_26.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_27.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_33.cs" />
+    <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_43.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_40.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_39.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_37.cs" />
