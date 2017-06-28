@@ -50,6 +50,7 @@ namespace DisposableFixer
             else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new MemoryStream()).Dispose()
             else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } 
             else if (node.IsPartOfReturnStatement()) { } 
+            else if (node.IsReturnValueInLambdaExpression()) { }
             else if (node.IsReturnedLaterWithinMethod()) { }
             else if (!IsDisposeableOrImplementsDisposable(type)) { } 
             else if (node.IsArgumentInObjectCreation()) AnalyseNodeInArgumentList(context, node, DisposableSource.ObjectCreation);
@@ -249,6 +250,7 @@ namespace DisposableFixer
             else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } 
             else if (!IsDisposeableOrImplementsDisposable(type)) { } 
             else if (node.IsPartOfReturnStatement()) { } //return new StreamReader()
+            else if (node.IsReturnValueInLambdaExpression()) { } //e.g. ()=> new MemoryStream
             else if (node.IsReturnedLaterWithinMethod()) { }
             else if (node.IsArgumentInObjectCreation()) AnalyseNodeInArgumentList(context, node, DisposableSource.InvokationExpression);
             else if (node.IsDescendantOfUsingDeclaration()) { } 

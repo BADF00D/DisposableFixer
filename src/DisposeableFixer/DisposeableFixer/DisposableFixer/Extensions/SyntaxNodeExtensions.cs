@@ -93,6 +93,21 @@ namespace DisposableFixer.Extensions
             return node.FindParent<ReturnStatementSyntax, MethodDeclarationSyntax>() != null;
         }
 
+        public static bool IsPartOfSimpleLambdaExpression(this SyntaxNode node)
+        {
+            return node?.Parent is SimpleLambdaExpressionSyntax;
+        }
+
+        public static bool IsPartOfParenthesizedExpression(this SyntaxNode node)
+        {
+            return node?.Parent is ParenthesizedLambdaExpressionSyntax;
+        }
+
+        public static bool IsReturnValueInLambdaExpression(this SyntaxNode node)
+        {
+            return node.IsPartOfSimpleLambdaExpression() || node.IsPartOfParenthesizedExpression();
+        }
+
         public static bool IsPartOfAwaitExpression(this SyntaxNode node)
         {
             return node.Parent is AwaitExpressionSyntax;
