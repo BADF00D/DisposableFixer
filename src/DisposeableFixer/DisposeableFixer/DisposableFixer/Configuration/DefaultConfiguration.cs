@@ -13,6 +13,9 @@ namespace DisposableFixer.Configuration {
 				"System.Resources.ResourceReader",
 				"System.Resources.ResourceSet",
 				"System.Resources.ResourceWriter",
+                "Newtonsoft.Json.JsonTextWriter",
+                "Newtonsoft.Json.Bson.BsonWriter",
+                "Newtonsoft.Json.Bson.BsonWriter"
             };
 			IgnoredInterfaces = new HashSet<string> {
 				"System.Collections.Generic.IEnumerator",
@@ -33,8 +36,8 @@ namespace DisposableFixer.Configuration {
 					},
 					["System.IO.StreamWriter"] = new[] {
 						new CtorCall(new [] {"Stream","Encoding", "Int32","Boolean"},3, true)
-					},
-			};
+					}
+            };
 
         }
 
