@@ -54,7 +54,7 @@ namespace DisposableFixer
             else if (node.IsReturnedLaterWithinMethod()) { }
             else if (!IsDisposeableOrImplementsDisposable(type)) { } 
             else if (node.IsArgumentInObjectCreation()) AnalyseNodeInArgumentList(context, node, DisposableSource.ObjectCreation);
-            else if (node.IsDescendantOfUsingDeclaration()) { }//this have to be checked after IsArgumentInObjectCreation
+            else if (node.IsDescendantOfUsingHeader()) { }//this have to be checked after IsArgumentInObjectCreation
             else if (node.IsDescendantOfVariableDeclarator()) AnalyseNodeWithinVariableDeclarator(context, node, DisposableSource.ObjectCreation);
             else if (node.IsPartOfAssignmentExpression()) AnalyseNodeInAssignmentExpression(context, node, DisposableSource.ObjectCreation);
             else context.ReportNotDisposedAnonymousObject(DisposableSource.ObjectCreation); //new MemoryStream();
@@ -179,7 +179,7 @@ namespace DisposableFixer
                 {
                     //local declaration in method
                     if (containingMethod.Returns(variableName)) return;
-                    if (node.IsDescendantOfUsingDeclaration()) return;
+                    if (node.IsDescendantOfUsingHeader()) return;
                     if (node.IsArgumentInObjectCreation())
                     {
                         AnalyseNodeInArgumentList(context, node, source);
@@ -205,7 +205,7 @@ namespace DisposableFixer
                 if (ctor.HasDecendentVariableDeclaratorFor(variableName))
                 {
                     //local variable in ctor
-                    if (node.IsDescendantOfUsingDeclaration()) return;
+                    if (node.IsDescendantOfUsingHeader()) return;
                     if (node.IsArgumentInObjectCreation())
                     {
                         AnalyseNodeInArgumentList(context, node, source);
@@ -253,7 +253,7 @@ namespace DisposableFixer
             else if (node.IsReturnValueInLambdaExpression()) { } //e.g. ()=> new MemoryStream
             else if (node.IsReturnedLaterWithinMethod()) { }
             else if (node.IsArgumentInObjectCreation()) AnalyseNodeInArgumentList(context, node, DisposableSource.InvokationExpression);
-            else if (node.IsDescendantOfUsingDeclaration()) { } 
+            else if (node.IsDescendantOfUsingHeader()) { } //using(memstream) or using(new MemoryStream())
             else if (node.IsDescendantOfVariableDeclarator()) AnalyseNodeWithinVariableDeclarator(context, node, DisposableSource.InvokationExpression);
             else if (node.IsPartOfAssignmentExpression()) AnalyseNodeInAssignmentExpression(context, node, DisposableSource.InvokationExpression);
             else context.ReportNotDisposedAnonymousObject(DisposableSource.InvokationExpression); //call to Create(): MemeoryStream
@@ -267,7 +267,7 @@ namespace DisposableFixer
             var returnType = awaitExpressionInfo.GetResultMethod.ReturnType as INamedTypeSymbol;
             if (!IsDisposeableOrImplementsDisposable(returnType)) return;
             if (IsIgnoredTypeOrImplementsIgnoredInterface(returnType)) return;
-            if (awaitExpression.IsDescendantOfUsingDeclaration()) return;
+            if (awaitExpression.IsDescendantOfUsingHeader()) return;
             if (awaitExpression.IsPartOfVariableDeclaratorInsideAUsingDeclaration()) return;
             if (awaitExpression.IsPartOfReturnStatement()) return;
             if (awaitExpression.IsReturnedLaterWithinMethod()) return;

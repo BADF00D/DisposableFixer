@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ArgumentListSyntax = Microsoft.CodeAnalysis.CSharp.Syntax.ArgumentListSyntax;
 using ArgumentSyntax = Microsoft.CodeAnalysis.CSharp.Syntax.ArgumentSyntax;
@@ -70,9 +71,19 @@ namespace DisposableFixer.Extensions
             return node.DescendantNodes().OfType<T>();
         }
 
-        public static bool IsParentAUsingDesclaration<T>(this T node) where T : SyntaxNode
+        /// <summary>
+        /// True if is
+        ///     using(memStream) 
+        ///     or using(new MemoryStream())
+        ///     or using(var memstream = new MemoryStream()){}
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        public static bool IsDescendantOfUsingHeader<T>(this T node) where T : SyntaxNode
         {
-            return node?.Parent is UsingStatementSyntax;
+            return node?.Parent is UsingStatementSyntax //using(memStream) or using(new MemoryStream())
+                || (node?.Parent?.Parent?.Parent is VariableDeclarationSyntax && node?.Parent?.Parent?.Parent?.Parent is UsingStatementSyntax);
         }
 
         public static bool IsPartOfVariableDeclaratorInsideAUsingDeclaration<T>(this T node) where T : SyntaxNode
