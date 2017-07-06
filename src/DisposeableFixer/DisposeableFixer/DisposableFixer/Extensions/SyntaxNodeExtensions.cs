@@ -70,7 +70,7 @@ namespace DisposableFixer.Extensions
             return node.DescendantNodes().OfType<T>();
         }
 
-        public static bool IsDescendantOfUsingDeclaration<T>(this T node) where T : SyntaxNode
+        public static bool IsParentAUsingDesclaration<T>(this T node) where T : SyntaxNode
         {
             return node?.Parent is UsingStatementSyntax;
         }
@@ -242,6 +242,13 @@ namespace DisposableFixer.Extensions
             return method != null;
         }
 
+        public static bool TryFindContainingPropery(this SyntaxNode node, out PropertyDeclarationSyntax method)
+        {
+            method = node.FindParent<PropertyDeclarationSyntax, ClassDeclarationSyntax>();
+
+            return method != null;
+        }
+
         public static bool TryFindContainingCtor(this SyntaxNode node, out ConstructorDeclarationSyntax ctor)
         {
             ctor = node.FindParent<ConstructorDeclarationSyntax, ClassDeclarationSyntax>();
@@ -261,6 +268,95 @@ namespace DisposableFixer.Extensions
         public static bool FindContainingConstructor(this SyntaxNode node, out ConstructorDeclarationSyntax ctor)
         {
             ctor = node.FindParent<ConstructorDeclarationSyntax, MethodDeclarationSyntax>();
+            return ctor != null;
+        }
+
+        public static bool TryFindParentOfType<T>(this SyntaxNode start, SyntaxNode @break, out SyntaxNode scope) where T : SyntaxNode
+        {
+            while (true)
+            {
+                if (start is T)
+                {
+                    scope = start;
+                    return true;
+                }
+                else if (start == @break)
+                {
+                    scope = null;
+                    return false;
+                }
+                else if (start.Parent == null)
+                {
+                    scope = null;
+                    return false;
+                }
+                start = start.Parent;
+            }
+        }
+
+        public static bool TryFindParentScope(this SyntaxNode node, out SyntaxNode parentScope)
+        {
+            ConstructorDeclarationSyntax ctor;
+            if (node.TryFindContainingCtor(out ctor))
+            {
+                if (node.TryFindParentOfType<SimpleLambdaExpressionSyntax>(ctor, out parentScope))
+                {
+                    return true;
+                }
+                if (node.TryFindParentOfType<ParenthesizedLambdaExpressionSyntax>(ctor, out parentScope))
+                {
+                    return true;
+                }
+                parentScope = ctor;
+                return true;
+            }
+            MethodDeclarationSyntax method;
+            if (node.TryFindContainingMethod(out method))
+            {
+                if (node.TryFindParentOfType<SimpleLambdaExpressionSyntax>(method, out parentScope))
+                {
+                    return true;
+                }
+                if (node.TryFindParentOfType<ParenthesizedLambdaExpressionSyntax>(method, out parentScope))
+                {
+                    return true;
+                }
+                parentScope = method;
+                return true;
+            }
+            PropertyDeclarationSyntax property;
+            if (node.TryFindContainingPropery(out property))
+            {
+                if (node.TryFindParentOfType<SimpleLambdaExpressionSyntax>(property, out parentScope))
+                {
+                    return true;
+                }
+                if (node.TryFindParentOfType<ParenthesizedLambdaExpressionSyntax>(property, out parentScope))
+                {
+                    return true;
+                }
+                parentScope = property;
+                return true;
+            }
+            parentScope = null;
+            return false;
+        }
+
+        public static bool IsDescendantOfCtor(this SyntaxNode node)
+        {
+            var ctor = node.FindParent<ConstructorDeclarationSyntax, ClassDeclarationSyntax>();
+            return ctor != null;
+        }
+
+        public static bool IsDescendantOfMethod(this SyntaxNode node)
+        {
+            var ctor = node.FindParent<MethodDeclarationSyntax, ClassDeclarationSyntax>();
+            return ctor != null;
+        }
+
+        public static bool IsDescendantOfProperty(this SyntaxNode node)
+        {
+            var ctor = node.FindParent<PropertyDeclarationSyntax, ClassDeclarationSyntax>();
             return ctor != null;
         }
 
