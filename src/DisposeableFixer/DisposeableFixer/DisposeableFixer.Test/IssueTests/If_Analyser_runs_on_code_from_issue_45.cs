@@ -1,5 +1,3 @@
-using System;
-using System.IO;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using NUnit.Framework;
@@ -47,26 +45,6 @@ namespace Disposeables {
         public void Then_there_should_be_one_Diagnostics()
         {
             _diagnostics.Length.Should().Be(1);
-        }
-    }
-
-    internal class Program2
-    {
-        static void Main(string[] args)
-        {
-            Func<MemoryStream> openStream = () => new MemoryStream();
-            Action action = () => {
-                var stream = CreateDisposable();//this is not disposed
-            };
-            Action action2 = () => {
-                var stream = CreateDisposable();
-                stream.Dispose();
-            };
-        }
-
-        private static MemoryStream CreateDisposable()
-        {
-            return new MemoryStream();
         }
     }
 }

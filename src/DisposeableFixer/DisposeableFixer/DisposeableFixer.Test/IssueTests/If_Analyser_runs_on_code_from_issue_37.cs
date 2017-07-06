@@ -1,3 +1,4 @@
+using System;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using NUnit.Framework;
