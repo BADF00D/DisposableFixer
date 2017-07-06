@@ -78,10 +78,10 @@ namespace DisposableFixer
         private static void AnalyseNodeWithinLocalDeclaration(SyntaxNodeAnalysisContext context,
             SyntaxNode node, string identifier)
         {
-            SyntaxNode ctorOrMethod;
-            if (!node.TryFindContainingConstructorOrMethod(out ctorOrMethod)) return;
+            SyntaxNode parentScope;//lamda or ctor or method 
+            if (!node.TryFindParentScope(out parentScope)) return;
 
-            var usings = ctorOrMethod.DescendantNodes<UsingStatementSyntax>()
+            var usings = parentScope.DescendantNodes<UsingStatementSyntax>()
                 .SelectMany(@using => @using.DescendantNodes<IdentifierNameSyntax>())
                 .Where(id => identifier != null && (string) id.Identifier.Value == identifier)
                 .ToArray();
@@ -107,7 +107,7 @@ namespace DisposableFixer
                 context.ReportNotDisposedLocalDeclaration();
                 return;
             }
-            var invokationExpression = ctorOrMethod.DescendantNodes<InvocationExpressionSyntax>().ToArray();
+            var invokationExpression = parentScope.DescendantNodes<InvocationExpressionSyntax>().ToArray();
             if (invokationExpression.Any(ies => identifier != null && ies.IsCallToDispose(identifier))) return;
             foreach (var ies in invokationExpression)
             {
@@ -117,7 +117,7 @@ namespace DisposableFixer
                 }
             }
 
-            if (ctorOrMethod.DescendantNodes<ObjectCreationExpressionSyntax>().Any(oce => {
+            if (parentScope.DescendantNodes<ObjectCreationExpressionSyntax>().Any(oce => {
                 return oce.ArgumentList.Arguments.Any(arg => {
                     var expression = arg.Expression as IdentifierNameSyntax;
                     var isPartOfObjectcreation = expression?.Identifier.Text == identifier;
