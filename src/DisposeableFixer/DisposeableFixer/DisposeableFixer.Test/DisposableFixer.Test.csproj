@@ -97,6 +97,7 @@
     <Compile Include="DisposeableFixerAnalyzerSpecs\LocalDeclaration\If_Analyser_runs_on_a_local_declared_variable_that_gets_not_disposed.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\LocalDeclaration\If_Analyser_runs_on_a_local_declared_variable_that_gets_returned.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\LocalDeclaration\If_Analyser_runs_on_a_local_declared_variable_that_gets_disposed.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\NullConditionalOperator\If_Analyser_runs_on_method_invocation_disposed_via_null_conditional_operator.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\NullConditionalOperator\If_Analyser_runs_on_field_disposed_via_null_conditional_operator.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\NullConditionalOperator\If_Analyser_runs_on_a_local_variable_disposed_via_null_conditional_operator.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\ObjectCreations\If_Analyser_runs_ObjectCreation_that_is_disposed.cs" />
