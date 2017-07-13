@@ -150,27 +150,47 @@ namespace DisposableFixer.Extensions
             var classDeclarationSyntax = nodeInClass.FindContainingClass();
             if (classDeclarationSyntax == null) return false;
 
-            return classDeclarationSyntax
+            var disposeMethods = classDeclarationSyntax
                 .DescendantNodes<MethodDeclarationSyntax>()
                 .Where(mds => mds.IsDisposeMethod())
+                .ToArray();
+            return disposeMethods
                 .SelectMany(disposeMethod => disposeMethod.DescendantNodes<InvocationExpressionSyntax>())
-                .Any(mes => mes.IsDisposeCallFor(nameOfVariable));
+                .Any(mes => mes.IsCallToDispose(nameOfVariable));
         }
 
-        public static bool IsDisposeCallFor(this InvocationExpressionSyntax invocationExpressionSyntax, string name)
+        /// <summary>
+        /// this does not recognize null conditional operator => replace with IsCallToDispose
+        /// </summary>
+        /// <param name="invocationExpressionSyntax"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        private static bool IsDisposeCallFor(this InvocationExpressionSyntax invocationExpressionSyntax, string name)
         {
             var memberAccessExpressionSyntax = invocationExpressionSyntax.Expression as MemberAccessExpressionSyntax;
 
             return memberAccessExpressionSyntax != null && memberAccessExpressionSyntax.IsDisposeCallFor(name);
         }
 
-        public static bool IsDisposeCallFor(this MemberAccessExpressionSyntax memberAccessExpressionSyntax, string name)
+        /// <summary>
+        /// this has
+        /// </summary>
+        /// <param name="memberAccessExpressionSyntax"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        private static bool IsDisposeCallFor(this MemberAccessExpressionSyntax memberAccessExpressionSyntax, string name)
         {
             var identifierNameSyntax = memberAccessExpressionSyntax?.Expression as IdentifierNameSyntax;
             return identifierNameSyntax?.Identifier.Text == name
                    && memberAccessExpressionSyntax?.Name.Identifier.Text == "Dispose";
         }
 
+        /// <summary>
+        /// missing null-conditional operator
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public static bool ContainsDisposeCallFor(this SyntaxNode node, string name)
         {
             return node
