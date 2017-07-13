@@ -195,6 +195,12 @@ namespace DisposableFixer.Extensions
                 var memberAccessExpressionSyntax = parent as MemberAccessExpressionSyntax;
                 if (memberAccessExpressionSyntax != null)
                     return memberAccessExpressionSyntax.Name.Identifier.Text == "Dispose";
+                var conditionalAccessExpression = parent as ConditionalAccessExpressionSyntax;
+                if (conditionalAccessExpression != null)
+                {
+                    var invocationExpressions = conditionalAccessExpression.DescendantNodes<InvocationExpressionSyntax>().ToArray();
+                    return invocationExpressions.Any(ies => ies.IsCallToDispose());
+                }
 
                 parent = parent.Parent;
             }
