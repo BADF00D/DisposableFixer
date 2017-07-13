@@ -1,4 +1,7 @@
-﻿Release 0.24
+﻿Release 0.25
+* Fixed issue 48: Null-conditional operator now correctly detects Dispose calls on MethodInvocations and fields, too.
+
+Release 0.24
 * Fixed issue 47: Removed unnecessary dependency to Microsoft.VisualStudio.Shell.12.0
 
 Release 0.23
