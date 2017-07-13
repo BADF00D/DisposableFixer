@@ -28,7 +28,13 @@ namespace DisposableFixer
 
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
-            => ImmutableArray.Create(SyntaxNodeAnalysisContextExtension.AnonymousObjectFromObjectCreationDescriptor);
+            => ImmutableArray.Create(
+                SyntaxNodeAnalysisContextExtension.AnonymousObjectFromObjectCreationDescriptor,
+                SyntaxNodeAnalysisContextExtension.AnonymousObjectFromMethodInvokationDescriptor,
+                SyntaxNodeAnalysisContextExtension.FieldNotDisposedDescriptor,
+                SyntaxNodeAnalysisContextExtension.NotDisposedDescriptor,
+                SyntaxNodeAnalysisContextExtension.NotDisposedLocalVariableDescriptor
+                );
 
         public override void Initialize(AnalysisContext context)
         {
@@ -108,14 +114,7 @@ namespace DisposableFixer
                 return;
             }
             var invokationExpression = parentScope.DescendantNodes<InvocationExpressionSyntax>().ToArray();
-            if (invokationExpression.Any(ies => identifier != null && ies.IsCallToDispose(identifier))) return;
-            foreach (var ies in invokationExpression)
-            {
-                if (identifier != null && ies.IsCallToDispose(identifier))
-                {
-                    return;
-                }
-            }
+            if (invokationExpression.Any(ies => identifier != null && ies.IsCallToDisposeFor(identifier))) return;
 
             if (parentScope.DescendantNodes<ObjectCreationExpressionSyntax>().Any(oce => {
                 return oce.ArgumentList.Arguments.Any(arg => {
@@ -137,29 +136,10 @@ namespace DisposableFixer
         }
 
         private static void AnalyseNodeInFieldDeclaration(SyntaxNodeAnalysisContext context,
-            SyntaxNode node, string identifier, DisposableSource source)
+            SyntaxNode node, string nameOfVariable, DisposableSource source)
         {
-            var disposeMethod = node.FindContainingClass().DescendantNodes<MethodDeclarationSyntax>()
-                .FirstOrDefault(method => method.Identifier.Text == DisposeMethod);
-            if (disposeMethod == null)
-            {
-                //there is no dispose method in this class
-                context.ReportNotDisposedField(source);
-                return;
-            }
-            
-            var isDisposed = disposeMethod.DescendantNodes<InvocationExpressionSyntax>()
-                .Select(invo => invo.Expression as MemberAccessExpressionSyntax)
-                .Any(invo =>
-                {
-                    var id = invo.Expression as IdentifierNameSyntax;
-                    var member = id?.Identifier.Text == identifier;
-                    var callToDispose = invo.Name.Identifier.Text == DisposeMethod;
+            if (node.IsDisposedInDisposedMethod(nameOfVariable)) return;
 
-                    return member && callToDispose;
-                });
-            if (isDisposed) return;
-            //there is a dispose method in this class, but ObjectCreation is not disposed
             context.ReportNotDisposedField(source);
         }
 

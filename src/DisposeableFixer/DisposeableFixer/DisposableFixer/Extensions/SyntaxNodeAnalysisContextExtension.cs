@@ -46,7 +46,7 @@ namespace DisposableFixer.Extensions
             DisposableFixerAnalyzer.Category,
             DiagnosticSeverity.Warning, true, Description);
 
-        public static readonly DiagnosticDescriptor NotDisposedLocalVariable = new DiagnosticDescriptor(
+        public static readonly DiagnosticDescriptor NotDisposedLocalVariableDescriptor = new DiagnosticDescriptor(
             DisposableFixerAnalyzer.DiagnosticId,
             Title,
             NotDisposedLocalVariableMessageFormat,
@@ -84,7 +84,7 @@ namespace DisposableFixer.Extensions
         {
             var location = context.Node.GetLocation();
 
-            context.ReportDiagnostic(Diagnostic.Create(NotDisposedLocalVariable, location));
+            context.ReportDiagnostic(Diagnostic.Create(NotDisposedLocalVariableDescriptor, location));
         }
 
         public static void ReportNotDisposedAnonymousObject(this SyntaxNodeAnalysisContext context, DisposableSource source)

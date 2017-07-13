@@ -1,18 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using ArgumentListSyntax = Microsoft.CodeAnalysis.CSharp.Syntax.ArgumentListSyntax;
-using ArgumentSyntax = Microsoft.CodeAnalysis.CSharp.Syntax.ArgumentSyntax;
-using FieldDeclarationSyntax = Microsoft.CodeAnalysis.CSharp.Syntax.FieldDeclarationSyntax;
-using IdentifierNameSyntax = Microsoft.CodeAnalysis.CSharp.Syntax.IdentifierNameSyntax;
-using InvocationExpressionSyntax = Microsoft.CodeAnalysis.CSharp.Syntax.InvocationExpressionSyntax;
-using LocalDeclarationStatementSyntax = Microsoft.CodeAnalysis.CSharp.Syntax.LocalDeclarationStatementSyntax;
-using ObjectCreationExpressionSyntax = Microsoft.CodeAnalysis.CSharp.Syntax.ObjectCreationExpressionSyntax;
-using ReturnStatementSyntax = Microsoft.CodeAnalysis.CSharp.Syntax.ReturnStatementSyntax;
-using UsingStatementSyntax = Microsoft.CodeAnalysis.CSharp.Syntax.UsingStatementSyntax;
-using VariableDeclaratorSyntax = Microsoft.CodeAnalysis.CSharp.Syntax.VariableDeclaratorSyntax;
 
 namespace DisposableFixer.Extensions
 {
@@ -72,8 +61,8 @@ namespace DisposableFixer.Extensions
         }
 
         /// <summary>
-        /// True if is
-        ///     using(memStream) 
+        ///     True if is
+        ///     using(memStream)
         ///     or using(new MemoryStream())
         ///     or using(var memstream = new MemoryStream()){}
         /// </summary>
@@ -83,15 +72,17 @@ namespace DisposableFixer.Extensions
         public static bool IsDescendantOfUsingHeader<T>(this T node) where T : SyntaxNode
         {
             return node?.Parent is UsingStatementSyntax //using(memStream) or using(new MemoryStream())
-                || (node?.Parent?.Parent?.Parent is VariableDeclarationSyntax && node?.Parent?.Parent?.Parent?.Parent is UsingStatementSyntax);
+                   ||
+                   (node?.Parent?.Parent?.Parent is VariableDeclarationSyntax &&
+                    node?.Parent?.Parent?.Parent?.Parent is UsingStatementSyntax);
         }
 
         public static bool IsPartOfVariableDeclaratorInsideAUsingDeclaration<T>(this T node) where T : SyntaxNode
         {
             return node?.Parent is EqualsValueClauseSyntax
-                && node?.Parent?.Parent is VariableDeclaratorSyntax
-                && node?.Parent?.Parent?.Parent is VariableDeclarationSyntax
-                && node?.Parent?.Parent?.Parent?.Parent is UsingStatementSyntax;
+                   && node?.Parent?.Parent is VariableDeclaratorSyntax
+                   && node?.Parent?.Parent?.Parent is VariableDeclarationSyntax
+                   && node?.Parent?.Parent?.Parent?.Parent is UsingStatementSyntax;
         }
 
         public static bool IsDescendantOfVariableDeclarator(this SyntaxNode node)
@@ -125,11 +116,12 @@ namespace DisposableFixer.Extensions
         }
 
         /// <summary>
-        /// Checks if node is part of a VariableDeclaratorSyntax that is return later within method body.
+        ///     Checks if node is part of a VariableDeclaratorSyntax that is return later within method body.
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        public static bool IsReturnedLaterWithinMethod(this SyntaxNode node) {
+        public static bool IsReturnedLaterWithinMethod(this SyntaxNode node)
+        {
             var method = node.FindParent<MethodDeclarationSyntax, ClassDeclarationSyntax>();
             if (method?.ReturnType == null) return false; // no method or ReturnType found
 
@@ -156,56 +148,18 @@ namespace DisposableFixer.Extensions
                 .ToArray();
             return disposeMethods
                 .SelectMany(disposeMethod => disposeMethod.DescendantNodes<InvocationExpressionSyntax>())
-                .Any(mes => mes.IsCallToDispose(nameOfVariable));
+                .Any(mes => mes.IsCallToDisposeFor(nameOfVariable));
         }
 
-        /// <summary>
-        /// this does not recognize null conditional operator => replace with IsCallToDispose
-        /// </summary>
-        /// <param name="invocationExpressionSyntax"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        private static bool IsDisposeCallFor(this InvocationExpressionSyntax invocationExpressionSyntax, string name)
-        {
-            var memberAccessExpressionSyntax = invocationExpressionSyntax.Expression as MemberAccessExpressionSyntax;
-
-            return memberAccessExpressionSyntax != null && memberAccessExpressionSyntax.IsDisposeCallFor(name);
-        }
-
-        /// <summary>
-        /// this has
-        /// </summary>
-        /// <param name="memberAccessExpressionSyntax"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        private static bool IsDisposeCallFor(this MemberAccessExpressionSyntax memberAccessExpressionSyntax, string name)
-        {
-            var identifierNameSyntax = memberAccessExpressionSyntax?.Expression as IdentifierNameSyntax;
-            return identifierNameSyntax?.Identifier.Text == name
-                   && memberAccessExpressionSyntax?.Name.Identifier.Text == "Dispose";
-        }
-
-        /// <summary>
-        /// missing null-conditional operator
-        /// </summary>
-        /// <param name="node"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
         public static bool ContainsDisposeCallFor(this SyntaxNode node, string name)
         {
             return node
                 .DescendantNodes<InvocationExpressionSyntax>()
-                .Any(ies => ies.IsDisposeCallFor(name));
-        }
-
-        public static bool IsDisposeMethod(this MethodDeclarationSyntax method)
-        {
-            return method.Identifier.Text == "Dispose"
-                   && method.ParameterList.Parameters.Count == 0;
+                .Any(ies => ies.IsCallToDisposeFor(name));
         }
 
         /// <summary>
-        /// Gets the identifier of the VariableDeclaratorSyntax, where given InvocationExpressionSyntax stores its value.
+        ///     Gets the identifier of the VariableDeclaratorSyntax, where given InvocationExpressionSyntax stores its value.
         /// </summary>
         /// <param name="node"></param>
         /// <returns>Identfier if parent is EqualsValueClauseSyntax and parent of parent is VariableDeclaratorSyntax</returns>
@@ -215,7 +169,7 @@ namespace DisposableFixer.Extensions
             var variableDeclaratorSyntax = node.Parent?.Parent as VariableDeclaratorSyntax;
             return variableDeclaratorSyntax?.Identifier.Text;
         }
-        
+
 
         public static bool IsFieldDeclaration(this SyntaxNode node)
         {
@@ -229,8 +183,8 @@ namespace DisposableFixer.Extensions
             while (true)
             {
                 if (parent == null
-                    || parent is MethodDeclarationSyntax 
-                    || parent is PropertyDeclarationSyntax 
+                    || parent is MethodDeclarationSyntax
+                    || parent is PropertyDeclarationSyntax
                     || parent is ConstructorDeclarationSyntax)
                     return false;
                 if (parent is ParenthesizedExpressionSyntax)
@@ -244,8 +198,6 @@ namespace DisposableFixer.Extensions
 
                 parent = parent.Parent;
             }
-
-            
         }
 
         public static bool IsPartOfAssignmentExpression(this SyntaxNode node)
@@ -294,7 +246,6 @@ namespace DisposableFixer.Extensions
                 .Any(identifier => identifier == name);
         }
 
-        
 
         public static bool FindContainingConstructor(this SyntaxNode node, out ConstructorDeclarationSyntax ctor)
         {
@@ -302,7 +253,8 @@ namespace DisposableFixer.Extensions
             return ctor != null;
         }
 
-        public static bool TryFindParentOfType<T>(this SyntaxNode start, SyntaxNode @break, out SyntaxNode scope) where T : SyntaxNode
+        public static bool TryFindParentOfType<T>(this SyntaxNode start, SyntaxNode @break, out SyntaxNode scope)
+            where T : SyntaxNode
         {
             while (true)
             {
@@ -311,12 +263,12 @@ namespace DisposableFixer.Extensions
                     scope = start;
                     return true;
                 }
-                else if (start == @break)
+                if (start == @break)
                 {
                     scope = null;
                     return false;
                 }
-                else if (start.Parent == null)
+                if (start.Parent == null)
                 {
                     scope = null;
                     return false;
@@ -373,24 +325,6 @@ namespace DisposableFixer.Extensions
             return false;
         }
 
-        public static bool IsDescendantOfCtor(this SyntaxNode node)
-        {
-            var ctor = node.FindParent<ConstructorDeclarationSyntax, ClassDeclarationSyntax>();
-            return ctor != null;
-        }
-
-        public static bool IsDescendantOfMethod(this SyntaxNode node)
-        {
-            var ctor = node.FindParent<MethodDeclarationSyntax, ClassDeclarationSyntax>();
-            return ctor != null;
-        }
-
-        public static bool IsDescendantOfProperty(this SyntaxNode node)
-        {
-            var ctor = node.FindParent<PropertyDeclarationSyntax, ClassDeclarationSyntax>();
-            return ctor != null;
-        }
-
         public static bool TryFindContainingConstructorOrMethod(this SyntaxNode node, out SyntaxNode ctorOrMethod)
         {
             ctorOrMethod = node;
@@ -431,16 +365,16 @@ namespace DisposableFixer.Extensions
         }
 
         /// <summary>
-        /// Searches for inner SyntaxNode of the ArgumentSyntax at given position.
+        ///     Searches for inner SyntaxNode of the ArgumentSyntax at given position.
         /// </summary>
         /// <param name="node"></param>
         /// <param name="position"></param>
         /// <returns></returns>
         public static SyntaxNode GetContentArgumentAtPosition(this ObjectCreationExpressionSyntax node, int position)
         {
-            if (node.ArgumentList.Arguments.Count < position) return null;
-
-            return node.ArgumentList.Arguments[position].DescendantNodes().FirstOrDefault();
+            return node.ArgumentList.Arguments.Count < position
+                ? null
+                : node.ArgumentList.Arguments[position].DescendantNodes().FirstOrDefault();
         }
     }
 }

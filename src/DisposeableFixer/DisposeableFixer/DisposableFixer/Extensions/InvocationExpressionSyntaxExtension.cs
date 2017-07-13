@@ -4,11 +4,12 @@ namespace DisposableFixer.Extensions
 {
     public static class InvocationExpressionSyntaxExtension
     {
-        public static bool IsCallToDispose(this InvocationExpressionSyntax node, string identifier)
+        public static bool IsCallToDisposeFor(this InvocationExpressionSyntax node, string identifier)
         {
-            if (node.Parent is ConditionalAccessExpressionSyntax)
+            var syntax = node.Parent as ConditionalAccessExpressionSyntax;
+            if (syntax != null)
             {
-                var condAccess = node.Parent as ConditionalAccessExpressionSyntax;
+                var condAccess = syntax;
                 var identifierSyntax = condAccess.Expression as IdentifierNameSyntax;
                 if (identifierSyntax == null) return false;
                 var expression = node.Expression as MemberBindingExpressionSyntax;
