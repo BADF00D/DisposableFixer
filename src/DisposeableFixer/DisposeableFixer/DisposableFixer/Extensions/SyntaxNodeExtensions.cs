@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using DisposableFixer.Configuration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -175,6 +176,20 @@ namespace DisposableFixer.Extensions
         {
             var parent = node.FindParent<FieldDeclarationSyntax, ClassDeclarationSyntax>();
             return parent != null;
+        }
+
+        internal static bool IsMaybePartOfMethodChainUsingTrackingExtensionMethod(
+            this ObjectCreationExpressionSyntax objectCreation)
+        {
+            return objectCreation?.Parent is MemberAccessExpressionSyntax
+                   && objectCreation?.Parent?.Parent is InvocationExpressionSyntax;
+        }
+
+        internal static bool IsMaybePartOfMethodChainUsingTrackingExtensionMethod(
+            this InvocationExpressionSyntax invocationExpression)
+        {
+            return invocationExpression?.Parent is MemberAccessExpressionSyntax
+                   && invocationExpression?.Parent?.Parent is InvocationExpressionSyntax;
         }
 
         public static bool IsParentADisposeCallIgnoringParenthesis(this SyntaxNode node)

@@ -38,6 +38,13 @@ namespace DisposableFixer.Configuration {
 						new CtorCall(new [] {"Stream","Encoding", "Int32","Boolean"},3, true)
 					}
             };
+            TrackingMethods = new Dictionary<string, IReadOnlyCollection<MethodCall>>
+            {
+                ["Reactive.Bindings.Extensions.IDisposableExtensions"] = new List<MethodCall>
+                {
+                    new MethodCall("AddTo", new [] {"T", "System.Collections.Generic.ICollection<IDisposable>"}, true)
+                }
+            };
 
         }
 
@@ -45,5 +52,6 @@ namespace DisposableFixer.Configuration {
 		public HashSet<string> IgnoredInterfaces { get; }
 		public HashSet<string> TrackingTypes { get; }
 		public Dictionary<string,IReadOnlyCollection<CtorCall>> IgnoredTrackingTypeCtorCalls { get; }
+	    public Dictionary<string, IReadOnlyCollection<MethodCall>> TrackingMethods { get; }
 	}
 }

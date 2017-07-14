@@ -53,6 +53,7 @@
     <Compile Include="DisposeableFixerAnalyzerSpecs\Async\If_Analyser_runs_on_class_that_opens_a_filestream_async_using_configure_await.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\Async\If_Analyser_runs_on_class_that_opens_a_filestream_async.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\DisposeableFixerAnalyzerSpec.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\ExtensionMethods\If_Analyser_runs_on_class_that_has_a_using_block_in_its_ctor_that_is_not_used_for_the_MemoryStream.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\FuncAndActions\If_analyser_runs_on_an_MethodInvokation_in_ParenthesizedLambdaExpression.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\FuncAndActions\If_analyser_runs_on_an_ObjectCreation_in_ParenthesizedLambdaExpression.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\FuncAndActions\If_analyser_runs_on_an_MethodInvokation_in_SimpleLambdaExpression.cs" />
@@ -232,6 +233,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2' Or $(TargetFrameworkVersion) == 'v4.6.3' Or $(TargetFrameworkVersion) == 'v4.7')">
       <ItemGroup>

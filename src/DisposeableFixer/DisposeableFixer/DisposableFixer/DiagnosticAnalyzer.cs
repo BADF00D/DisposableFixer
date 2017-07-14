@@ -54,11 +54,16 @@ namespace DisposableFixer
             var type = (symbolInfo.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
             if (type == null) { }
             else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new MemoryStream()).Dispose()
-            else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } 
-            else if (node.IsPartOfReturnStatement()) { } 
+            else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { }
+            else if (node.IsPartOfReturnStatement()) { }
             else if (node.IsReturnValueInLambdaExpression()) { }
             else if (node.IsReturnedLaterWithinMethod()) { }
-            else if (!IsDisposeableOrImplementsDisposable(type)) { } 
+            else if (!IsDisposeableOrImplementsDisposable(type)) { }
+            else if (node.IsMaybePartOfMethodChainUsingTrackingExtensionMethod())
+            {
+                var methodInvokation = node.Parent.Parent as InvocationExpressionSyntax;
+                if (Detector.IsTrackingMethodCall(methodInvokation, context.SemanticModel)) return;
+            }
             else if (node.IsArgumentInObjectCreation()) AnalyseNodeInArgumentList(context, node, DisposableSource.ObjectCreation);
             else if (node.IsDescendantOfUsingHeader()) { }//this have to be checked after IsArgumentInObjectCreation
             else if (node.IsDescendantOfVariableDeclarator()) AnalyseNodeWithinVariableDeclarator(context, node, DisposableSource.ObjectCreation);
@@ -228,6 +233,17 @@ namespace DisposableFixer
             else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new object()).AsDisposable().Dispose()
             else if (node.IsPartOfAwaitExpression()) AnalyseInvokationExpressionInsideAwaitExpression(context, node);
             else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } 
+            else if (Detector.IsTrackingMethodCall(node, context.SemanticModel)) { }
+            else if (node.IsMaybePartOfMethodChainUsingTrackingExtensionMethod())
+            {
+                //there maybe multiple method invocations within one chain
+                var baseNode = node;
+                while(baseNode?.Parent is MemberAccessExpressionSyntax && baseNode?.Parent?.Parent is InvocationExpressionSyntax)
+                {
+                    baseNode = baseNode.Parent.Parent as InvocationExpressionSyntax;
+                    if (Detector.IsTrackingMethodCall(baseNode, context.SemanticModel)) return;
+                }
+            }
             else if (!IsDisposeableOrImplementsDisposable(type)) { } 
             else if (node.IsPartOfReturnStatement()) { } //return new StreamReader()
             else if (node.IsReturnValueInLambdaExpression()) { } //e.g. ()=> new MemoryStream

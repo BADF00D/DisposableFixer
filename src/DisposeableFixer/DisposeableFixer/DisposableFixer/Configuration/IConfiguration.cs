@@ -10,5 +10,9 @@ namespace DisposableFixer.Configuration {
 		HashSet<string> IgnoredInterfaces { get; }
 		HashSet<string> TrackingTypes { get; }
 		Dictionary<string, IReadOnlyCollection<CtorCall>> IgnoredTrackingTypeCtorCalls { get; }
+        /// <summary>
+        /// IDisposables given to this methods are consired as automatically disposed.
+        /// </summary>
+        Dictionary<string, IReadOnlyCollection<MethodCall>> TrackingMethods { get; } 
 	}
 }

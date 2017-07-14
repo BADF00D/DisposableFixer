@@ -1,6 +1,6 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using DisposableFixer.Extensions;
 using Microsoft.CodeAnalysis;
@@ -10,8 +10,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace DisposableFixer.Configuration {
 	internal sealed class TrackingTypeDetector : IDetector {
 		private readonly IConfiguration _configuration = ConfigurationManager.Instance;
-		public bool IsIgnoredInterface(INamedTypeSymbol named_type) {
-			var name = named_type.GetFullNamespace();
+		public bool IsIgnoredInterface(INamedTypeSymbol namedType) {
+			var name = namedType.GetFullNamespace();
 			return _configuration.IgnoredInterfaces.Contains(name);
 		}
 
@@ -55,7 +55,46 @@ namespace DisposableFixer.Configuration {
                 || nonTrackingCtorUsed.FlagIndicationNonDisposedResource;
 		}
 
-	    private static CtorCall GetCtorConfiguration(IMethodSymbol ctorInUse, CtorCall[] nonTrackingCtorsWithSameParameterCount) {
+	    public bool IsTrackingMethodCall(InvocationExpressionSyntax invocationExpression, SemanticModel semanticModel)
+	    {
+            var memberAccessExpression = invocationExpression.Expression as MemberAccessExpressionSyntax;
+	        if (memberAccessExpression == null) return false; //something like Create() this cant be a tracking call
+            var methodName = memberAccessExpression.Name.Identifier.Text;
+
+            var symbols = semanticModel.LookupSymbols(0);
+	        var s = semanticModel.LookupNamespacesAndTypes(0);
+            var symbolInfo = semanticModel.GetSymbolInfo(invocationExpression);
+            if (symbolInfo.Symbol == null) return false;
+
+            var method = symbolInfo.Symbol as IMethodSymbol;
+            if (method.IsExtensionMethod)
+            {
+                return AnalyseExtensionMethodCall(method, semanticModel);
+            }
+            else
+            {
+                return AnalyseNonExtensionMethodCall(method, semanticModel);
+            }
+	    }
+
+        private bool AnalyseNonExtensionMethodCall(IMethodSymbol method, SemanticModel semanticModel)
+        {
+            return false;
+        }
+
+        private bool AnalyseExtensionMethodCall(IMethodSymbol method, SemanticModel semanticModel)
+        {
+            var originalDefinition = method.OriginalDefinition;
+            var methodName = method.Name;
+            var @namespace = originalDefinition.ContainingType.GetFullNamespace(); //does not work classname missing
+
+            var extensionMethods = _configuration.TrackingMethods.Where(tm => tm.Key == @namespace).Select(tm => tm.Value).ToArray();
+            if (!extensionMethods.Any()) return false;
+
+            return extensionMethods.Any(tm => tm.Any(mc => mc.Name == methodName));
+        }
+
+        private static CtorCall GetCtorConfiguration(IMethodSymbol ctorInUse, CtorCall[] nonTrackingCtorsWithSameParameterCount) {
 	        foreach (var ctorCall in nonTrackingCtorsWithSameParameterCount)
 	        {
 	            for (var i = 0; i < ctorCall.Parameter.Length; i++)
