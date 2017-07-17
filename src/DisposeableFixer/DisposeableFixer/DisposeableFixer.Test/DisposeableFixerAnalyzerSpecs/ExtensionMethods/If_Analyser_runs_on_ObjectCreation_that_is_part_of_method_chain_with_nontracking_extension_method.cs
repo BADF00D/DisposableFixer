@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.ExtensionMethods
 {
     [TestFixture]
-    internal class If_Analyser_runs_on_ObjectCreation_that_is_part_of_method_chain_with_tracking_extension_method :
+    internal class If_Analyser_runs_on_ObjectCreation_that_is_part_of_method_chain_with_nontracking_extension_method :
         DisposeableFixerAnalyzerSpec
     {
         private Diagnostic[] _diagnostics;
@@ -28,6 +28,7 @@ namespace DisFixerTest {
         {
             new MemoryStream().AddTo(_disposables);
         }
+        public void SomeMethod(){}
 
         public void Dispose()
         {
@@ -39,7 +40,7 @@ namespace DisFixerTest {
     }
 }
 namespace Reactive.Bindings.Extensions{
-    internal static class IDisposableExtensions
+    internal static class ExtensionNotInListOfTrackingTypes
     {
         public static T AddTo<T>(this T item, ICollection<T> disposables) where T : IDisposable
         {
@@ -52,9 +53,9 @@ namespace Reactive.Bindings.Extensions{
 ";
 
         [Test]
-        public void Then_there_should_be_no_Diagnostics()
+        public void Then_there_should_be_one_Diagnostics()
         {
-            _diagnostics.Length.Should().Be(0);
+            _diagnostics.Length.Should().Be(1);
         }
     }
 }

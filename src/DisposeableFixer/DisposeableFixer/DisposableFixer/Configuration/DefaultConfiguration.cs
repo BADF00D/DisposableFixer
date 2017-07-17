@@ -43,7 +43,11 @@ namespace DisposableFixer.Configuration {
                 ["Reactive.Bindings.Extensions.IDisposableExtensions"] = new List<MethodCall>
                 {
                     new MethodCall("AddTo", new [] {"T", "System.Collections.Generic.ICollection<IDisposable>"}, true)
-                }
+                },
+                //["TestProject.Reactive.Bindings.Extensions.IDisposableExtensions"] = new List<MethodCall>
+                //{
+                //    new MethodCall("AddTo", new [] {"T", "System.Collections.Generic.ICollection<IDisposable>"}, true)
+                //}
             };
 
         }
