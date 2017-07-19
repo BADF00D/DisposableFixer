@@ -13,4 +13,4 @@
 ### Screenshot
 <!-- sometimes a picture is worth a thousand words -->
 
-<!-- Thanks for reporting the issue to Nancy! -->
+<!-- Thanks for reporting the issue to DisposableFixer! -->
