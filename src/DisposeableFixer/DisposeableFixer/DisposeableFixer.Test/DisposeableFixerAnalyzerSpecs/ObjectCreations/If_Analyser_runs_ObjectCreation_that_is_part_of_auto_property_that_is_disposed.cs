@@ -31,7 +31,6 @@ namespace DisFixerTest.ObjectCreationAssignedToField {
         [Test]
         public void Then_there_should_be_no_Diagnostics()
         {
-            var diagnostic = _diagnostics.First();
             _diagnostics.Should().BeEmpty();
         }
     }

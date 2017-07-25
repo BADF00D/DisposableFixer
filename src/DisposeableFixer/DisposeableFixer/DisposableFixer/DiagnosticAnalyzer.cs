@@ -59,7 +59,8 @@ namespace DisposableFixer
             var type = (symbolInfo.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
             if (type == null) { }
             else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new MemoryStream()).Dispose()
-            else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { }
+            else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } 
+            else if (node.IsReturnedInProperty()) AnalyseNodeInReturnStatementOfProperty(context, node);
             else if (node.IsPartOfReturnStatement()) { }
             else if (node.IsReturnValueInLambdaExpression()) { }
             else if (node.IsReturnedLaterWithinMethod()) { }
@@ -73,20 +74,27 @@ namespace DisposableFixer
             else if (node.IsDescendantOfUsingHeader()) { }//this have to be checked after IsArgumentInObjectCreation
             else if (node.IsDescendantOfVariableDeclarator()) AnalyseNodeWithinVariableDeclarator(context, node, DisposableSource.ObjectCreation);
             else if (node.IsPartOfAssignmentExpression()) AnalyseNodeInAssignmentExpression(context, node, DisposableSource.ObjectCreation);
-            else if (node.IsPartOfPropertyExpressionBody())  AnalyseNodeInProperty(context, node);
-            else if (node.IsPartOfAutoProperty()) AnalyseNodeInProperty(context, node);
+            else if (node.IsPartOfPropertyExpressionBody())  AnalyseNodeInAutoPropertyOrPropertyExpressionBody(context, node);
+            else if (node.IsPartOfAutoProperty()) AnalyseNodeInAutoPropertyOrPropertyExpressionBody(context, node);
+            
             else context.ReportNotDisposedAnonymousObject(DisposableSource.ObjectCreation); //new MemoryStream();
         }
 
-        private static void AnalyseNodeInProperty(SyntaxNodeAnalysisContext context, ObjectCreationExpressionSyntax node)
+        private static void AnalyseNodeInReturnStatementOfProperty(SyntaxNodeAnalysisContext context, ObjectCreationExpressionSyntax node)
+        {
+            var propertyDeclaration = node.Parent.Parent.Parent.Parent.Parent as PropertyDeclarationSyntax;
+            if (propertyDeclaration == null) return; // should not happen => we cke this before
+            
+            if (node.IsDisposedInDisposedMethod(propertyDeclaration.Identifier.Text)) return;
+            context.ReportNotDisposedProperty(DisposableSource.ObjectCreation);
+        }
+
+        private static void AnalyseNodeInAutoPropertyOrPropertyExpressionBody(SyntaxNodeAnalysisContext context, SyntaxNode node)
         {
             var propertyDeclaration = node.Parent.Parent as PropertyDeclarationSyntax;
-            var propertyName = propertyDeclaration
-                .DescendantNodes<IdentifierNameSyntax>()
-                .Select(ins => ins.Identifier.Text)
-                .First();
+            if (propertyDeclaration == null) return; // should not happen => we cke this before
 
-            if (node.IsDisposedInDisposedMethod(propertyName)) return;
+            if (node.IsDisposedInDisposedMethod(propertyDeclaration.Identifier.Text)) return;
             context.ReportNotDisposedProperty(DisposableSource.ObjectCreation);
         }
 

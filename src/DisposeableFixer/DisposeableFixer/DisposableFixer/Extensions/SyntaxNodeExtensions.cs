@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using DisposableFixer.Configuration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -246,6 +247,11 @@ namespace DisposableFixer.Extensions
         public static bool IsPartOfAutoProperty(this SyntaxNode node) {
             return node?.Parent is EqualsValueClauseSyntax
                    && node.Parent?.Parent is PropertyDeclarationSyntax;
+        }
+
+        public static bool IsReturnedInProperty(this SyntaxNode node) {
+            return node?.Parent is ReturnStatementSyntax
+                   && node.Parent?.Parent?.Parent?.Parent?.Parent is PropertyDeclarationSyntax;
         }
 
         public static bool IsPropertyDeclaration(this SyntaxNode node)

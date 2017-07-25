@@ -12,9 +12,9 @@ namespace DisposableFixer.Test.IssueTests
         private const string Code = @"
 namespace SomeNamespace
     public class SomeCode{
-        public IDisposable Property {
+        public System.IDisposable Property {
             get {
-                return new MemoryStream();
+                return new System.IO.MemoryStream();
             }
         }
     }
