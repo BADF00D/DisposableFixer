@@ -5,7 +5,8 @@ using NUnit.Framework;
 namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs
 {
     [TestFixture]
-    internal class If_Analyser_runs_on_class_with_a_field_of_type_MemoryStream_that_is_initialized_in_a_method_but_never_disposed :
+    internal class
+        If_Analyser_runs_on_class_with_a_field_of_type_MemoryStream_that_is_initialized_in_a_method_but_never_disposed :
             DisposeableFixerAnalyzerSpec
     {
         private Diagnostic[] _diagnostics;

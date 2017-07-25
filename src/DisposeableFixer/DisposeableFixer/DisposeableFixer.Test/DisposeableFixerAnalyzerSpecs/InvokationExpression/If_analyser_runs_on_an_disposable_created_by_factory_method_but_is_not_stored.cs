@@ -5,7 +5,8 @@ using NUnit.Framework;
 namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.InvokationExpression
 {
     [TestFixture]
-    internal class If_analyser_runs_on_an_disposable_created_by_factory_method_but_is_not_stored : DisposeableFixerAnalyzerSpec
+    internal class If_analyser_runs_on_an_disposable_created_by_factory_method_but_is_not_stored :
+        DisposeableFixerAnalyzerSpec
     {
         private readonly string _code = @"
 using System;

@@ -1,5 +1,3 @@
-using System.Linq;
-using DisposableFixer.Extensions;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using NUnit.Framework;
@@ -7,7 +5,8 @@ using NUnit.Framework;
 namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.ObjectCreations
 {
     [TestFixture]
-    internal class If_Analyser_runs_ObjectCreation_that_is_part_of_expression_body_of_a_property_that_is_disposed : DisposeableFixerAnalyzerSpec
+    internal class If_Analyser_runs_ObjectCreation_that_is_part_of_expression_body_of_a_property_that_is_disposed :
+        DisposeableFixerAnalyzerSpec
     {
         private const string Code = @"
 namespace DisFixerTest.ObjectCreationAssignedToField {

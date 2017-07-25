@@ -7,7 +7,8 @@ using NUnit.Framework;
 namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.ObjectCreations
 {
     [TestFixture]
-    internal class If_Analyser_runs_ObjectCreation_that_is_part_of_expression_body_of_a_property : DisposeableFixerAnalyzerSpec
+    internal class If_Analyser_runs_ObjectCreation_that_is_part_of_expression_body_of_a_property :
+        DisposeableFixerAnalyzerSpec
     {
         private readonly string _code = @"
 namespace DisFixerTest.ObjectCreationAssignedToField {

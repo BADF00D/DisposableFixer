@@ -5,8 +5,9 @@ using NUnit.Framework;
 namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.Tracked
 {
     [TestFixture]
-    internal class If_a_stream_delivered_by_a_factory_is_stored_local_and_given_to_ctor_of_tracking_class_that_id_not_disposed :
-        DisposeableFixerAnalyzerSpec
+    internal class
+        If_a_stream_delivered_by_a_factory_is_stored_local_and_given_to_ctor_of_tracking_class_that_id_not_disposed :
+            DisposeableFixerAnalyzerSpec
     {
         private Diagnostic[] _diagnostics;
 

@@ -5,7 +5,8 @@ using NUnit.Framework;
 namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.ObjectCreations
 {
     [TestFixture]
-    internal class If_Analyser_runs_ObjectCreation_assigned_to_a_local_variable_already_declared : DisposeableFixerAnalyzerSpec
+    internal class If_Analyser_runs_ObjectCreation_assigned_to_a_local_variable_already_declared :
+        DisposeableFixerAnalyzerSpec
     {
         private readonly string _code = @"
 using System;

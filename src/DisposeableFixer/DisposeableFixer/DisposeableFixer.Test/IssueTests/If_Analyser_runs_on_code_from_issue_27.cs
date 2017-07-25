@@ -43,16 +43,4 @@ namespace DisFixerTest.ObjectCreation {
             _diagnostics.Length.Should().Be(3);
         }
     }
-    class ObjectCreationInUsingBlock {
-        public ObjectCreationInUsingBlock() {
-            using (var memStream = new MemoryStream()) {
-                new MemoryStream(); //this should be marked as not disposed
-                var tmp = new MemoryStream(); //this should be marked as not disposed
-                var tmp2 = Create();//this should be marked as not disposed
-            }
-        }
-        private IDisposable Create() {
-            return new MemoryStream();
-        }
-    }
 }
