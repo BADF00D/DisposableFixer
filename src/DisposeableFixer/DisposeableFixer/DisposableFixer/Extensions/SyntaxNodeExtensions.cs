@@ -237,6 +237,12 @@ namespace DisposableFixer.Extensions
             return parent != null;
         }
 
+        public static bool IsPartOfPropertyExpressionBody(this SyntaxNode node)
+        {
+            return node?.Parent is ArrowExpressionClauseSyntax
+                   && node?.Parent?.Parent is PropertyDeclarationSyntax;
+        }
+
         public static bool IsPropertyDeclaration(this SyntaxNode node)
         {
             var parent = node.FindParent<PropertyDeclarationSyntax, ClassDeclarationSyntax>();
