@@ -243,6 +243,11 @@ namespace DisposableFixer.Extensions
                    && node?.Parent?.Parent is PropertyDeclarationSyntax;
         }
 
+        public static bool IsPartOfAutoProperty(this SyntaxNode node) {
+            return node?.Parent is EqualsValueClauseSyntax
+                   && node.Parent?.Parent is PropertyDeclarationSyntax;
+        }
+
         public static bool IsPropertyDeclaration(this SyntaxNode node)
         {
             var parent = node.FindParent<PropertyDeclarationSyntax, ClassDeclarationSyntax>();

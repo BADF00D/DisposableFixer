@@ -3,6 +3,7 @@ using System.CodeDom;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.NetworkInformation;
 using DisposableFixer.Configuration;
 using DisposableFixer.Extensions;
 using Microsoft.CodeAnalysis;
@@ -72,15 +73,12 @@ namespace DisposableFixer
             else if (node.IsDescendantOfUsingHeader()) { }//this have to be checked after IsArgumentInObjectCreation
             else if (node.IsDescendantOfVariableDeclarator()) AnalyseNodeWithinVariableDeclarator(context, node, DisposableSource.ObjectCreation);
             else if (node.IsPartOfAssignmentExpression()) AnalyseNodeInAssignmentExpression(context, node, DisposableSource.ObjectCreation);
-            else if (node.IsPartOfPropertyExpressionBody())
-            {
-                AnalyseNodeInPropertyExpressionBody(context, node);
-                return;
-            }
+            else if (node.IsPartOfPropertyExpressionBody())  AnalyseNodeInProperty(context, node);
+            else if (node.IsPartOfAutoProperty()) AnalyseNodeInProperty(context, node);
             else context.ReportNotDisposedAnonymousObject(DisposableSource.ObjectCreation); //new MemoryStream();
         }
 
-        private static void AnalyseNodeInPropertyExpressionBody(SyntaxNodeAnalysisContext context, ObjectCreationExpressionSyntax node)
+        private static void AnalyseNodeInProperty(SyntaxNodeAnalysisContext context, ObjectCreationExpressionSyntax node)
         {
             var propertyDeclaration = node.Parent.Parent as PropertyDeclarationSyntax;
             var propertyName = propertyDeclaration
