@@ -86,6 +86,16 @@ namespace DisposableFixer.Extensions
                    && node?.Parent?.Parent?.Parent?.Parent is UsingStatementSyntax;
         }
 
+        public static bool IsAssignmentToProperty(this SyntaxNode node, string variableName)
+        {
+            var @class = node.FindContainingClass();
+            if (@class == null) return false;
+
+            return @class
+                .DescendantNodes<PropertyDeclarationSyntax>()
+                .Any(pd => pd.Identifier.Text == variableName);
+        }
+
         public static bool IsDescendantOfVariableDeclarator(this SyntaxNode node)
         {
             return node.Parent?.Parent is VariableDeclaratorSyntax;

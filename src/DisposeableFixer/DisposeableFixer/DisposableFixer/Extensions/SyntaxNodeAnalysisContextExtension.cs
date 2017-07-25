@@ -6,6 +6,16 @@ namespace DisposableFixer.Extensions
     //todo define correct rules
     public static class SyntaxNodeAnalysisContextExtension
     {
+        public const string IdForAnonymousObjectFromObjectCreation = "IdForAnonymousObjectFromObjectCreation";
+        public const string IdForAnonymousMethodInvocation = "IdForAnonymousMethodInvocation";
+        public const string IdForNotDisposedLocalVariable = "IdForNotDisposedLocalVariable";
+        public const string IdForNotDisposed = "IdForNotDisposed";
+        public const string IdForAssignmendFromObjectCreationToFieldNotDisposed = "IdForAssignmendFromObjectCreationToFieldNotDisposed";
+        public const string IdForAssignmendFromMethodInvocationToFieldNotDisposed = "IdForAssignmendFromMethodInvocationToFieldNotDisposed";
+        public const string IdForAssignmendFromObjectCreationToPropertyNotDisposed = "IdForAssignmendFromObjectCreationToPropertyNotDisposed";
+        public const string IdForAssignmendFromMethodInvocationToPropertyNotDisposed = "IdForAssignmendFromMethodInvocationToPropertyNotDisposed";
+        public const string IdForPropertyNotDisposed = "IdForPropertyNotDisposed";
+
         private static readonly LocalizableString Title = new LocalizableResourceString(
             nameof(Resources.AnalyzerTitle), Resources.ResourceManager, typeof (Resources));
 
@@ -33,45 +43,77 @@ namespace DisposableFixer.Extensions
                 typeof (Resources));
 
         public static readonly DiagnosticDescriptor AnonymousObjectFromObjectCreationDescriptor = new DiagnosticDescriptor(
-            DisposableFixerAnalyzer.DiagnosticId,
+            IdForAnonymousObjectFromObjectCreation,
             Title,
             AnonymousObjectFromObjectCreationMessageFormat,
             DisposableFixerAnalyzer.Category,
             DiagnosticSeverity.Warning, true, Description);
 
         public static readonly DiagnosticDescriptor AnonymousObjectFromMethodInvokationDescriptor = new DiagnosticDescriptor(
-            DisposableFixerAnalyzer.DiagnosticId,
+            IdForAnonymousMethodInvocation,
             Title,
             AnonymousObjectFromMethodInvokationMessageFormat,
             DisposableFixerAnalyzer.Category,
             DiagnosticSeverity.Warning, true, Description);
 
         public static readonly DiagnosticDescriptor NotDisposedLocalVariableDescriptor = new DiagnosticDescriptor(
-            DisposableFixerAnalyzer.DiagnosticId,
+            IdForNotDisposedLocalVariable,
             Title,
             NotDisposedLocalVariableMessageFormat,
             DisposableFixerAnalyzer.Category,
             DiagnosticSeverity.Warning, true, Description);
 
         public static readonly DiagnosticDescriptor NotDisposedDescriptor = new DiagnosticDescriptor(
-            DisposableFixerAnalyzer.DiagnosticId,
+            IdForNotDisposed,
             Title,
             NotDisposedMessageFormat,
             DisposableFixerAnalyzer.Category,
             DiagnosticSeverity.Warning, true, Description);
 
-        public static readonly DiagnosticDescriptor FieldNotDisposedDescriptor = new DiagnosticDescriptor(
-           DisposableFixerAnalyzer.DiagnosticId,
+        public static readonly DiagnosticDescriptor AssignmendFromObjectCreationToFieldNotDisposedDescriptor = new DiagnosticDescriptor(
+           IdForAssignmendFromObjectCreationToFieldNotDisposed,
+           Title,
+           FieldMessageFormat,
+           DisposableFixerAnalyzer.Category,
+           DiagnosticSeverity.Warning, true, Description);
+
+        public static readonly DiagnosticDescriptor AssignmendFromMethodInvocationToFieldNotDisposedDescriptor = new DiagnosticDescriptor(
+           IdForAssignmendFromMethodInvocationToFieldNotDisposed,
+           Title,
+           FieldMessageFormat,
+           DisposableFixerAnalyzer.Category,
+           DiagnosticSeverity.Warning, true, Description);
+
+        public static readonly DiagnosticDescriptor AssignmendFromObjectCreationToPropertyNotDisposedDescriptor = new DiagnosticDescriptor(
+          IdForAssignmendFromObjectCreationToPropertyNotDisposed,
+          Title,
+          FieldMessageFormat,
+          DisposableFixerAnalyzer.Category,
+          DiagnosticSeverity.Warning, true, Description);
+
+        public static readonly DiagnosticDescriptor AssignmendFromMethodInvocationToPropertyNotDisposedDescriptor = new DiagnosticDescriptor(
+           IdForAssignmendFromMethodInvocationToPropertyNotDisposed,
            Title,
            FieldMessageFormat,
            DisposableFixerAnalyzer.Category,
            DiagnosticSeverity.Warning, true, Description);
 
 
-        public static void ReportNotDisposedField(this SyntaxNodeAnalysisContext context, DisposableSource source) {
+        public static void ReportNotDisposedField(this SyntaxNodeAnalysisContext context, DisposableSource source)
+        {
             var location = context.Node.GetLocation();
 
-            context.ReportDiagnostic(Diagnostic.Create(FieldNotDisposedDescriptor, location));
+            context.ReportDiagnostic(source == DisposableSource.InvokationExpression
+                ? Diagnostic.Create(AssignmendFromMethodInvocationToFieldNotDisposedDescriptor, location)
+                : Diagnostic.Create(AssignmendFromObjectCreationToFieldNotDisposedDescriptor, location));
+        }
+
+        public static void ReportNotDisposedProperty(this SyntaxNodeAnalysisContext context, DisposableSource source) {
+            var location = context.Node.GetLocation();
+
+            context.ReportDiagnostic(source == DisposableSource.InvokationExpression
+                ? Diagnostic.Create(AssignmendFromMethodInvocationToPropertyNotDisposedDescriptor, location)
+                : Diagnostic.Create(AssignmendFromObjectCreationToPropertyNotDisposedDescriptor, location));
         }
 
         public static void ReportNotDisposedAssignmentToFieldOrProperty(this SyntaxNodeAnalysisContext context, DisposableSource source) {

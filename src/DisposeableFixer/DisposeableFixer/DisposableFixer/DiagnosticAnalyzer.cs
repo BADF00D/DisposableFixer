@@ -31,9 +31,13 @@ namespace DisposableFixer
             => ImmutableArray.Create(
                 SyntaxNodeAnalysisContextExtension.AnonymousObjectFromObjectCreationDescriptor,
                 SyntaxNodeAnalysisContextExtension.AnonymousObjectFromMethodInvokationDescriptor,
-                SyntaxNodeAnalysisContextExtension.FieldNotDisposedDescriptor,
                 SyntaxNodeAnalysisContextExtension.NotDisposedDescriptor,
-                SyntaxNodeAnalysisContextExtension.NotDisposedLocalVariableDescriptor
+                SyntaxNodeAnalysisContextExtension.NotDisposedLocalVariableDescriptor,
+                
+                SyntaxNodeAnalysisContextExtension.AssignmendFromObjectCreationToFieldNotDisposedDescriptor,
+                SyntaxNodeAnalysisContextExtension.AssignmendFromObjectCreationToPropertyNotDisposedDescriptor,
+                SyntaxNodeAnalysisContextExtension.AssignmendFromMethodInvocationToFieldNotDisposedDescriptor,
+                SyntaxNodeAnalysisContextExtension.AssignmendFromMethodInvocationToPropertyNotDisposedDescriptor
                 );
 
         public override void Initialize(AnalysisContext context)
@@ -199,14 +203,21 @@ namespace DisposableFixer
                     if (ctor.ContainsDisposeCallFor(variableName)) return;
                     context.ReportNotDisposedLocalDeclaration();
                 }
-                else //field
+                else //field or property
                 {
                     if (node.IsDisposedInDisposedMethod(variableName)) return;
-                    context.ReportNotDisposedField(source);
-                    return;
+
+                    if (node.IsAssignmentToProperty(variableName))
+                    {
+                        context.ReportNotDisposedProperty(source);
+                    }
+                    else
+                    {
+                        context.ReportNotDisposedField(source);
+                    }
+                    
                 }
             }
-            //part of a property?
         }
         
         private static void AnalyseNodeInArgumentList(SyntaxNodeAnalysisContext context,
