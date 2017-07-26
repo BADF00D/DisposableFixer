@@ -1,4 +1,10 @@
-﻿Release 0.26
+﻿Release 0.27 - Support for properties
+* Issue 51: Corrected diagnostics id for undisposed assignments to properties.
+* Issue 52: Corrected diagnostics id for undisposed properties with expression body.
+* Issue 53: Corrected diagnostics id for undisposed auto properties.
+* Issue 54: Properties not get detected correctly.
+
+Release 0.26
 * Issue 34 & 49: Added support for extension methods that are tracking calls like AddTo from Reactive.Bindings.Extensions.IDisposableExtensions.
 
 Release 0.25
