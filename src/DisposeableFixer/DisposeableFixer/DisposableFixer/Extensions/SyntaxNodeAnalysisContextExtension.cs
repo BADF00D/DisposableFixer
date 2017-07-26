@@ -34,6 +34,10 @@ namespace DisposableFixer.Extensions
             new LocalizableResourceString(nameof(Resources.NotDisposedFieldMessageFormat), Resources.ResourceManager,
                 typeof(Resources));
 
+        private static readonly LocalizableString PropertyMessageFormat =
+            new LocalizableResourceString(nameof(Resources.NotDisposedPropertyMessageFormat), Resources.ResourceManager,
+                typeof(Resources));
+
         private static readonly LocalizableString NotDisposedMessageFormat =
             new LocalizableResourceString(nameof(Resources.NotDisposedMessageFormat), Resources.ResourceManager,
                 typeof(Resources));
@@ -87,14 +91,14 @@ namespace DisposableFixer.Extensions
         public static readonly DiagnosticDescriptor AssignmendFromObjectCreationToPropertyNotDisposedDescriptor = new DiagnosticDescriptor(
           IdForAssignmendFromObjectCreationToPropertyNotDisposed,
           Title,
-          FieldMessageFormat,
+          PropertyMessageFormat,
           DisposableFixerAnalyzer.Category,
           DiagnosticSeverity.Warning, true, Description);
 
         public static readonly DiagnosticDescriptor AssignmendFromMethodInvocationToPropertyNotDisposedDescriptor = new DiagnosticDescriptor(
            IdForAssignmendFromMethodInvocationToPropertyNotDisposed,
            Title,
-           FieldMessageFormat,
+           PropertyMessageFormat,
            DisposableFixerAnalyzer.Category,
            DiagnosticSeverity.Warning, true, Description);
 

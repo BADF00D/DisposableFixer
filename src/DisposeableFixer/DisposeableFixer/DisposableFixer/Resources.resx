@@ -141,4 +141,7 @@
   <data name="NotDisposedMessageFormat" xml:space="preserve">
     <value>This disposable is not disposed.</value>
   </data>
+  <data name="NotDisposedPropertyMessageFormat" xml:space="preserve">
+    <value>Property is not disposed.</value>
+  </data>
 </root>

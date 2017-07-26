@@ -105,7 +105,16 @@ namespace DisposableFixer {
                 return ResourceManager.GetString("NotDisposedFieldMessageFormat", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Field is not disposed..
+        /// </summary>
+        internal static string NotDisposedPropertyMessageFormat {
+            get {
+                return ResourceManager.GetString("NotDisposedPropertyMessageFormat", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Local variable is not disposed.
         /// </summary>

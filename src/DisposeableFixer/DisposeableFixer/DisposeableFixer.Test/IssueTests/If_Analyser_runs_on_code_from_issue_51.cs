@@ -33,8 +33,8 @@ namespace SomeNamespace
             _diagnostics.Length.Should().Be(1);
 
             var diagnostic = _diagnostics.First();
-            diagnostic.Descriptor.Id.Should()
-                .Be(SyntaxNodeAnalysisContextExtension.IdForAssignmendFromObjectCreationToPropertyNotDisposed);
+            diagnostic.Descriptor.Should()
+                .Be(SyntaxNodeAnalysisContextExtension.AssignmendFromObjectCreationToPropertyNotDisposedDescriptor);
         }
     }
 }

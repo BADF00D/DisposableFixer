@@ -60,7 +60,7 @@ namespace DisposableFixer
             if (type == null) { }
             else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new MemoryStream()).Dispose()
             else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } 
-            else if (node.IsReturnedInProperty()) AnalyseNodeInReturnStatementOfProperty(context, node);
+            else if (node.IsReturnedInProperty()) AnalyseNodeInReturnStatementOfProperty(context, node, DisposableSource.ObjectCreation);
             else if (node.IsPartOfReturnStatement()) { }
             else if (node.IsReturnValueInLambdaExpression()) { }
             else if (node.IsReturnedLaterWithinMethod()) { }
@@ -74,28 +74,28 @@ namespace DisposableFixer
             else if (node.IsDescendantOfUsingHeader()) { }//this have to be checked after IsArgumentInObjectCreation
             else if (node.IsDescendantOfVariableDeclarator()) AnalyseNodeWithinVariableDeclarator(context, node, DisposableSource.ObjectCreation);
             else if (node.IsPartOfAssignmentExpression()) AnalyseNodeInAssignmentExpression(context, node, DisposableSource.ObjectCreation);
-            else if (node.IsPartOfPropertyExpressionBody())  AnalyseNodeInAutoPropertyOrPropertyExpressionBody(context, node);
-            else if (node.IsPartOfAutoProperty()) AnalyseNodeInAutoPropertyOrPropertyExpressionBody(context, node);
+            else if (node.IsPartOfPropertyExpressionBody())  AnalyseNodeInAutoPropertyOrPropertyExpressionBody(context, node, DisposableSource.ObjectCreation);
+            else if (node.IsPartOfAutoProperty()) AnalyseNodeInAutoPropertyOrPropertyExpressionBody(context, node, DisposableSource.ObjectCreation);
             
             else context.ReportNotDisposedAnonymousObject(DisposableSource.ObjectCreation); //new MemoryStream();
         }
 
-        private static void AnalyseNodeInReturnStatementOfProperty(SyntaxNodeAnalysisContext context, ObjectCreationExpressionSyntax node)
+        private static void AnalyseNodeInReturnStatementOfProperty(SyntaxNodeAnalysisContext context, SyntaxNode node, DisposableSource source) 
         {
             var propertyDeclaration = node.Parent.Parent.Parent.Parent.Parent as PropertyDeclarationSyntax;
             if (propertyDeclaration == null) return; // should not happen => we cke this before
             
             if (node.IsDisposedInDisposedMethod(propertyDeclaration.Identifier.Text)) return;
-            context.ReportNotDisposedProperty(DisposableSource.ObjectCreation);
+            context.ReportNotDisposedProperty(source);
         }
 
-        private static void AnalyseNodeInAutoPropertyOrPropertyExpressionBody(SyntaxNodeAnalysisContext context, SyntaxNode node)
+        private static void AnalyseNodeInAutoPropertyOrPropertyExpressionBody(SyntaxNodeAnalysisContext context, SyntaxNode node, DisposableSource source) 
         {
             var propertyDeclaration = node.Parent.Parent as PropertyDeclarationSyntax;
             if (propertyDeclaration == null) return; // should not happen => we cke this before
 
             if (node.IsDisposedInDisposedMethod(propertyDeclaration.Identifier.Text)) return;
-            context.ReportNotDisposedProperty(DisposableSource.ObjectCreation);
+            context.ReportNotDisposedProperty(source);
         }
 
         private static void AnalyseNodeWithinVariableDeclarator(SyntaxNodeAnalysisContext context,
@@ -266,6 +266,7 @@ namespace DisposableFixer
             if (type == null) { } 
             else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new object()).AsDisposable().Dispose()
             else if (node.IsPartOfAwaitExpression()) AnalyseInvokationExpressionInsideAwaitExpression(context, node);
+            else if (node.IsReturnedInProperty()) AnalyseNodeInReturnStatementOfProperty(context, node, DisposableSource.InvokationExpression);
             else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } 
             else if (Detector.IsTrackingMethodCall(node, context.SemanticModel)) { }
             else if (node.IsMaybePartOfMethodChainUsingTrackingExtensionMethod())
@@ -286,6 +287,8 @@ namespace DisposableFixer
             else if (node.IsDescendantOfUsingHeader()) { } //using(memstream) or using(new MemoryStream())
             else if (node.IsDescendantOfVariableDeclarator()) AnalyseNodeWithinVariableDeclarator(context, node, DisposableSource.InvokationExpression);
             else if (node.IsPartOfAssignmentExpression()) AnalyseNodeInAssignmentExpression(context, node, DisposableSource.InvokationExpression);
+            else if (node.IsPartOfAutoProperty()) AnalyseNodeInAutoPropertyOrPropertyExpressionBody(context, node, DisposableSource.InvokationExpression);
+            else if (node.IsPartOfPropertyExpressionBody()) AnalyseNodeInAutoPropertyOrPropertyExpressionBody(context, node, DisposableSource.InvokationExpression);
             else context.ReportNotDisposedAnonymousObject(DisposableSource.InvokationExpression); //call to Create(): MemeoryStream
         }
 
