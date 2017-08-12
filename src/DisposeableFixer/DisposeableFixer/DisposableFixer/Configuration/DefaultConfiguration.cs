@@ -43,23 +43,23 @@ namespace DisposableFixer.Configuration {
                 ["Reactive.Bindings.Extensions.IDisposableExtensions"] = new List<MethodCall>
                 {
                     new MethodCall("AddTo", new [] {"T", "System.Collections.Generic.ICollection<IDisposable>"}, true)
-                },
-                //["TestProject.Reactive.Bindings.Extensions.IDisposableExtensions"] = new List<MethodCall>
-                //{
-                //    new MethodCall("AddTo", new [] {"T", "System.Collections.Generic.ICollection<IDisposable>"}, true)
-                //}
+                }
             };
 
 		    DisposingMethods = new HashSet<string>
 		    {
                 "Cleanup"
 		    };
+		    DisposingAttributes = new HashSet<string>
+		    {
+                "NUnit.Framework.TearDownAttribute"
+            };
 		}
-
-		public HashSet<string> IgnoredTypes { get; }
+        public HashSet<string> IgnoredTypes { get; }
 		public HashSet<string> IgnoredInterfaces { get; }
 		public HashSet<string> TrackingTypes { get; }
 	    public HashSet<string> DisposingMethods { get; }
+	    public HashSet<string> DisposingAttributes { get; }
 	    public Dictionary<string,IReadOnlyCollection<CtorCall>> IgnoredTrackingTypeCtorCalls { get; }
 	    public Dictionary<string, IReadOnlyCollection<MethodCall>> TrackingMethods { get; }
 	}

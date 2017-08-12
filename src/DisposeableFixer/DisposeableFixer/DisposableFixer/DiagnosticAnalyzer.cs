@@ -81,7 +81,7 @@ namespace DisposableFixer
             var propertyDeclaration = node.Parent.Parent.Parent.Parent.Parent as PropertyDeclarationSyntax;
             if (propertyDeclaration == null) return; // should not happen => we cke this before
             
-            if (node.IsDisposedInDisposingMethod(propertyDeclaration.Identifier.Text, Configuration.DisposingMethods)) return;
+            if (node.IsDisposedInDisposingMethod(propertyDeclaration.Identifier.Text, Configuration, context.SemanticModel)) return;
             context.ReportNotDisposedProperty(source);
         }
 
@@ -90,7 +90,7 @@ namespace DisposableFixer
             var propertyDeclaration = node.Parent.Parent as PropertyDeclarationSyntax;
             if (propertyDeclaration == null) return; // should not happen => we cke this before
 
-            if (node.IsDisposedInDisposingMethod(propertyDeclaration.Identifier.Text, Configuration.DisposingMethods)) return;
+            if (node.IsDisposedInDisposingMethod(propertyDeclaration.Identifier.Text, Configuration, context.SemanticModel)) return;
             context.ReportNotDisposedProperty(source);
         }
 
@@ -166,7 +166,7 @@ namespace DisposableFixer
         private static void AnalyseNodeInFieldDeclaration(SyntaxNodeAnalysisContext context,
             SyntaxNode node, string nameOfVariable, DisposableSource source)
         {
-            if (node.IsDisposedInDisposingMethod(nameOfVariable, Configuration.DisposingMethods)) return;
+            if (node.IsDisposedInDisposingMethod(nameOfVariable, Configuration, context.SemanticModel)) return;
 
             context.ReportNotDisposedField(source);
         }
@@ -198,7 +198,7 @@ namespace DisposableFixer
                     return;
                 }
                 //field declaration
-                if (node.IsDisposedInDisposingMethod(variableName, Configuration.DisposingMethods)) return;
+                if (node.IsDisposedInDisposingMethod(variableName, Configuration, context.SemanticModel)) return;
                 if (node.IsArgumentInObjectCreation())
                 {
                     AnalyseNodeInArgumentList(context, node, source);
@@ -224,7 +224,7 @@ namespace DisposableFixer
                 }
                 else //field or property
                 {
-                    if (node.IsDisposedInDisposingMethod(variableName, Configuration.DisposingMethods)) return;
+                    if (node.IsDisposedInDisposingMethod(variableName, Configuration, context.SemanticModel)) return;
 
                     if (node.IsAssignmentToProperty(variableName))
                     {

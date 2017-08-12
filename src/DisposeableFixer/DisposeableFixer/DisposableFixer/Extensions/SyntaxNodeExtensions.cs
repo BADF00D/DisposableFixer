@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using DisposableFixer.Configuration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace DisposableFixer.Extensions
 {
-    public static class SyntaxNodeExtensions
+    internal static class SyntaxNodeExtensions
     {
         public static ClassDeclarationSyntax FindContainingClass(this SyntaxNode node)
         {
@@ -154,20 +154,31 @@ namespace DisposableFixer.Extensions
         /// </summary>
         /// <param name="nodeInClass">A node within the class. usually the node where analysis started.</param>
         /// <param name="nameOfVariable">Name of the property/field that should be evaluated.</param>
-        /// <param name="disposingMethods"></param>
+        /// <param name="configuration"></param>
+        /// <param name="semanticModel"></param>
         /// <returns></returns>
-        public static bool IsDisposedInDisposingMethod(this SyntaxNode nodeInClass, string nameOfVariable, HashSet<string> disposingMethods)
+        public static bool IsDisposedInDisposingMethod(this SyntaxNode nodeInClass, string nameOfVariable, IConfiguration configuration, SemanticModel semanticModel)
         {
             var classDeclarationSyntax = nodeInClass.FindContainingClass();
             if (classDeclarationSyntax == null) return false;
 
             var disposeMethods = classDeclarationSyntax
                 .DescendantNodes<MethodDeclarationSyntax>()
-                .Where(mds => mds.IsDisposeMethod() || disposingMethods.Contains(mds.Identifier.Text))
+                .Where(mds => IsDisposingMethod(mds, configuration, semanticModel))
                 .ToArray();
             return disposeMethods
                 .SelectMany(disposeMethod => disposeMethod.DescendantNodes<InvocationExpressionSyntax>())
                 .Any(mes => mes.IsCallToDisposeFor(nameOfVariable));
+        }
+
+        private static bool IsDisposingMethod(MethodDeclarationSyntax mds, IConfiguration configuration, SemanticModel semanticModel)
+        {
+            return mds.IsDisposeMethod() 
+                || configuration.DisposingMethods.Contains(mds.Identifier.Text)
+                || mds.AttributeLists
+                    .SelectMany(als => als.Attributes)
+                    .Select(a => semanticModel.GetTypeInfo(a).Type)
+                    .Any(attribute => configuration.DisposingAttributes.Contains(attribute.GetFullNamespace()));
         }
 
         public static bool ContainsDisposeCallFor(this SyntaxNode node, string name)

@@ -15,6 +15,15 @@ namespace DisposableFixer.Configuration {
         /// </summary>
         HashSet<string> DisposingMethods { get; }
 
+        /// <summary>
+        /// A methods marked with on of this attributes, is treated just as if this is the dispose method. 
+        /// </summary>
+        /// <remarks>Name of attributes should contains its namespace.</remarks>
+        HashSet<string> DisposingAttributes { get; }
+
+        /// <summary>
+        /// Collection of contructors of tracking types, that dont track given disposables.
+        /// </summary>
         Dictionary<string, IReadOnlyCollection<CtorCall>> IgnoredTrackingTypeCtorCalls { get; }
         /// <summary>
         /// IDisposables given to this methods are consired as automatically disposed.

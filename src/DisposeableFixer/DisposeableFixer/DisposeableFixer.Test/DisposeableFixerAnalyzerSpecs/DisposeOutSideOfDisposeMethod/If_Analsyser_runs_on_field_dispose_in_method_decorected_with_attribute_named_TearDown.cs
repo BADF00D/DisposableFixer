@@ -15,6 +15,8 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.DisposeOutSideOfDis
             _diagnostics = MyHelper.RunAnalyser(Code, Sut);
         }
         private const string Code = @"
+using System;
+using NUnit.Framework;
 namespace SomeNamespace
     public class SomeSpec : Spec{
         private System.IDisposable _memstream;
@@ -28,11 +30,17 @@ namespace SomeNamespace
             _memstream?.Dispose();
         }
 
-        private class TearDownAttribute : System.Attribute
-        {
-        }
+        
     }
-}";
+}
+namespace NUnit.Framework{
+    public class TearDownAttribute : System.Attribute
+    {
+    }
+}
+
+
+";
 
         [Test]
         public void Then_there_should_be_no_Diagnostics()

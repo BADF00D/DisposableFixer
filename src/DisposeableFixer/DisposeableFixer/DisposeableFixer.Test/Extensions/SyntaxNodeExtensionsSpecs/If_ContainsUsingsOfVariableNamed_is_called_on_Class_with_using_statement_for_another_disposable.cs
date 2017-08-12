@@ -1,8 +1,8 @@
 using System.Linq;
-using DisposableFixer.Extensions;
 using FluentAssertions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
+using DisposableFixer.Extensions;
 
 namespace DisposableFixer.Test.Extensions.SyntaxNodeExtensionsSpecs
 {
