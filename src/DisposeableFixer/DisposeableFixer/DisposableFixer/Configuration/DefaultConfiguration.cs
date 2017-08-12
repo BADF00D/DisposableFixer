@@ -50,12 +50,17 @@ namespace DisposableFixer.Configuration {
                 //}
             };
 
-        }
+		    DisposingMethods = new HashSet<string>
+		    {
+                "Cleanup"
+		    };
+		}
 
 		public HashSet<string> IgnoredTypes { get; }
 		public HashSet<string> IgnoredInterfaces { get; }
 		public HashSet<string> TrackingTypes { get; }
-		public Dictionary<string,IReadOnlyCollection<CtorCall>> IgnoredTrackingTypeCtorCalls { get; }
+	    public HashSet<string> DisposingMethods { get; }
+	    public Dictionary<string,IReadOnlyCollection<CtorCall>> IgnoredTrackingTypeCtorCalls { get; }
 	    public Dictionary<string, IReadOnlyCollection<MethodCall>> TrackingMethods { get; }
 	}
 }

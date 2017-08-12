@@ -149,14 +149,21 @@ namespace DisposableFixer.Extensions
                 .Any(inss => inss.Any(ins => ins.Identifier.Text == name));
         }
 
-        public static bool IsDisposedInDisposedMethod(this SyntaxNode nodeInClass, string nameOfVariable)
+        /// <summary>
+        /// Returns true, if field/property is disposed in Dispose or a DisposingMethod.
+        /// </summary>
+        /// <param name="nodeInClass">A node within the class. usually the node where analysis started.</param>
+        /// <param name="nameOfVariable">Name of the property/field that should be evaluated.</param>
+        /// <param name="disposingMethods"></param>
+        /// <returns></returns>
+        public static bool IsDisposedInDisposingMethod(this SyntaxNode nodeInClass, string nameOfVariable, HashSet<string> disposingMethods)
         {
             var classDeclarationSyntax = nodeInClass.FindContainingClass();
             if (classDeclarationSyntax == null) return false;
 
             var disposeMethods = classDeclarationSyntax
                 .DescendantNodes<MethodDeclarationSyntax>()
-                .Where(mds => mds.IsDisposeMethod())
+                .Where(mds => mds.IsDisposeMethod() || disposingMethods.Contains(mds.Identifier.Text))
                 .ToArray();
             return disposeMethods
                 .SelectMany(disposeMethod => disposeMethod.DescendantNodes<InvocationExpressionSyntax>())

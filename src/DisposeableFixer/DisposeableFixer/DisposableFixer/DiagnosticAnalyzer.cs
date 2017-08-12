@@ -1,9 +1,6 @@
-using System;
-using System.CodeDom;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
-using System.Net.NetworkInformation;
+using System.Net;
 using DisposableFixer.Configuration;
 using DisposableFixer.Extensions;
 using Microsoft.CodeAnalysis;
@@ -16,15 +13,14 @@ namespace DisposableFixer
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class DisposableFixerAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "DisposableFixer";
         public const string Category = "Wrong Usage";
 
-        private const string DisposeMethod = "Dispose";
         private const string DisposableInterface = "IDisposable";
 
 	    private static readonly IDetector Detector = new TrackingTypeDetector();
+        private static readonly IConfiguration Configuration = ConfigurationManager.Instance;
 
-	    // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
+        // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
         // See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Localizing%20Analyzers.md for more on localization
 
 
@@ -85,7 +81,7 @@ namespace DisposableFixer
             var propertyDeclaration = node.Parent.Parent.Parent.Parent.Parent as PropertyDeclarationSyntax;
             if (propertyDeclaration == null) return; // should not happen => we cke this before
             
-            if (node.IsDisposedInDisposedMethod(propertyDeclaration.Identifier.Text)) return;
+            if (node.IsDisposedInDisposingMethod(propertyDeclaration.Identifier.Text, Configuration.DisposingMethods)) return;
             context.ReportNotDisposedProperty(source);
         }
 
@@ -94,7 +90,7 @@ namespace DisposableFixer
             var propertyDeclaration = node.Parent.Parent as PropertyDeclarationSyntax;
             if (propertyDeclaration == null) return; // should not happen => we cke this before
 
-            if (node.IsDisposedInDisposedMethod(propertyDeclaration.Identifier.Text)) return;
+            if (node.IsDisposedInDisposingMethod(propertyDeclaration.Identifier.Text, Configuration.DisposingMethods)) return;
             context.ReportNotDisposedProperty(source);
         }
 
@@ -170,7 +166,7 @@ namespace DisposableFixer
         private static void AnalyseNodeInFieldDeclaration(SyntaxNodeAnalysisContext context,
             SyntaxNode node, string nameOfVariable, DisposableSource source)
         {
-            if (node.IsDisposedInDisposedMethod(nameOfVariable)) return;
+            if (node.IsDisposedInDisposingMethod(nameOfVariable, Configuration.DisposingMethods)) return;
 
             context.ReportNotDisposedField(source);
         }
@@ -202,7 +198,7 @@ namespace DisposableFixer
                     return;
                 }
                 //field declaration
-                if (node.IsDisposedInDisposedMethod(variableName)) return;
+                if (node.IsDisposedInDisposingMethod(variableName, Configuration.DisposingMethods)) return;
                 if (node.IsArgumentInObjectCreation())
                 {
                     AnalyseNodeInArgumentList(context, node, source);
@@ -228,7 +224,7 @@ namespace DisposableFixer
                 }
                 else //field or property
                 {
-                    if (node.IsDisposedInDisposedMethod(variableName)) return;
+                    if (node.IsDisposedInDisposingMethod(variableName, Configuration.DisposingMethods)) return;
 
                     if (node.IsAssignmentToProperty(variableName))
                     {

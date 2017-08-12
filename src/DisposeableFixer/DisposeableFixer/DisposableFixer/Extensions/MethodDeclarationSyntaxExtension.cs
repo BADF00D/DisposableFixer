@@ -1,6 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-static internal class MethodDeclarationSyntaxExtension
+internal static class MethodDeclarationSyntaxExtension
 {
     public static bool IsDisposeMethod(this MethodDeclarationSyntax method)
     {

@@ -30,7 +30,6 @@ namespace SomeNamespace
 
         private class TearDownAttribute : System.Attribute
         {
-            
         }
     }
 }";
