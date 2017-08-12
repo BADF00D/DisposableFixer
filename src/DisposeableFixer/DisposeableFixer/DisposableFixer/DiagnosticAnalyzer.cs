@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using System.Linq;
-using System.Net;
 using DisposableFixer.Configuration;
 using DisposableFixer.Extensions;
 using Microsoft.CodeAnalysis;
@@ -265,6 +264,7 @@ namespace DisposableFixer
             else if (node.IsReturnedInProperty()) AnalyseNodeInReturnStatementOfProperty(context, node, DisposableSource.InvokationExpression);
             else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } 
             else if (Detector.IsTrackingMethodCall(node, context.SemanticModel)) { }
+            else if (Detector.IsIgnoredFactoryMethod(node, context.SemanticModel)) return;
             else if (node.IsMaybePartOfMethodChainUsingTrackingExtensionMethod())
             {
                 //there maybe multiple method invocations within one chain

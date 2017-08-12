@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DisposableFixer.Misc;
 
 namespace DisposableFixer.Configuration {
 	internal class DefaultConfiguration : IConfiguration {
@@ -45,6 +46,13 @@ namespace DisposableFixer.Configuration {
                     new MethodCall("AddTo", new [] {"T", "System.Collections.Generic.ICollection<IDisposable>"}, true)
                 }
             };
+            TrackingFactoryMethods = new Dictionary<string, IReadOnlyCollection<MethodCall>>
+            {
+                ["FakeItEasy.A"] = new List<MethodCall>
+                {
+                    new MethodCall("Fake", Empty.Array<string>(), true)
+                }
+            };
 
 		    DisposingMethods = new HashSet<string>
 		    {
@@ -62,5 +70,6 @@ namespace DisposableFixer.Configuration {
 	    public HashSet<string> DisposingAttributes { get; }
 	    public Dictionary<string,IReadOnlyCollection<CtorCall>> IgnoredTrackingTypeCtorCalls { get; }
 	    public Dictionary<string, IReadOnlyCollection<MethodCall>> TrackingMethods { get; }
+	    public Dictionary<string, IReadOnlyCollection<MethodCall>> TrackingFactoryMethods { get; }
 	}
 }

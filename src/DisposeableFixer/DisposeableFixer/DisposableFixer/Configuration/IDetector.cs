@@ -7,5 +7,6 @@ namespace DisposableFixer.Configuration {
 		bool IsIgnoredType(INamedTypeSymbol namedType);
 		bool IsTrackedType(INamedTypeSymbol namedType, ObjectCreationExpressionSyntax node, SemanticModel semanticModel);
 	    bool IsTrackingMethodCall(InvocationExpressionSyntax methodInvocation, SemanticModel semanticModel);
+	    bool IsIgnoredFactoryMethod(InvocationExpressionSyntax methodInvocation, SemanticModel semanticModel);
 	}
 }

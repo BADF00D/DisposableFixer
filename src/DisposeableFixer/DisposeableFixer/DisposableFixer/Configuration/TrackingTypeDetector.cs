@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DisposableFixer.Extensions;
 using Microsoft.CodeAnalysis;
@@ -74,6 +75,25 @@ namespace DisposableFixer.Configuration
             return method.IsExtensionMethod
                 ? AnalyseExtensionMethodCall(method, semanticModel)
                 : AnalyseNonExtensionMethodCall(method, semanticModel);
+        }
+
+        public bool IsIgnoredFactoryMethod(InvocationExpressionSyntax methodInvocation, SemanticModel semanticModel)
+        {
+            var memberAccessExpression = methodInvocation.Expression as MemberAccessExpressionSyntax;
+            if (memberAccessExpression == null) return false; //something like Create() this cant be a tracking call
+
+            var symbolInfo = semanticModel.GetSymbolInfo(methodInvocation);
+            if (symbolInfo.Symbol == null) return false;
+
+            var method = symbolInfo.Symbol as IMethodSymbol;
+
+            var classname = method.ReceiverType.GetFullNamespace();
+
+            IReadOnlyCollection<MethodCall> _ignoredMethodCalls;
+            if (!_configuration.TrackingFactoryMethods.TryGetValue(classname, out _ignoredMethodCalls)) return false;
+
+            return _ignoredMethodCalls
+                .Any(mc => mc.Name == method.Name && mc.Parameter.Length == method.Parameters.Length);
         }
 
         private bool AnalyseNonExtensionMethodCall(IMethodSymbol method, SemanticModel semanticModel)

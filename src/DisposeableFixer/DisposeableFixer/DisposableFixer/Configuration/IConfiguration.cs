@@ -29,5 +29,10 @@ namespace DisposableFixer.Configuration {
         /// IDisposables given to this methods are consired as automatically disposed.
         /// </summary>
         Dictionary<string, IReadOnlyCollection<MethodCall>> TrackingMethods { get; } 
+
+        /// <summary>
+        /// IDisposables delivered by on of these methods can be ignored.
+        /// </summary>
+        Dictionary<string, IReadOnlyCollection<MethodCall>> TrackingFactoryMethods { get; } 
 	}
 }
