@@ -93,6 +93,7 @@
     <Compile Include="DisposeableFixerAnalyzerSpecs\If_Analyser_runs_on_method_that_returns_a_MemoryStream.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\Ignored\If_Analyser_runs_on_an_Enumerator_that_should_be_ignored.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\Ignored\If_Analyser_runs_on_an_Task_that_should_be_ignored.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\Ignored\If_Analyser_runs_on_field_that_is_assigned_via_ignored_static_method_call.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\InvokationExpression\If_Analyser_runs_MethodInvocation_that_is_part_of_auto_property.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\InvokationExpression\If_Analyser_runs_MethodInvocation_that_is_part_of_auto_property_that_is_disposed.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\InvokationExpression\If_Analyser_runs_MethodInvocation_that_is_part_of_expression_body_of_a_property.cs" />
@@ -160,6 +161,7 @@
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_27.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_33.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_41.cs" />
+    <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_50.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_55.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_54.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_53.cs" />
