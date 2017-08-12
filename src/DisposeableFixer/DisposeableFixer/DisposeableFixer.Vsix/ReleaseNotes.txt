@@ -1,4 +1,8 @@
-﻿Release 0.27 - Support for properties
+﻿Release 0.28 
+* Issue 50: A.Fake<IDisposable> is now ignored.
+* Issue 55: Added additional places to recognize disposing of fields/properties. Currently Cleanup method and TearDown attribute is supported.
+
+Release 0.27 - Support for properties
 * Issue 51: Corrected diagnostics id for undisposed assignments to properties.
 * Issue 52: Corrected diagnostics id for undisposed properties with expression body.
 * Issue 53: Corrected diagnostics id for undisposed auto properties.
