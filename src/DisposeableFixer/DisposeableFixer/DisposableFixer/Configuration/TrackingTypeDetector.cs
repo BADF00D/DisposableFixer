@@ -72,6 +72,7 @@ namespace DisposableFixer.Configuration
             if (symbolInfo.Symbol == null) return false;
 
             var method = symbolInfo.Symbol as IMethodSymbol;
+
             return method.IsExtensionMethod
                 ? AnalyseExtensionMethodCall(method, semanticModel)
                 : AnalyseNonExtensionMethodCall(method, semanticModel);
@@ -98,7 +99,18 @@ namespace DisposableFixer.Configuration
 
         private bool AnalyseNonExtensionMethodCall(IMethodSymbol method, SemanticModel semanticModel)
         {
-            return false;
+            //todo merge with AnalyseExtensionMethodCall
+            var originalDefinition = method.OriginalDefinition;
+            var methodName = method.Name;
+            var @namespace = originalDefinition.ContainingType.GetFullNamespace(); 
+
+            var extensionMethods =
+                _configuration.TrackingMethods.Where(tm => tm.Key == @namespace)
+                .Select(tm => tm.Value)
+                .ToArray();
+            if (!extensionMethods.Any()) return false;
+
+            return extensionMethods.Any(tm => tm.Any(mc => mc.Name == methodName));
         }
 
         private bool AnalyseExtensionMethodCall(IMethodSymbol method, SemanticModel semanticModel)
@@ -111,7 +123,10 @@ namespace DisposableFixer.Configuration
                 _configuration.TrackingMethods.Where(tm => tm.Key == @namespace).Select(tm => tm.Value).ToArray();
             if (!extensionMethods.Any()) return false;
 
-            return extensionMethods.Any(tm => tm.Any(mc => mc.Name == methodName));
+            return extensionMethods.Any(tm => tm.Any(mc => 
+            mc.Name == methodName
+            && mc.IsStatic
+            ));
         }
 
         private static CtorCall GetCtorConfiguration(IMethodSymbol ctorInUse,

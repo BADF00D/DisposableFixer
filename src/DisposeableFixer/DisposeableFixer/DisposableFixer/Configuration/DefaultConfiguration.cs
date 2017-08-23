@@ -16,7 +16,8 @@ namespace DisposableFixer.Configuration {
 				"System.Resources.ResourceWriter",
                 "Newtonsoft.Json.JsonTextWriter",
                 "Newtonsoft.Json.Bson.BsonWriter",
-                "Newtonsoft.Json.Bson.BsonWriter"
+                "Newtonsoft.Json.Bson.BsonWriter",
+                "System.Reactive.Disposables.CompositeDisposable"
             };
 			IgnoredInterfaces = new HashSet<string> {
 				"System.Collections.Generic.IEnumerator",
@@ -43,7 +44,11 @@ namespace DisposableFixer.Configuration {
             {
                 ["Reactive.Bindings.Extensions.IDisposableExtensions"] = new List<MethodCall>
                 {
-                    new MethodCall("AddTo", new [] {"T", "System.Collections.Generic.ICollection<IDisposable>"}, true)
+                    new MethodCall("AddTo", new [] {"T", "System.Collections.Generic.ICollection<IDisposable>"}, true),
+                },
+                ["System.Reactive.Disposables.CompositeDisposable"] = new List<MethodCall>
+                {
+                    new MethodCall("Add", new [] {"System.IDisposable"}, false)
                 }
             };
             TrackingFactoryMethods = new Dictionary<string, IReadOnlyCollection<MethodCall>>

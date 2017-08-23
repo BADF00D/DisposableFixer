@@ -50,12 +50,33 @@ namespace DisposableFixer.Extensions
                 });
         }
 
+        /// <summary>
+        /// Returns true, it node is Argument within an ObjectCreationExpression.
+        /// <example>new List<IDisposable>(new MemoryStream())</example>
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         public static bool IsArgumentInObjectCreation(this SyntaxNode node)
         {
             return node?.Parent is ArgumentSyntax
                    && node.Parent?.Parent is ArgumentListSyntax
                    && node.Parent.Parent.Parent is ObjectCreationExpressionSyntax;
         }
+
+        /// <summary>
+        /// Returns true, it node part of an array initializer that is within an ObjectCreationExpression.
+        /// <example>new List<IDisposable>(new []{new MemoryStream()})</example>
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        public static bool IsPartIfArrayInitializerThatIsPartOfObjectCreation(this SyntaxNode node) {
+            return node?.Parent is InitializerExpressionSyntax
+                   && (node.Parent?.Parent is ImplicitArrayCreationExpressionSyntax || node.Parent?.Parent is ArrayCreationExpressionSyntax)
+                   && node.Parent?.Parent?.Parent is ArgumentSyntax
+                   && node.Parent?.Parent?.Parent?.Parent is ArgumentListSyntax
+                   && node.Parent?.Parent?.Parent?.Parent?.Parent is ObjectCreationExpressionSyntax;
+        }
+        
 
         public static IEnumerable<T> DescendantNodes<T>(this SyntaxNode node) where T : SyntaxNode
         {
@@ -212,6 +233,14 @@ namespace DisposableFixer.Extensions
         {
             return objectCreation?.Parent is MemberAccessExpressionSyntax
                    && objectCreation?.Parent?.Parent is InvocationExpressionSyntax;
+        }
+        
+
+        internal static bool IsPartOfMethodCall(this SyntaxNode node)
+        {
+            return node?.Parent is ArgumentSyntax
+                   && node?.Parent.Parent is ArgumentListSyntax
+                   && node?.Parent?.Parent?.Parent is InvocationExpressionSyntax;
         }
 
         internal static bool IsMaybePartOfMethodChainUsingTrackingExtensionMethod(
