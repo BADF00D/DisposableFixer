@@ -162,8 +162,26 @@ namespace DisposableFixer.Extensions
             return method.Returns(identifier);
         }
 
+        /// <summary>
+        ///     Checks if node is part of a VariableDeclaratorSyntax that is return later within method body.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        public static bool IsReturnedLaterWithinParenthesizedLambdaExpression(this SyntaxNode node) {
+            var localVariable = node.GetIdentifierIfIsPartOfVariableDeclarator();
+            var func = node.FindParent<ParenthesizedLambdaExpressionSyntax, ClassDeclarationSyntax>();
+            return func != null && func.Returns(localVariable);
+        }
+
         public static bool Returns(this MethodDeclarationSyntax method, string name)
         {
+            if (name == null) return false;
+            return method.DescendantNodes<ReturnStatementSyntax>()
+                .Select(rss => rss.DescendantNodes<IdentifierNameSyntax>())
+                .Any(inss => inss.Any(ins => ins.Identifier.Text == name));
+        }
+
+        public static bool Returns(this ParenthesizedLambdaExpressionSyntax method, string name) {
             if (name == null) return false;
             return method.DescendantNodes<ReturnStatementSyntax>()
                 .Select(rss => rss.DescendantNodes<IdentifierNameSyntax>())

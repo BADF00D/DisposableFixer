@@ -59,6 +59,7 @@ namespace DisposableFixer
             else if (node.IsPartOfReturnStatement()) { }
             else if (node.IsReturnValueInLambdaExpression()) { }
             else if (node.IsReturnedLaterWithinMethod()) { }
+            else if (node.IsReturnedLaterWithinParenthesizedLambdaExpression()) { }
             else if (!IsDisposeableOrImplementsDisposable(type)) { }
             else if (node.IsPartOfMethodCall())
             {
@@ -304,6 +305,7 @@ namespace DisposableFixer
             else if (node.IsPartOfReturnStatement()) { } //return new StreamReader()
             else if (node.IsReturnValueInLambdaExpression()) { } //e.g. ()=> new MemoryStream
             else if (node.IsReturnedLaterWithinMethod()) { }
+            else if (node.IsReturnedLaterWithinParenthesizedLambdaExpression()) { }
             else if (node.IsArgumentInObjectCreation()) AnalyseNodeInArgumentList(context, node, DisposableSource.InvokationExpression);
             else if (node.IsPartIfArrayInitializerThatIsPartOfObjectCreation()) {
                 var objectCreation = node.Parent.Parent.Parent.Parent.Parent as ObjectCreationExpressionSyntax;
