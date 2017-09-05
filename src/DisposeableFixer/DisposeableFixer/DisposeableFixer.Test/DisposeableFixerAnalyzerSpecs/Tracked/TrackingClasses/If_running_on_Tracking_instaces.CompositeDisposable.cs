@@ -12,6 +12,7 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.Tracked.TrackingCla
                 yield return CompositeDisposableCtorThatTakesIEnumerableOfDisposablesFromObjectCreation();
                 yield return CompositeDisposableCtorThatTakesParamsDisposablesFromObjectCreation();
                 yield return CompositeDisposableAddToFromObjectCreation();
+                yield return CompositeDisposableAddToFromObjectCreationWithSplitDeclarationAndAdd();
                 yield return CompositeDisposableCtorThatTakesIEnumerableOfDisposablesFromMethodInvocation();
                 yield return CompositeDisposableCtorThatTakesParamsDisposablesFromMethodInvocation();
                 yield return CompositeDisposableAddToFromMethodInvocation();
@@ -48,6 +49,35 @@ namespace System.Reactive.Disposables
     }
 }")
                 .SetName("CompositeDisposable().AddTo(IDisposable) called with ObjectCreation");
+        }
+
+        private static TestCaseData CompositeDisposableAddToFromObjectCreationWithSplitDeclarationAndAdd() {
+            return new TestCaseData(@"
+using System.IO;
+using System.Reactive.Disposables;
+namespace SomeNamespace
+{
+    public class SomeSpec
+    {
+        public SomeSpec()
+        {
+            var disposables = new CompositeDisposable();
+            var mem = new MemoryStream();
+            disposables.Add(mem);
+        }
+    }
+}
+
+namespace System.Reactive.Disposables
+{
+    public class CompositeDisposable
+    {
+        public void Add(IDisposable item)
+        {
+        }
+    }
+}")
+                .SetName("CompositeDisposable().AddTo(IDisposable) called with local variable");
         }
 
         private static TestCaseData CompositeDisposableCtorThatTakesIEnumerableOfDisposablesFromObjectCreation()
