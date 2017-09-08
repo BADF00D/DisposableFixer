@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DisposableFixer.Configuration;
 using Microsoft.CodeAnalysis;
@@ -345,6 +346,12 @@ namespace DisposableFixer.Extensions
             return method != null;
         }
 
+        public static bool TryFindContainingParenthesizedLambda(this SyntaxNode node, out ParenthesizedLambdaExpressionSyntax method) {
+            method = node.FindParent<ParenthesizedLambdaExpressionSyntax, ClassDeclarationSyntax>();
+
+            return method != null;
+        }
+
         public static bool TryFindContainingCtor(this SyntaxNode node, out ConstructorDeclarationSyntax ctor)
         {
             ctor = node.FindParent<ConstructorDeclarationSyntax, ClassDeclarationSyntax>();
@@ -392,6 +399,7 @@ namespace DisposableFixer.Extensions
 
         public static bool TryFindParentScope(this SyntaxNode node, out SyntaxNode parentScope)
         {
+            //todo refactor this. most of this branches are not in use
             ConstructorDeclarationSyntax ctor;
             if (node.TryFindContainingCtor(out ctor))
             {
@@ -432,6 +440,12 @@ namespace DisposableFixer.Extensions
                     return true;
                 }
                 parentScope = property;
+                return true;
+            }
+            ParenthesizedLambdaExpressionSyntax lambda;
+            if (node.TryFindContainingParenthesizedLambda(out lambda))
+            {
+                parentScope = lambda;
                 return true;
             }
             parentScope = null;

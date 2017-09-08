@@ -132,7 +132,8 @@ namespace DisposableFixer
         private static void AnalyseNodeWithinLocalDeclaration(SyntaxNodeAnalysisContext context,
             SyntaxNode node, string identifier)
         {
-            SyntaxNode parentScope;//lamda or ctor or method 
+            SyntaxNode parentScope;//lamda or ctor or method or property
+            //todo Add detection to find calls to tracking methods. 
             if (!node.TryFindParentScope(out parentScope)) return;
 
             var usings = parentScope.DescendantNodes<UsingStatementSyntax>()
@@ -161,8 +162,22 @@ namespace DisposableFixer
                 context.ReportNotDisposedLocalDeclaration();
                 return;
             }
-            var invokationExpression = parentScope.DescendantNodes<InvocationExpressionSyntax>().ToArray();
-            if (invokationExpression.Any(ies => identifier != null && ies.IsCallToDisposeFor(identifier))) return;
+            var invocationExpression = parentScope.DescendantNodes<InvocationExpressionSyntax>().ToArray();
+            if (invocationExpression.Any(ies => identifier != null && ies.IsCallToDisposeFor(identifier))) return;
+            var symbols = context.SemanticModel.LookupSymbols(node.GetLocation().SourceSpan.Start);
+            if (invocationExpression.Any(ie =>
+            {
+                var mac = ie.Expression as MemberAccessExpressionSyntax;
+                var id = (mac?.Expression as IdentifierNameSyntax)?.Identifier.Text;
+                if (id == null) return false;
+                var symbol = symbols.FirstOrDefault(s => s.Name == id) as ILocalSymbol;
+                if (symbol == null) return false;
+
+                return Detector.IsTrackingMethodCall(ie, context.SemanticModel);
+            }))
+            {
+                return;
+            }
 
             if (parentScope.DescendantNodes<ObjectCreationExpressionSyntax>().Any(oce => {
                 return oce.ArgumentList.Arguments.Any(arg => {
