@@ -26,8 +26,7 @@ namespace DisposableFixer
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
             => ImmutableArray.Create(
                 SyntaxNodeAnalysisContextExtension.AnonymousObjectFromObjectCreationDescriptor,
-                SyntaxNodeAnalysisContextExtension.AnonymousObjectFromMethodInvokationDescriptor,
-                SyntaxNodeAnalysisContextExtension.NotDisposedDescriptor,
+                SyntaxNodeAnalysisContextExtension.AnonymousObjectFromMethodInvocationDescriptor,
                 SyntaxNodeAnalysisContextExtension.NotDisposedLocalVariableDescriptor,
                 
                 SyntaxNodeAnalysisContextExtension.AssignmendFromObjectCreationToFieldNotDisposedDescriptor,

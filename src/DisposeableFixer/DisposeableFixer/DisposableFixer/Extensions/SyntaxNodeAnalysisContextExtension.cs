@@ -6,102 +6,166 @@ namespace DisposableFixer.Extensions
     //todo define correct rules
     public static class SyntaxNodeAnalysisContextExtension
     {
-        public const string IdForAnonymousObjectFromObjectCreation = "IdForAnonymousObjectFromObjectCreation";
-        public const string IdForAnonymousMethodInvocation = "IdForAnonymousMethodInvocation";
-        public const string IdForNotDisposedLocalVariable = "IdForNotDisposedLocalVariable";
-        public const string IdForNotDisposed = "IdForNotDisposed";
-        public const string IdForAssignmendFromObjectCreationToFieldNotDisposed = "IdForAssignmendFromObjectCreationToFieldNotDisposed";
-        public const string IdForAssignmendFromMethodInvocationToFieldNotDisposed = "IdForAssignmendFromMethodInvocationToFieldNotDisposed";
-        public const string IdForAssignmendFromObjectCreationToPropertyNotDisposed = "IdForAssignmendFromObjectCreationToPropertyNotDisposed";
-        public const string IdForAssignmendFromMethodInvocationToPropertyNotDisposed = "IdForAssignmendFromMethodInvocationToPropertyNotDisposed";
-        public const string IdForPropertyNotDisposed = "IdForPropertyNotDisposed";
+        public const string IdForAnonymousObjectFromObjectCreation = "DF0000";
+        public const string IdForAnonymousMethodInvocation = "DF0001";
+        public const string IdForNotDisposedLocalVariable = "DF0010";
+        public const string IdForAssignmendFromObjectCreationToFieldNotDisposed = "DF0020";
+        public const string IdForAssignmendFromMethodInvocationToFieldNotDisposed = "DF0021";
+        public const string IdForAssignmendFromObjectCreationToPropertyNotDisposed = "DF0022";
+        public const string IdForAssignmendFromMethodInvocationToPropertyNotDisposed = "DF0023";
 
-        private static readonly LocalizableString Title = new LocalizableResourceString(
-            nameof(Resources.AnalyzerTitle), Resources.ResourceManager, typeof (Resources));
 
+        #region AnonymousObjectFromMethod
+        private static readonly LocalizableString AnonymousObjectFromMethodInvocationTitle = new LocalizableResourceString(
+            nameof(Resources.AnonymousObjectFromMethodInvocationTitle), Resources.ResourceManager, typeof (Resources));
+
+        private static readonly LocalizableString AnonymousObjectFromMethodInvocationMessageFormat =
+            new LocalizableResourceString(nameof(Resources.AnonymousObjectFromMethodInvocationMessageFormat), Resources.ResourceManager,
+                typeof(Resources));
+
+        private static readonly LocalizableString AnonymousObjectFromMethodInvocationDescription =
+            new LocalizableResourceString(nameof(Resources.AnonymousObjectFromMethodInvocationDescription), Resources.ResourceManager,
+                typeof(Resources));
+
+        public static readonly DiagnosticDescriptor AnonymousObjectFromMethodInvocationDescriptor = new DiagnosticDescriptor(
+            IdForAnonymousMethodInvocation,
+            AnonymousObjectFromMethodInvocationTitle,
+            AnonymousObjectFromMethodInvocationMessageFormat,
+            DisposableFixerAnalyzer.Category,
+            DiagnosticSeverity.Warning, true, AnonymousObjectFromMethodInvocationDescription);
+        #endregion
+        
+        #region AnonymousObjectFromObjectCreation
         private static readonly LocalizableString AnonymousObjectFromObjectCreationMessageFormat =
             new LocalizableResourceString(nameof(Resources.AnonymousObjectFromObjectCreationMessageFormat), Resources.ResourceManager,
-                typeof (Resources));
-
-        private static readonly LocalizableString AnonymousObjectFromMethodInvokationMessageFormat =
-            new LocalizableResourceString(nameof(Resources.AnonymousObjectFromMethodInvokationMessageFormat), Resources.ResourceManager,
                 typeof(Resources));
+
+        private static readonly LocalizableString AnonymousObjectFromObjectCreationTitle =
+            new LocalizableResourceString(nameof(Resources.AnonymousObjectFromObjectCreationTitle), Resources.ResourceManager,
+                typeof(Resources));
+
+        private static readonly LocalizableString AnonymousObjectFromObjectCreationDescription =
+            new LocalizableResourceString(nameof(Resources.AnonymousObjectFromObjectCreationDescription), Resources.ResourceManager,
+                typeof(Resources));
+
+        public static readonly DiagnosticDescriptor AnonymousObjectFromObjectCreationDescriptor = new DiagnosticDescriptor(
+            IdForAnonymousObjectFromObjectCreation,
+            AnonymousObjectFromObjectCreationTitle,
+            AnonymousObjectFromObjectCreationMessageFormat,
+            DisposableFixerAnalyzer.Category,
+            DiagnosticSeverity.Warning, true, AnonymousObjectFromObjectCreationDescription);
+        #endregion
+
+        #region NotDisposedLocalVariable
         private static readonly LocalizableString NotDisposedLocalVariableMessageFormat =
             new LocalizableResourceString(nameof(Resources.NotDisposedLocalVariableMessageFormat), Resources.ResourceManager,
                 typeof(Resources));
 
-        private static readonly LocalizableString FieldMessageFormat =
-            new LocalizableResourceString(nameof(Resources.NotDisposedFieldMessageFormat), Resources.ResourceManager,
+        private static readonly LocalizableString NotDisposedLocalVariableTitle =
+            new LocalizableResourceString(nameof(Resources.NotDisposedLocalVariableTitle), Resources.ResourceManager,
                 typeof(Resources));
 
-        private static readonly LocalizableString PropertyMessageFormat =
-            new LocalizableResourceString(nameof(Resources.NotDisposedPropertyMessageFormat), Resources.ResourceManager,
+        private static readonly LocalizableString NotDisposedLocalVariableDescription =
+            new LocalizableResourceString(nameof(Resources.NotDisposedLocalVariableDescription), Resources.ResourceManager,
                 typeof(Resources));
-
-        private static readonly LocalizableString NotDisposedMessageFormat =
-            new LocalizableResourceString(nameof(Resources.NotDisposedMessageFormat), Resources.ResourceManager,
-                typeof(Resources));
-
-        private static readonly LocalizableString Description =
-            new LocalizableResourceString(nameof(Resources.AnalyzerDescription), Resources.ResourceManager,
-                typeof (Resources));
-
-        public static readonly DiagnosticDescriptor AnonymousObjectFromObjectCreationDescriptor = new DiagnosticDescriptor(
-            IdForAnonymousObjectFromObjectCreation,
-            Title,
-            AnonymousObjectFromObjectCreationMessageFormat,
-            DisposableFixerAnalyzer.Category,
-            DiagnosticSeverity.Warning, true, Description);
-
-        public static readonly DiagnosticDescriptor AnonymousObjectFromMethodInvokationDescriptor = new DiagnosticDescriptor(
-            IdForAnonymousMethodInvocation,
-            Title,
-            AnonymousObjectFromMethodInvokationMessageFormat,
-            DisposableFixerAnalyzer.Category,
-            DiagnosticSeverity.Warning, true, Description);
 
         public static readonly DiagnosticDescriptor NotDisposedLocalVariableDescriptor = new DiagnosticDescriptor(
             IdForNotDisposedLocalVariable,
-            Title,
+            NotDisposedLocalVariableTitle,
             NotDisposedLocalVariableMessageFormat,
             DisposableFixerAnalyzer.Category,
-            DiagnosticSeverity.Warning, true, Description);
+            DiagnosticSeverity.Warning, true, NotDisposedLocalVariableDescription);
 
-        public static readonly DiagnosticDescriptor NotDisposedDescriptor = new DiagnosticDescriptor(
-            IdForNotDisposed,
-            Title,
-            NotDisposedMessageFormat,
-            DisposableFixerAnalyzer.Category,
-            DiagnosticSeverity.Warning, true, Description);
+        #endregion NotDisposedLocalVariable
 
-        public static readonly DiagnosticDescriptor AssignmendFromObjectCreationToFieldNotDisposedDescriptor = new DiagnosticDescriptor(
-           IdForAssignmendFromObjectCreationToFieldNotDisposed,
-           Title,
-           FieldMessageFormat,
-           DisposableFixerAnalyzer.Category,
-           DiagnosticSeverity.Warning, true, Description);
+        #region AssignmendFromObjectCreationToPropertyNotDisposedDescriptor
+        private static readonly LocalizableString AssignmendFromObjectCreationToPropertyNotDisposedTitle =
+            new LocalizableResourceString(nameof(Resources.AssignmendFromObjectCreationToPropertyNotDisposedTitle), Resources.ResourceManager,
+                typeof(Resources));
 
-        public static readonly DiagnosticDescriptor AssignmendFromMethodInvocationToFieldNotDisposedDescriptor = new DiagnosticDescriptor(
-           IdForAssignmendFromMethodInvocationToFieldNotDisposed,
-           Title,
-           FieldMessageFormat,
-           DisposableFixerAnalyzer.Category,
-           DiagnosticSeverity.Warning, true, Description);
+        private static readonly LocalizableString AssignmendFromObjectCreationToPropertyNotDisposedMessageFormat =
+            new LocalizableResourceString(nameof(Resources.AssignmendFromObjectCreationToPropertyNotDisposedMessageFormat), Resources.ResourceManager,
+                typeof(Resources));
+
+        private static readonly LocalizableString AssignmendFromObjectCreationToPropertyNotDisposedDescription =
+            new LocalizableResourceString(nameof(Resources.AssignmendFromObjectCreationToPropertyNotDisposedDescription), Resources.ResourceManager,
+                typeof(Resources));
 
         public static readonly DiagnosticDescriptor AssignmendFromObjectCreationToPropertyNotDisposedDescriptor = new DiagnosticDescriptor(
           IdForAssignmendFromObjectCreationToPropertyNotDisposed,
-          Title,
-          PropertyMessageFormat,
-          DisposableFixerAnalyzer.Category,
-          DiagnosticSeverity.Warning, true, Description);
+           AssignmendFromObjectCreationToPropertyNotDisposedTitle,
+           AssignmendFromObjectCreationToPropertyNotDisposedMessageFormat,
+           DisposableFixerAnalyzer.Category,
+           DiagnosticSeverity.Warning, true, AssignmendFromObjectCreationToPropertyNotDisposedDescription);
+
+        #endregion
+
+        #region AssignmendFromObjectCreationToFieldNotDisposedDescriptor
+        private static readonly LocalizableString AssignmendFromObjectCreationToFieldNotDisposedTitle =
+            new LocalizableResourceString(nameof(Resources.AssignmendFromObjectCreationToFieldNotDisposedTitle), Resources.ResourceManager,
+                typeof(Resources));
+
+        private static readonly LocalizableString AssignmendFromObjectCreationToFieldNotDisposedMessageFormat =
+            new LocalizableResourceString(nameof(Resources.AssignmendFromObjectCreationToFieldNotDisposedMessageFormat), Resources.ResourceManager,
+                typeof(Resources));
+
+        private static readonly LocalizableString AssignmendFromObjectCreationToFieldNotDisposedDescription =
+            new LocalizableResourceString(nameof(Resources.AssignmendFromObjectCreationToFieldNotDisposedDescription), Resources.ResourceManager,
+                typeof(Resources));
+
+        public static readonly DiagnosticDescriptor AssignmendFromObjectCreationToFieldNotDisposedDescriptor = new DiagnosticDescriptor(
+          IdForAssignmendFromObjectCreationToFieldNotDisposed,
+           AssignmendFromObjectCreationToFieldNotDisposedTitle,
+           AssignmendFromObjectCreationToFieldNotDisposedMessageFormat,
+           DisposableFixerAnalyzer.Category,
+           DiagnosticSeverity.Warning, true, AssignmendFromObjectCreationToFieldNotDisposedDescription);
+
+        #endregion
+
+        #region AssignmendFromMethodInvocationToFieldNotDisposedDescriptor
+        private static readonly LocalizableString AssignmendFromMethodInvocationToFieldNotDisposedTitle =
+            new LocalizableResourceString(nameof(Resources.AssignmendFromMethodInvocationToFieldNotDisposedTitle), Resources.ResourceManager,
+                typeof(Resources));
+
+        private static readonly LocalizableString AssignmendFromMethodInvocationToFieldNotDisposedMessageFormat =
+            new LocalizableResourceString(nameof(Resources.AssignmendFromMethodInvocationToFieldNotDisposedMessageFormat), Resources.ResourceManager,
+                typeof(Resources));
+
+        private static readonly LocalizableString AssignmendFromMethodInvocationToFieldNotDisposedDescription =
+            new LocalizableResourceString(nameof(Resources.AssignmendFromMethodInvocationToFieldNotDisposedDescription), Resources.ResourceManager,
+                typeof(Resources));
+
+        public static readonly DiagnosticDescriptor AssignmendFromMethodInvocationToFieldNotDisposedDescriptor = new DiagnosticDescriptor(
+          IdForAssignmendFromMethodInvocationToFieldNotDisposed,
+           AssignmendFromMethodInvocationToFieldNotDisposedTitle,
+           AssignmendFromMethodInvocationToFieldNotDisposedMessageFormat,
+           DisposableFixerAnalyzer.Category,
+           DiagnosticSeverity.Warning, true, AssignmendFromMethodInvocationToFieldNotDisposedDescription);
+
+        #endregion
+
+
+        #region AssignmendFromMethodInvocationToPropertyNotDisposedDescriptor
+        private static readonly LocalizableString AssignmendFromMethodInvocationToPropertyNotDisposedTitle =
+            new LocalizableResourceString(nameof(Resources.AssignmendFromMethodInvocationToPropertyNotDisposedTitle), Resources.ResourceManager,
+                typeof(Resources));
+
+        private static readonly LocalizableString AssignmendFromMethodInvocationToPropertyNotDisposedMessageFormat =
+            new LocalizableResourceString(nameof(Resources.AssignmendFromMethodInvocationToPropertyNotDisposedMessageFormat), Resources.ResourceManager,
+                typeof(Resources));
+
+        private static readonly LocalizableString AssignmendFromMethodInvocationToPropertyNotDisposedDescription =
+            new LocalizableResourceString(nameof(Resources.AssignmendFromMethodInvocationToPropertyNotDisposedDescription), Resources.ResourceManager,
+                typeof(Resources));
 
         public static readonly DiagnosticDescriptor AssignmendFromMethodInvocationToPropertyNotDisposedDescriptor = new DiagnosticDescriptor(
-           IdForAssignmendFromMethodInvocationToPropertyNotDisposed,
-           Title,
-           PropertyMessageFormat,
+          IdForAssignmendFromMethodInvocationToPropertyNotDisposed,
+           AssignmendFromMethodInvocationToPropertyNotDisposedTitle,
+           AssignmendFromMethodInvocationToPropertyNotDisposedMessageFormat,
            DisposableFixerAnalyzer.Category,
-           DiagnosticSeverity.Warning, true, Description);
+           DiagnosticSeverity.Warning, true, AssignmendFromMethodInvocationToPropertyNotDisposedDescription);
 
+        #endregion
 
         public static void ReportNotDisposedField(this SyntaxNodeAnalysisContext context, DisposableSource source)
         {
@@ -120,12 +184,6 @@ namespace DisposableFixer.Extensions
                 : Diagnostic.Create(AssignmendFromObjectCreationToPropertyNotDisposedDescriptor, location));
         }
 
-        public static void ReportNotDisposedAssignmentToFieldOrProperty(this SyntaxNodeAnalysisContext context, DisposableSource source) {
-            var location = context.Node.GetLocation();
-
-            context.ReportDiagnostic(Diagnostic.Create(NotDisposedDescriptor, location));
-        }
-
         public static void ReportNotDisposedLocalDeclaration(this SyntaxNodeAnalysisContext context)
         {
             var location = context.Node.GetLocation();
@@ -138,7 +196,7 @@ namespace DisposableFixer.Extensions
             var location = context.Node.GetLocation();
 
             context.ReportDiagnostic(source == DisposableSource.InvokationExpression
-                ? Diagnostic.Create(AnonymousObjectFromMethodInvokationDescriptor, location)
+                ? Diagnostic.Create(AnonymousObjectFromMethodInvocationDescriptor, location)
                 : Diagnostic.Create(AnonymousObjectFromObjectCreationDescriptor, location));
         }
     }

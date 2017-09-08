@@ -62,29 +62,28 @@ namespace DisposableFixer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This disposable is not disposed..
-        /// </summary>
-        internal static string AnalyzerDescription {
-            get {
-                return ResourceManager.GetString("AnalyzerDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Undisposed ressource..
         /// </summary>
-        internal static string AnalyzerTitle {
+        internal static string AnonymousObjectFromMethodInvocationTitle {
             get {
-                return ResourceManager.GetString("AnalyzerTitle", resourceCulture);
+                return ResourceManager.GetString("AnonymousObjectFromMethodInvocationTitle", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Method returns an anonymous object that is not disposed..
         /// </summary>
-        internal static string AnonymousObjectFromMethodInvokationMessageFormat {
+        internal static string AnonymousObjectFromMethodInvocationMessageFormat {
             get {
-                return ResourceManager.GetString("AnonymousObjectFromMethodInvokationMessageFormat", resourceCulture);
+                return ResourceManager.GetString("AnonymousObjectFromMethodInvocationMessageFormat", resourceCulture);
+            }
+        }
+        /// <summary>
+        ///   Looks up a localized string similar to Method returns an anonymous object that is not disposed..
+        /// </summary>
+        internal static string AnonymousObjectFromMethodInvocationDescription {
+            get {
+                return ResourceManager.GetString("AnonymousObjectFromMethodInvocationDescription", resourceCulture);
             }
         }
         
@@ -96,22 +95,129 @@ namespace DisposableFixer {
                 return ResourceManager.GetString("AnonymousObjectFromObjectCreationMessageFormat", resourceCulture);
             }
         }
+        /// <summary>
+        ///   Looks up a localized string similar to This ObjectCreation returns an object that is not disposed..
+        /// </summary>
+        internal static string AnonymousObjectFromObjectCreationDescription {
+            get {
+                return ResourceManager.GetString("AnonymousObjectFromObjectCreationDescription", resourceCulture);
+            }
+        }
+         /// <summary>
+        ///   Looks up a localized string similar to This ObjectCreation returns an object that is not disposed..
+        /// </summary>
+        internal static string AnonymousObjectFromObjectCreationTitle {
+            get {
+                return ResourceManager.GetString("AnonymousObjectFromObjectCreationTitle", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Field is not disposed..
         /// </summary>
-        internal static string NotDisposedFieldMessageFormat {
+        internal static string AssignmendFromObjectCreationToFieldNotDisposedDescription {
             get {
-                return ResourceManager.GetString("NotDisposedFieldMessageFormat", resourceCulture);
+                return ResourceManager.GetString("AssignmendFromObjectCreationToFieldNotDisposedDescription", resourceCulture);
             }
         }
 
         /// <summary>
         ///   Looks up a localized string similar to Field is not disposed..
         /// </summary>
-        internal static string NotDisposedPropertyMessageFormat {
+        internal static string AssignmendFromObjectCreationToFieldNotDisposedTitle {
             get {
-                return ResourceManager.GetString("NotDisposedPropertyMessageFormat", resourceCulture);
+                return ResourceManager.GetString("AssignmendFromObjectCreationToFieldNotDisposedTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Field is not disposed..
+        /// </summary>
+        internal static string AssignmendFromObjectCreationToFieldNotDisposedMessageFormat {
+            get {
+                return ResourceManager.GetString("AssignmendFromObjectCreationToFieldNotDisposedMessageFormat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Field is not disposed..
+        /// </summary>
+        internal static string AssignmendFromMethodInvocationToFieldNotDisposedDescription {
+            get {
+                return ResourceManager.GetString("AssignmendFromMethodInvocationToFieldNotDisposedDescription", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Field is not disposed..
+        /// </summary>
+        internal static string AssignmendFromMethodInvocationToFieldNotDisposedTitle {
+            get {
+                return ResourceManager.GetString("AssignmendFromMethodInvocationToFieldNotDisposedTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Field is not disposed..
+        /// </summary>
+        internal static string AssignmendFromMethodInvocationToFieldNotDisposedMessageFormat {
+            get {
+                return ResourceManager.GetString("AssignmendFromMethodInvocationToFieldNotDisposedMessageFormat", resourceCulture);
+            }
+        }
+
+        // <summary>
+        ///   Looks up a localized string similar to Property is not disposed..
+        /// </summary>
+        internal static string AssignmendFromMethodInvocationToPropertyNotDisposedDescription {
+            get {
+                return ResourceManager.GetString("AssignmendFromMethodInvocationToPropertyNotDisposedDescription", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Property is not disposed..
+        /// </summary>
+        internal static string AssignmendFromMethodInvocationToPropertyNotDisposedTitle {
+            get {
+                return ResourceManager.GetString("AssignmendFromMethodInvocationToPropertyNotDisposedTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Property is not disposed..
+        /// </summary>
+        internal static string AssignmendFromMethodInvocationToPropertyNotDisposedMessageFormat {
+            get {
+                return ResourceManager.GetString("AssignmendFromMethodInvocationToPropertyNotDisposedMessageFormat", resourceCulture);
+            }
+        }
+
+
+        /// <summary>
+        ///   Looks up a localized string similar to Field is not disposed..
+        /// </summary>
+        internal static string AssignmendFromObjectCreationToPropertyNotDisposedDescription {
+            get {
+                return ResourceManager.GetString("AssignmendFromObjectCreationToPropertyNotDisposedDescription", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Field is not disposed..
+        /// </summary>
+        internal static string AssignmendFromObjectCreationToPropertyNotDisposedTitle {
+            get {
+                return ResourceManager.GetString("AssignmendFromObjectCreationToPropertyNotDisposedTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Field is not disposed..
+        /// </summary>
+        internal static string AssignmendFromObjectCreationToPropertyNotDisposedMessageFormat {
+            get {
+                return ResourceManager.GetString("AssignmendFromObjectCreationToPropertyNotDisposedMessageFormat", resourceCulture);
             }
         }
 
@@ -123,13 +229,22 @@ namespace DisposableFixer {
                 return ResourceManager.GetString("NotDisposedLocalVariableMessageFormat", resourceCulture);
             }
         }
-        
+
         /// <summary>
-        ///   Looks up a localized string similar to This disposable is not disposed..
+        ///   Looks up a localized string similar to Local variable is not disposed.
         /// </summary>
-        internal static string NotDisposedMessageFormat {
+        internal static string NotDisposedLocalVariableTitle {
             get {
-                return ResourceManager.GetString("NotDisposedMessageFormat", resourceCulture);
+                return ResourceManager.GetString("NotDisposedLocalVariableTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Local variable is not disposed.
+        /// </summary>
+        internal static string NotDisposedLocalVariableDescription {
+            get {
+                return ResourceManager.GetString("NotDisposedLocalVariableDescription", resourceCulture);
             }
         }
     }
