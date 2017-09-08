@@ -130,15 +130,14 @@ namespace DisposableFixer
         }
 
         private static void AnalyseNodeWithinLocalDeclaration(SyntaxNodeAnalysisContext context,
-            SyntaxNode node, string identifier)
+            SyntaxNode node, string localVariableName)
         {
             SyntaxNode parentScope;//lamda or ctor or method or property
-            //todo Add detection to find calls to tracking methods. 
             if (!node.TryFindParentScope(out parentScope)) return;
 
             var usings = parentScope.DescendantNodes<UsingStatementSyntax>()
                 .SelectMany(@using => @using.DescendantNodes<IdentifierNameSyntax>())
-                .Where(id => identifier != null && (string) id.Identifier.Value == identifier)
+                .Where(id => localVariableName != null && (string) id.Identifier.Value == localVariableName)
                 .ToArray();
 
             if (usings.Any())
@@ -162,19 +161,10 @@ namespace DisposableFixer
                 context.ReportNotDisposedLocalDeclaration();
                 return;
             }
-            var invocationExpression = parentScope.DescendantNodes<InvocationExpressionSyntax>().ToArray();
-            if (invocationExpression.Any(ies => identifier != null && ies.IsCallToDisposeFor(identifier))) return;
-            var symbols = context.SemanticModel.LookupSymbols(node.GetLocation().SourceSpan.Start);
-            if (invocationExpression.Any(ie =>
-            {
-                var mac = ie.Expression as MemberAccessExpressionSyntax;
-                var id = (mac?.Expression as IdentifierNameSyntax)?.Identifier.Text;
-                if (id == null) return false;
-                var symbol = symbols.FirstOrDefault(s => s.Name == id) as ILocalSymbol;
-                if (symbol == null) return false;
+            var invocationExpressions = parentScope.DescendantNodes<InvocationExpressionSyntax>().ToArray();
+            if (invocationExpressions.Any(ies => localVariableName != null && ies.IsCallToDisposeFor(localVariableName))) return;
 
-                return Detector.IsTrackingMethodCall(ie, context.SemanticModel);
-            }))
+            if (invocationExpressions.Any(ie => ie.UsesVariableInArguments(localVariableName) && Detector.IsTrackingMethodCall(ie, context.SemanticModel)))
             {
                 return;
             }
@@ -182,7 +172,7 @@ namespace DisposableFixer
             if (parentScope.DescendantNodes<ObjectCreationExpressionSyntax>().Any(oce => {
                 return oce.ArgumentList.Arguments.Any(arg => {
                     var expression = arg.Expression as IdentifierNameSyntax;
-                    var isPartOfObjectcreation = expression?.Identifier.Text == identifier;
+                    var isPartOfObjectcreation = expression?.Identifier.Text == localVariableName;
                     if (!isPartOfObjectcreation) return false;
 
                     //check if is tracking instance

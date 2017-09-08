@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using System.Linq;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DisposableFixer.Extensions
 {
@@ -46,6 +47,13 @@ namespace DisposableFixer.Extensions
 
                 return expression.Name.Identifier.Text == "Dispose";
             }
+        }
+
+        public static bool UsesVariableInArguments(this InvocationExpressionSyntax invocationExpression, string variable)
+        {
+            return invocationExpression.ArgumentList.Arguments
+                .Select(arg => arg.Expression as IdentifierNameSyntax)
+                .Any(identifier => identifier?.Identifier.Text == variable);
         }
     }
 }
