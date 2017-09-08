@@ -49,6 +49,10 @@ namespace DisposableFixer.Configuration {
                 ["System.Reactive.Disposables.CompositeDisposable"] = new List<MethodCall>
                 {
                     new MethodCall("Add", new [] {"System.IDisposable"}, false)
+                },
+                ["System.Diagnostics.Process"] = new List<MethodCall>
+                {
+                    new MethodCall("GetCurrentProcess", new string[0] , true)
                 }
             };
             TrackingFactoryMethods = new Dictionary<string, IReadOnlyCollection<MethodCall>>

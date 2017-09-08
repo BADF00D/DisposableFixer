@@ -24,6 +24,8 @@ namespace DisposableFixer.Test
 
         private static readonly MetadataReference CodeAnalysisReference =
             MetadataReference.CreateFromFile(typeof (Compilation).Assembly.Location);
+        private static readonly MetadataReference SystemReference =
+            MetadataReference.CreateFromFile(typeof(System.Diagnostics.Process).Assembly.Location);
 
 
         public static SyntaxNode CompileAndRetrieveRootNode(string source)
@@ -277,6 +279,7 @@ namespace DisposableFixer.Test
                 .CurrentSolution
                 .AddProject(projectId, "TestProject", "TestProject", LanguageNames.CSharp)
                 .AddMetadataReference(projectId, CorlibReference)
+                .AddMetadataReference(projectId, SystemReference)
                 .AddMetadataReference(projectId, SystemCoreReference)
                 .AddMetadataReference(projectId, CSharpSymbolsReference)
                 .AddMetadataReference(projectId, CodeAnalysisReference);
