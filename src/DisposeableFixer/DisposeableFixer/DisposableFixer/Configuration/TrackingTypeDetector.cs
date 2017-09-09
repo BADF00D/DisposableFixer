@@ -74,8 +74,8 @@ namespace DisposableFixer.Configuration
             var method = symbolInfo.Symbol as IMethodSymbol;
 
             return method.IsExtensionMethod
-                ? AnalyseExtensionMethodCall(method, semanticModel)
-                : AnalyseNonExtensionMethodCall(method, semanticModel);
+                ? AnalyseExtensionMethodCall(method)
+                : AnalyseNonExtensionMethodCall(method);
         }
 
         public bool IsIgnoredFactoryMethod(InvocationExpressionSyntax methodInvocation, SemanticModel semanticModel)
@@ -97,7 +97,7 @@ namespace DisposableFixer.Configuration
                 .Any(mc => mc.Name == method.Name && mc.Parameter.Length == method.Parameters.Length);
         }
 
-        private bool AnalyseNonExtensionMethodCall(IMethodSymbol method, SemanticModel semanticModel)
+        private bool AnalyseNonExtensionMethodCall(IMethodSymbol method)
         {
             //todo merge with AnalyseExtensionMethodCall
             var originalDefinition = method.OriginalDefinition;
@@ -113,19 +113,21 @@ namespace DisposableFixer.Configuration
             return extensionMethods.Any(tm => tm.Any(mc => mc.Name == methodName));
         }
 
-        private bool AnalyseExtensionMethodCall(IMethodSymbol method, SemanticModel semanticModel)
+        private bool AnalyseExtensionMethodCall(IMethodSymbol method)
         {
             var originalDefinition = method.OriginalDefinition;
             var methodName = method.Name;
             var @namespace = originalDefinition.ContainingType.GetFullNamespace(); //does not work classname missing
-
+            
             var extensionMethods =
                 _configuration.TrackingMethods.Where(tm => tm.Key == @namespace).Select(tm => tm.Value).ToArray();
             if (!extensionMethods.Any()) return false;
 
+            var numberOfParameter = originalDefinition.Parameters.Count();
             return extensionMethods.Any(tm => tm.Any(mc => 
-            mc.Name == methodName
-            && mc.IsStatic
+                mc.Name == methodName
+                && mc.IsStatic
+                && mc.Parameter.Length -1 == numberOfParameter
             ));
         }
 

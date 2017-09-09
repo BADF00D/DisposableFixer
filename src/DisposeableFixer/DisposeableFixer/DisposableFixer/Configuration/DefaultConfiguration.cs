@@ -53,14 +53,27 @@ namespace DisposableFixer.Configuration {
                 ["System.Diagnostics.Process"] = new List<MethodCall>
                 {
                     new MethodCall("GetCurrentProcess", new string[0] , true)
+                },
+                ["FakeItEasy.ArgumentConstraintManagerExtensions"] = new List<MethodCall>()
+                {
+                    new MethodCall("Matches", new [] {"FakeItEasy.IArgumentConstraintManager<T>", "System.Linq.Expressions.Expression<System.Func<T, bool>>"}, true),
+                },
+                ["FakeItEasy.IArgumentConstraintManager"] = new List<MethodCall>()
+                {
+                    new MethodCall("Matches", new [] {"FakeItEasy.IArgumentConstraintManager<T>", "System.Linq.Expressions.Expression<System.Func<T, bool>>", "System.Action<FakeItEasy.IOutputWriter>"}, true)
                 }
             };
             TrackingFactoryMethods = new Dictionary<string, IReadOnlyCollection<MethodCall>>
             {
                 ["FakeItEasy.A"] = new List<MethodCall>
                 {
-                    new MethodCall("Fake", Empty.Array<string>(), true)
-                }
+                    new MethodCall("Fake", Empty.Array<string>(), true),
+                    new MethodCall("Fake", new [] {"System.Action<FakeItEasy.Creation.IFakeOptions<T>>"}, true),
+                    new MethodCall("Dummy", Empty.Array<string>(), true),
+                    new MethodCall("CollectionOfFake", new [] {"Int32"}, true),
+                    new MethodCall("CollectionOfFake", new [] {"Int32", "System.Action<FakeItEasy.Creation.IFakeOptions<T>>"}, true),
+                    new MethodCall("CollectionOfDummy", new [] {"Int32"}, true),
+                },
             };
 
 		    DisposingMethods = new HashSet<string>
