@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeFixer\UndisposedPropertyCodeFixer.cs" />
     <Compile Include="CodeFixProvider.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Configuration\CtorCall.cs" />
@@ -48,6 +49,7 @@
     <Compile Include="Configuration\IDetector.cs" />
     <Compile Include="Configuration\MethodCall.cs" />
     <Compile Include="Configuration\TrackingTypeDetector.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="DiagnosticAnalyzer.cs" />
     <Compile Include="DisposableSource.cs" />
     <Compile Include="Extensions\ClassDeclarationSyntaxExtensions.cs" />

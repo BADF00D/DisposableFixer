@@ -98,7 +98,7 @@ namespace DisposableFixer
             if (propertyDeclaration == null) return; // should not happen => we cke this before
             
             if (node.IsDisposedInDisposingMethod(propertyDeclaration.Identifier.Text, Configuration, context.SemanticModel)) return;
-            context.ReportNotDisposedProperty(source);
+            context.ReportNotDisposedProperty(propertyDeclaration.Identifier.Text ,source);
         }
 
         private static void AnalyseNodeInAutoPropertyOrPropertyExpressionBody(SyntaxNodeAnalysisContext context, SyntaxNode node, DisposableSource source) 
@@ -107,7 +107,7 @@ namespace DisposableFixer
             if (propertyDeclaration == null) return; // should not happen => we cke this before
 
             if (node.IsDisposedInDisposingMethod(propertyDeclaration.Identifier.Text, Configuration, context.SemanticModel)) return;
-            context.ReportNotDisposedProperty(source);
+            context.ReportNotDisposedProperty(propertyDeclaration.Identifier.Text, source);
         }
 
         private static void AnalyseNodeWithinVariableDeclarator(SyntaxNodeAnalysisContext context,
@@ -236,11 +236,11 @@ namespace DisposableFixer
         }
 
         private static void AnalyseNodeInFieldDeclaration(SyntaxNodeAnalysisContext context,
-            SyntaxNode node, string nameOfVariable, DisposableSource source)
+            SyntaxNode node, string variableName, DisposableSource source)
         {
-            if (node.IsDisposedInDisposingMethod(nameOfVariable, Configuration, context.SemanticModel)) return;
+            if (node.IsDisposedInDisposingMethod(variableName, Configuration, context.SemanticModel)) return;
             
-            context.ReportNotDisposedField(source);
+            context.ReportNotDisposedField(variableName, source);
         }
 
         private static void AnalyseNodeInAssignmentExpression(SyntaxNodeAnalysisContext context,
@@ -276,7 +276,7 @@ namespace DisposableFixer
                     AnalyseNodeInArgumentList(context, node, source);
                     return;
                 }
-                context.ReportNotDisposedField(source);
+                context.ReportNotDisposedField(variableName, source);
                 return;
             }
             ConstructorDeclarationSyntax ctor;
@@ -300,11 +300,11 @@ namespace DisposableFixer
 
                     if (node.IsAssignmentToProperty(variableName))
                     {
-                        context.ReportNotDisposedProperty(source);
+                        context.ReportNotDisposedProperty(variableName ,source);
                     }
                     else
                     {
-                        context.ReportNotDisposedField(source);
+                        context.ReportNotDisposedField(variableName, source);
                     }
                     
                 }

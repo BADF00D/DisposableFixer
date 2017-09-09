@@ -1,5 +1,8 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.SqlServer.Server;
 
 namespace DisposableFixer.Extensions
 {
@@ -167,21 +170,28 @@ namespace DisposableFixer.Extensions
 
         #endregion
 
-        public static void ReportNotDisposedField(this SyntaxNodeAnalysisContext context, DisposableSource source)
+        public static void ReportNotDisposedField(this SyntaxNodeAnalysisContext context, string variableName, DisposableSource source)
         {
             var location = context.Node.GetLocation();
 
+            var properties = ImmutableDictionary.CreateBuilder<string, string>();
+            properties.Add(Constants.Variablename, variableName);
+
             context.ReportDiagnostic(source == DisposableSource.InvokationExpression
-                ? Diagnostic.Create(AssignmendFromMethodInvocationToFieldNotDisposedDescriptor, location)
-                : Diagnostic.Create(AssignmendFromObjectCreationToFieldNotDisposedDescriptor, location));
+                ? Diagnostic.Create(AssignmendFromMethodInvocationToFieldNotDisposedDescriptor, location, properties)
+                : Diagnostic.Create(AssignmendFromObjectCreationToFieldNotDisposedDescriptor, location, properties));
         }
 
-        public static void ReportNotDisposedProperty(this SyntaxNodeAnalysisContext context, DisposableSource source) {
+        public static void ReportNotDisposedProperty(this SyntaxNodeAnalysisContext context, string variableName,  DisposableSource source) {
             var location = context.Node.GetLocation();
 
+            var properties = ImmutableDictionary.CreateBuilder<string,string>();
+            properties.Add(Constants.Variablename, variableName);
+                
             context.ReportDiagnostic(source == DisposableSource.InvokationExpression
-                ? Diagnostic.Create(AssignmendFromMethodInvocationToPropertyNotDisposedDescriptor, location)
-                : Diagnostic.Create(AssignmendFromObjectCreationToPropertyNotDisposedDescriptor, location));
+                ? Diagnostic.Create(AssignmendFromMethodInvocationToPropertyNotDisposedDescriptor, location, properties.ToImmutable())
+                : Diagnostic.Create(AssignmendFromObjectCreationToPropertyNotDisposedDescriptor, location, properties.ToImmutable())
+                );
         }
 
         public static void ReportNotDisposedLocalDeclaration(this SyntaxNodeAnalysisContext context)

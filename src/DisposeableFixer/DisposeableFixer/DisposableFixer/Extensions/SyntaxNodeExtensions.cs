@@ -354,6 +354,18 @@ namespace DisposableFixer.Extensions
             return ctor != null;
         }
 
+        public static bool TryFindParentClass(this SyntaxNode node, out ClassDeclarationSyntax @class)
+        {
+            SyntaxNode result;
+            if (node.TryFindParentOfType<ClassDeclarationSyntax>(default(SyntaxNode), out result))
+            {
+                @class = result as ClassDeclarationSyntax;
+                return true;
+            }
+            @class = default(ClassDeclarationSyntax);
+            return false;
+        }
+
         public static bool TryFindParentOfType<T>(this SyntaxNode start, SyntaxNode @break, out SyntaxNode scope)
             where T : SyntaxNode
         {
