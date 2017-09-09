@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/8mk3us0d5stlkq47?svg=true)](https://ci.appveyor.com/project/badf00d/disposablefixer)
+
 # DisposableFixer
 This is a small Visual Studio Extension that should identify and fix problems as memleaks while using IDispoables.
 
