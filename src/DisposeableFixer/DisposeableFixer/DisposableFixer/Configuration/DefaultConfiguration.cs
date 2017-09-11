@@ -17,7 +17,8 @@ namespace DisposableFixer.Configuration {
                 "Newtonsoft.Json.JsonTextWriter",
                 "Newtonsoft.Json.Bson.BsonWriter",
                 "Newtonsoft.Json.Bson.BsonWriter",
-                "System.Reactive.Disposables.CompositeDisposable"
+                "System.Reactive.Disposables.CompositeDisposable",
+                "LumenWorks.Framework.IO.Csv.CsvReader"
             };
 			IgnoredInterfaces = new HashSet<string> {
 				"System.Collections.Generic.IEnumerator",
