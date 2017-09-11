@@ -1,4 +1,11 @@
-﻿Release 0.29
+﻿Release 0.30
+* Issue 62 Added support for LumenWorks.Framework.IO.Csv.CsvReader
+* issue 61 Return value of System.Diagnostics.Process.GetCurrentProcess() is ignored.
+* Issue 60 Ids and titles of diagnostics follows standard of C# compiler.
+* Issue 59 Disposables return in Func and Action get ignored.
+* Issue 56 Corrected detection for CompositeDisposable.
+
+Release 0.29
 * Issue 56: All tracking methods and constructors get detected correcl, now.
 
 Release 0.28 
