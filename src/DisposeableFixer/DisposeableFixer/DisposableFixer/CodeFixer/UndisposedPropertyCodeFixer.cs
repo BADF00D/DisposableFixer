@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
-using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
 using DisposableFixer.Extensions;
@@ -12,18 +9,22 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.MSBuild;
-using Microsoft.CodeAnalysis.Options;
-using Microsoft.CodeAnalysis.Text;
 
 namespace DisposableFixer.CodeFixer
 {
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UndisposedPropertyCodeFixer)), Shared]
-    public class UndisposedPropertyCodeFixer : CodeFixProvider {
+    public class UndisposedPropertyCodeFixer : CodeFixProvider
+    {
+        public override ImmutableArray<string> FixableDiagnosticIds { get; } =
+            ImmutableArray.Create(
+                SyntaxNodeAnalysisContextExtension.IdForAssignmendFromMethodInvocationToPropertyNotDisposed,
+                SyntaxNodeAnalysisContextExtension.IdForAssignmendFromObjectCreationToPropertyNotDisposed);
+
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            context.RegisterCodeFix(CodeAction.Create("Dispose property in Dispose() method", c => DisposeProperty(context, c)), context.Diagnostics);
+            context.RegisterCodeFix(
+                CodeAction.Create("Dispose property in Dispose() method", c => DisposeProperty(context, c)),
+                context.Diagnostics);
 
             return Task.FromResult(1);
         }
@@ -38,17 +39,18 @@ namespace DisposableFixer.CodeFixer
             if (node.TryFindParentClass(out oldClass))
             {
                 var model = await context.Document.GetSemanticModelAsync(cancel);
-                var @classtype = model.GetEnclosingSymbol(context.Span.Start, cancel).ContainingSymbol as INamedTypeSymbol;
+                var @classtype =
+                    model.GetEnclosingSymbol(context.Span.Start, cancel).ContainingSymbol as INamedTypeSymbol;
                 if (@classtype == null) return context.Document;
 
 
-
                 var disposeMethods = oldClass
-                        .DescendantNodes<MethodDeclarationSyntax>()
-                        .Where(mds => mds.Identifier.Text == "Dispose" && mds.ParameterList.Parameters.Count == 0)
-                        .ToArray();
+                    .DescendantNodes<MethodDeclarationSyntax>()
+                    .Where(mds => mds.Identifier.Text == Constants.Dispose && mds.ParameterList.Parameters.Count == 0)
+                    .ToArray();
                 SyntaxNode newRoot;
-                if (disposeMethods.Any()) {
+                if (disposeMethods.Any())
+                {
                     var oldDisposeMethod = disposeMethods.First();
                     var disposeCall = SyntaxFactory
                         .ExpressionStatement(
@@ -56,87 +58,101 @@ namespace DisposableFixer.CodeFixer
                                 SyntaxFactory.MemberAccessExpression(
                                     SyntaxKind.SimpleMemberAccessExpression,
                                     SyntaxFactory.IdentifierName(variableName),
-                                    SyntaxFactory.IdentifierName("Dispose"))))
+                                    SyntaxFactory.IdentifierName(Constants.Dispose))))
                         .NormalizeWhitespace();
                     var newdisposeMethod = oldDisposeMethod.AddBodyStatements(disposeCall);
 
-                    var implementsIDisposable = @classtype.AllInterfaces.Any(i => i.GetFullNamespace() == "System.IDisposable");
+                    var implementsIDisposable =
+                        @classtype.AllInterfaces.Any(i => i.GetFullNamespace() == Constants.SystemIDisposable);
                     ClassDeclarationSyntax newClass;
-                    if (implementsIDisposable) {
+                    if (implementsIDisposable)
+                    {
                         newClass = oldClass;
-                    } else if (oldClass.BaseList == null) {
+                    }
+                    else if (oldClass.BaseList == null)
+                    {
                         newClass = SyntaxFactory
                             .ClassDeclaration(oldClass.Identifier.Text)
                             .WithModifiers(oldClass.Modifiers)
                             .WithBaseList(
                                 SyntaxFactory.BaseList(
-                                    SyntaxFactory.SingletonSeparatedList<BaseTypeSyntax>(
-                                        SyntaxFactory.SimpleBaseType(
-                                            SyntaxFactory.IdentifierName("IDisposable")))))
+                                    SyntaxFactory.SingletonSeparatedList<BaseTypeSyntax>(ImplementIDisposable())))
                             .WithMembers(oldClass.Members)
                             .NormalizeWhitespace();
-                    } else {
-                        var newBaseList = oldClass.BaseList.AddTypes(SyntaxFactory.SimpleBaseType(SyntaxFactory.IdentifierName("IDisposable")).NormalizeWhitespace());
+                    }
+                    else
+                    {
+                        var newBaseList =
+                            oldClass.BaseList.AddTypes(
+                                SyntaxFactory.SimpleBaseType(SyntaxFactory.IdentifierName(Constants.IDisposable))
+                                    .NormalizeWhitespace());
                         newClass = oldClass.ReplaceNode(oldClass.BaseList, newBaseList);
                     }
 
                     newClass = newClass.ReplaceNode(oldDisposeMethod, newdisposeMethod);
                     newRoot = oldRoot.ReplaceNode(oldClass, newClass);
-                    
-                } else {
+                }
+                else
+                {
                     var disposeMethod = SyntaxFactory
                         .MethodDeclaration(
                             SyntaxFactory.PredefinedType(
                                 SyntaxFactory.Token(SyntaxKind.VoidKeyword)),
-                            SyntaxFactory.Identifier("Dispose"))
-                            .WithModifiers(
-                                SyntaxFactory.TokenList(
-                                    SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
-                            .WithBody(
-                                SyntaxFactory.Block(
-                                    SyntaxFactory.SingletonList<StatementSyntax>(
-                                        SyntaxFactory.ExpressionStatement(
-                                            SyntaxFactory.InvocationExpression(
-                                                SyntaxFactory.MemberAccessExpression(
-                                                    SyntaxKind.SimpleMemberAccessExpression,
-                                                    SyntaxFactory.IdentifierName(variableName),
-                                                    SyntaxFactory.IdentifierName("Dispose")))))))
+                            SyntaxFactory.Identifier(Constants.Dispose))
+                        .WithModifiers(
+                            SyntaxFactory.TokenList(
+                                SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
+                        .WithBody(
+                            SyntaxFactory.Block(
+                                SyntaxFactory.SingletonList<StatementSyntax>(
+                                    SyntaxFactory.ExpressionStatement(
+                                        SyntaxFactory.InvocationExpression(
+                                            SyntaxFactory.MemberAccessExpression(
+                                                SyntaxKind.SimpleMemberAccessExpression,
+                                                SyntaxFactory.IdentifierName(variableName),
+                                                SyntaxFactory.IdentifierName(Constants.Dispose)))))))
                         .NormalizeWhitespace();
-                    
-                    var implementsIDisposable = @classtype.AllInterfaces.Any(i => i.GetFullNamespace() == "System.IDisposable");
+
+                    var implementsIDisposable =
+                        @classtype.AllInterfaces.Any(i => i.GetFullNamespace() == Constants.SystemIDisposable);
                     ClassDeclarationSyntax newClass;
                     if (implementsIDisposable)
                     {
                         newClass = oldClass;
-                    } else if (oldClass.BaseList == null) {
+                    }
+                    else if (oldClass.BaseList == null)
+                    {
                         newClass = SyntaxFactory
                             .ClassDeclaration(oldClass.Identifier.Text)
                             .WithModifiers(oldClass.Modifiers)
                             .WithBaseList(
                                 SyntaxFactory.BaseList(
-                                    SyntaxFactory.SingletonSeparatedList<BaseTypeSyntax>(
-                                        SyntaxFactory.SimpleBaseType(
-                                            SyntaxFactory.IdentifierName("IDisposable")))))
+                                    SyntaxFactory.SingletonSeparatedList<BaseTypeSyntax>(ImplementIDisposable())))
                             .WithMembers(oldClass.Members)
                             .NormalizeWhitespace();
-                    } else {
-                        var newBaseList = oldClass.BaseList.AddTypes(SyntaxFactory.SimpleBaseType(SyntaxFactory.IdentifierName("IDisposable")).NormalizeWhitespace());
+                    }
+                    else
+                    {
+                        var newBaseList =
+                            oldClass.BaseList.AddTypes(
+                                SyntaxFactory.SimpleBaseType(SyntaxFactory.IdentifierName(Constants.IDisposable))
+                                    .NormalizeWhitespace());
                         newClass = oldClass.ReplaceNode(oldClass.BaseList, newBaseList);
                     }
-                    
+
                     newRoot = oldRoot.ReplaceNode(oldClass, newClass.AddMembers(disposeMethod));
                 }
-                
+
                 return context.Document.WithSyntaxRoot(newRoot);
             }
-            
+
             return context.Document;
         }
-        
 
-        public override ImmutableArray<string> FixableDiagnosticIds { get; } = 
-            ImmutableArray.Create(
-                SyntaxNodeAnalysisContextExtension.IdForAssignmendFromMethodInvocationToPropertyNotDisposed,
-                SyntaxNodeAnalysisContextExtension.IdForAssignmendFromObjectCreationToPropertyNotDisposed);
+        private static SimpleBaseTypeSyntax ImplementIDisposable()
+        {
+            return SyntaxFactory.SimpleBaseType(
+                SyntaxFactory.IdentifierName(Constants.IDisposable));
+        }
     }
 }
