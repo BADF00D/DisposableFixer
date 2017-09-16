@@ -1,7 +1,11 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/8mk3us0d5stlkq47?svg=true)](https://ci.appveyor.com/project/badf00d/disposablefixer)
 
 # DisposableFixer
-This is a small Visual Studio Extension that should identify and fix problems as memleaks while using IDispoables.
+This is a small Visual Studio Extension that should identify and fix problems as memleaks while using IDispoables. You can download it via [Visual Studio Gallery](https://marketplace.visualstudio.com/items?itemName=DavidStormer.DisposableFixer) or using Visual Studio Extension Manager.
+
+Here is a little Preview of the extension in action:
+
+![Preview](https://github.com/BADF00D/DisposableFixer/blob/master/src/DisposeableFixer/resources/Preview.png "Preview")
 
 This project is in early stage. Currently it has some known false positive and false negative results. 
 Furthermore there are no code fixes available at the moment.
