@@ -36,9 +36,8 @@ namespace DisposableFixer.Extensions
                 var condAccess = syntax;
                 var identifierSyntax = condAccess.Expression as InvocationExpressionSyntax;
                 if (identifierSyntax == null) return false;
-                var expression = node.Expression as MemberBindingExpressionSyntax;
-
-                return expression.Name.Identifier.Text == "Dispose";
+                var mbe = node.Expression as MemberBindingExpressionSyntax;
+                return mbe?.Name.Identifier.Text == "Dispose";
             } else {
                 var expression = node.Expression as MemberAccessExpressionSyntax;
 

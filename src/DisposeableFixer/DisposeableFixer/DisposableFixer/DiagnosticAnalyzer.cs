@@ -134,57 +134,76 @@ namespace DisposableFixer
             SyntaxNode parentScope;//lamda or ctor or method or property
             if (!node.TryFindParentScope(out parentScope)) return;
 
-            var usings = parentScope.DescendantNodes<UsingStatementSyntax>()
+            var localVariableInsideUsing = parentScope
+                .DescendantNodes<UsingStatementSyntax>()
                 .SelectMany(@using => @using.DescendantNodes<IdentifierNameSyntax>())
                 .Where(id => localVariableName != null && (string) id.Identifier.Value == localVariableName)
                 .ToArray();
 
-            if (usings.Any())
+            if (localVariableInsideUsing.Any())
             {
-                if (usings.Any(id => id.Parent is UsingStatementSyntax)) //using(mem))
+                if (localVariableInsideUsing.Any(id => id.Parent is UsingStatementSyntax)) //using(mem))
                 {
                     return;
                 }
-                var isTracked = usings
-                    .Select(id => id.Parent?.Parent?.Parent)
-                    .Where(parent => parent is ObjectCreationExpressionSyntax)
-                    .Any(ocs =>
-                    {
-                        var sym = context.SemanticModel.GetSymbolInfo(ocs);
-                        var type2 = (sym.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
-
-                        return Detector.IsTrackedType(type2, ocs as ObjectCreationExpressionSyntax, context.SemanticModel);
-                    });
-                if (isTracked) return;
+                if (IsArgumentInConstructorOfTrackingTypeWithinUsing(context, localVariableInsideUsing)) return;
 
                 context.ReportNotDisposedLocalDeclaration();
                 return;
             }
             var invocationExpressions = parentScope.DescendantNodes<InvocationExpressionSyntax>().ToArray();
-            if (invocationExpressions.Any(ies => localVariableName != null && ies.IsCallToDisposeFor(localVariableName))) return;
-
-            if (invocationExpressions.Any(ie => ie.UsesVariableInArguments(localVariableName) && Detector.IsTrackingMethodCall(ie, context.SemanticModel)))
-            {
-                return;
-            }
-
-            if (parentScope.DescendantNodes<ObjectCreationExpressionSyntax>().Any(oce => {
-                return oce.ArgumentList.Arguments.Any(arg => {
-                    var expression = arg.Expression as IdentifierNameSyntax;
-                    var isPartOfObjectcreation = expression?.Identifier.Text == localVariableName;
-                    if (!isPartOfObjectcreation) return false;
-
-                    //check if is tracking instance
-                    var sym = context.SemanticModel.GetSymbolInfo(oce);
-                    var type2 = (sym.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
-
-                    return Detector.IsTrackedType(type2, oce, context.SemanticModel);
-                });
-            })) {
-                return;
-            }
+            if (ExistsDisposeCall(localVariableName, invocationExpressions)) return;
+            if (IsArgumentInTrackingMethod(context, localVariableName, invocationExpressions)) return;
+            if (IsArgumentInConstructorOfTrackingType(context, localVariableName, parentScope)) return;
             
             context.ReportNotDisposedLocalDeclaration();
+        }
+
+        private static bool IsArgumentInConstructorOfTrackingTypeWithinUsing(SyntaxNodeAnalysisContext context, IdentifierNameSyntax[] localVariableInsideUsing)
+        {
+            return localVariableInsideUsing
+                .Select(id => id.Parent?.Parent?.Parent)
+                .Where(parent => parent is ObjectCreationExpressionSyntax)
+                .Cast<ObjectCreationExpressionSyntax>()
+                .Any(ocs =>
+                {
+                    var sym = context.SemanticModel.GetSymbolInfo(ocs);
+                    var type2 = (sym.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
+
+                    return Detector.IsTrackedType(type2, ocs, context.SemanticModel);
+                });
+        }
+
+        private static bool ExistsDisposeCall(string localVariableName, InvocationExpressionSyntax[] invocationExpressions)
+        {
+            return invocationExpressions.Any(ies => localVariableName != null && ies.IsCallToDisposeFor(localVariableName));
+        }
+
+        private static bool IsArgumentInTrackingMethod(SyntaxNodeAnalysisContext context, string localVariableName, InvocationExpressionSyntax[] invocationExpressions)
+        {
+            return invocationExpressions.Any(ie => ie.UsesVariableInArguments(localVariableName) && Detector.IsTrackingMethodCall(ie, context.SemanticModel));
+        }
+
+        private static bool IsArgumentInConstructorOfTrackingType(SyntaxNodeAnalysisContext context,
+            string localVariableName, SyntaxNode parentScope)
+        {
+            return parentScope
+                .DescendantNodes<ObjectCreationExpressionSyntax>()
+                .Any(oce =>
+                {
+                    return oce.ArgumentList.Arguments.Any(arg =>
+                    {
+                        var expression = arg.Expression as IdentifierNameSyntax;
+                        var isPartOfObjectcreation = expression?.Identifier.Text == localVariableName;
+                        if (!isPartOfObjectcreation) return false;
+
+                        //check if is tracking instance
+                        var sym = context.SemanticModel.GetSymbolInfo(oce);
+                        var type2 = (sym.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
+
+                        return Detector.IsTrackedType(type2, oce, context.SemanticModel);
+                    });
+                });
         }
 
         private static void AnalyseNodeInFieldDeclaration(SyntaxNodeAnalysisContext context,
