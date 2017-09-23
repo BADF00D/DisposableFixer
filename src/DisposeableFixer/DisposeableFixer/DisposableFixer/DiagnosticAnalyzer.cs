@@ -191,7 +191,9 @@ namespace DisposableFixer
                 .DescendantNodes<ObjectCreationExpressionSyntax>()
                 .Any(oce =>
                 {
-                    return oce.ArgumentList.Arguments.Any(arg =>
+                    var argumentListSyntax = oce.ArgumentList;
+                    if (argumentListSyntax == null) return false;
+                    return argumentListSyntax.Arguments.Any(arg =>
                     {
                         var expression = arg.Expression as IdentifierNameSyntax;
                         var isPartOfObjectcreation = expression?.Identifier.Text == localVariableName;
