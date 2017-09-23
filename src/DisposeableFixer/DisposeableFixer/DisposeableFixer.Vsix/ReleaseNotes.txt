@@ -1,4 +1,9 @@
-﻿Release 0.31
+﻿
+Release 0.32
+* Issue 64: Fixed NullReferenceException when using property initializer.
+* Issue 66: When using MethodIncocations in Properties that doesn't implement IDisposable, there is no longer a Diagnsotic.
+
+Release 0.31
 * Issue 64: Started first investigations and refactored some code.
 
 Release 0.30
