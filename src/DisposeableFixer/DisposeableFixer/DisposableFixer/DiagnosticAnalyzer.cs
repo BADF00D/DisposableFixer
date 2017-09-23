@@ -55,7 +55,7 @@ namespace DisposableFixer
             else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new MemoryStream()).Dispose()
             else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } 
             else if (node.IsReturnedInProperty()) AnalyseNodeInReturnStatementOfProperty(context, node, DisposableSource.ObjectCreation);
-            else if (node.IsPartOfReturnStatement()) { }
+            else if (node.IsPartOfReturnStatementInMethod()) { }
             else if (node.IsReturnValueInLambdaExpression()) { }
             else if (node.IsReturnedLaterWithinMethod()) { }
             else if (node.IsReturnedLaterWithinParenthesizedLambdaExpression()) { }
@@ -304,9 +304,10 @@ namespace DisposableFixer
             var symbol = symbolInfo.Symbol as IMethodSymbol;
             var type = symbol?.ReturnType as INamedTypeSymbol;
 
-            if (type == null) { } 
+            if (type == null) { }
             else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new object()).AsDisposable().Dispose()
             else if (node.IsPartOfAwaitExpression()) AnalyseInvokationExpressionInsideAwaitExpression(context, node);
+            else if (!IsDisposeableOrImplementsDisposable(type)) return;
             else if (node.IsReturnedInProperty()) AnalyseNodeInReturnStatementOfProperty(context, node, DisposableSource.InvokationExpression);
             else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } //GetEnumerator()
             else if (Detector.IsTrackingMethodCall(node, context.SemanticModel)) { }//ignored extension methods
@@ -327,7 +328,7 @@ namespace DisposableFixer
                 if (Detector.IsTrackingMethodCall(methodInvocation, context.SemanticModel)) return;
                 context.ReportNotDisposedAnonymousObject(DisposableSource.ObjectCreation);
             } 
-            else if (node.IsPartOfReturnStatement()) { } //return new StreamReader()
+            else if (node.IsPartOfReturnStatementInMethod()) { } //return new StreamReader()
             else if (node.IsReturnValueInLambdaExpression()) { } //e.g. ()=> new MemoryStream
             else if (node.IsReturnedLaterWithinMethod()) { }
             else if (node.IsReturnedLaterWithinParenthesizedLambdaExpression()) { }
@@ -354,7 +355,7 @@ namespace DisposableFixer
             if (IsIgnoredTypeOrImplementsIgnoredInterface(returnType)) return;
             if (awaitExpression.IsDescendantOfUsingHeader()) return;
             if (awaitExpression.IsPartOfVariableDeclaratorInsideAUsingDeclaration()) return;
-            if (awaitExpression.IsPartOfReturnStatement()) return;
+            if (awaitExpression.IsPartOfReturnStatementInMethod()) return;
             if (awaitExpression.IsReturnedLaterWithinMethod()) return;
             if (awaitExpression.IsDescendantOfVariableDeclarator())
             {

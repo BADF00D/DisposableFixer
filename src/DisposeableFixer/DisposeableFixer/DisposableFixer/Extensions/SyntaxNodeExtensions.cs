@@ -124,7 +124,7 @@ namespace DisposableFixer.Extensions
             return node.Parent?.Parent is VariableDeclaratorSyntax;
         }
 
-        public static bool IsPartOfReturnStatement(this SyntaxNode node)
+        public static bool IsPartOfReturnStatementInMethod(this SyntaxNode node)
         {
             return node.FindParent<ReturnStatementSyntax, MethodDeclarationSyntax>() != null;
         }
@@ -142,6 +142,15 @@ namespace DisposableFixer.Extensions
         public static bool IsReturnValueInLambdaExpression(this SyntaxNode node)
         {
             return node.IsPartOfSimpleLambdaExpression() || node.IsPartOfParenthesizedExpression();
+        }
+
+        public static bool IsReturnDirectlyOrLater(this SyntaxNode node)
+        {
+            return node.IsReturnValueInLambdaExpression()
+                   || node.IsReturnedLaterWithinParenthesizedLambdaExpression()
+                   || node.IsReturnedLaterWithinMethod()
+                   || node.IsReturnedInProperty()
+                   || node.IsPartOfReturnStatementInMethod();
         }
 
         public static bool IsPartOfAwaitExpression(this SyntaxNode node)
@@ -308,6 +317,13 @@ namespace DisposableFixer.Extensions
         {
             return node?.Parent is ArrowExpressionClauseSyntax
                    && node?.Parent?.Parent is PropertyDeclarationSyntax;
+        }
+
+        public static bool IsDecendentOfAProperty(this SyntaxNode node)
+        {
+            PropertyDeclarationSyntax parent;
+
+            return TryFindContainingPropery(node, out parent);
         }
 
         public static bool IsPartOfAutoProperty(this SyntaxNode node) {
