@@ -75,6 +75,14 @@ namespace DisposableFixer.Configuration {
                     new MethodCall("CollectionOfFake", new [] {"Int32", "System.Action<FakeItEasy.Creation.IFakeOptions<T>>"}, true),
                     new MethodCall("CollectionOfDummy", new [] {"Int32"}, true),
                 },
+                ["Castle.Windsor.IWindsorContainer"] = new List<MethodCall>
+                {
+                    new MethodCall("AddFacility", new [] {"Castle.MicroKernel.IFacility"}, false),
+                    new MethodCall("AddFacility", Empty.Array<string>(), false),
+                    new MethodCall("AddFacility", new [] {"System.Action<T>"}, false),
+                    new MethodCall("Install", new [] {"Castle.MicroKernel.Registration.IWindsorInstaller[]"}, false),
+                    new MethodCall("Register", new [] {"Castle.MicroKernel.Registration.IRegistration[]"}, false),
+                }
             };
 
 		    DisposingMethods = new HashSet<string>

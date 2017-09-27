@@ -84,17 +84,30 @@ namespace DisposableFixer.Configuration
             if (memberAccessExpression == null) return false; //something like Create() this cant be a tracking call
 
             var symbolInfo = semanticModel.GetSymbolInfo(methodInvocation);
-            if (symbolInfo.Symbol == null) return false;
 
             var method = symbolInfo.Symbol as IMethodSymbol;
+            if (method == null) return false;
+            
+            foreach (var typeName in GetTypeAndInterfaces(method.ReceiverType).Select(type => type.GetFullNamespace()))
+            {
+                IReadOnlyCollection<MethodCall> methodCalls;
+                if (!_configuration.TrackingFactoryMethods.TryGetValue(typeName, out methodCalls)) continue;
 
-            var classname = method.ReceiverType.GetFullNamespace();
+                var ifTracked =
+                    methodCalls.Any(mc => mc.Name == method.Name && mc.Parameter.Length == method.Parameters.Length);
+                if (ifTracked) return true;
+            }
 
-            IReadOnlyCollection<MethodCall> _ignoredMethodCalls;
-            if (!_configuration.TrackingFactoryMethods.TryGetValue(classname, out _ignoredMethodCalls)) return false;
+            return false;
+        }
 
-            return _ignoredMethodCalls
-                .Any(mc => mc.Name == method.Name && mc.Parameter.Length == method.Parameters.Length);
+        private IEnumerable<ITypeSymbol> GetTypeAndInterfaces(ITypeSymbol type)
+        {
+            yield return type;
+            foreach (var @interface in type.Interfaces)
+            {
+                yield return @interface;
+            }
         }
 
         private bool AnalyseNonExtensionMethodCall(IMethodSymbol method)
