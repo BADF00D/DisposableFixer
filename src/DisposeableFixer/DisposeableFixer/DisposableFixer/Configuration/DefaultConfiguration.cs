@@ -62,6 +62,10 @@ namespace DisposableFixer.Configuration {
                 ["FakeItEasy.IArgumentConstraintManager"] = new List<MethodCall>()
                 {
                     new MethodCall("Matches", new [] {"FakeItEasy.IArgumentConstraintManager<T>", "System.Linq.Expressions.Expression<System.Func<T, bool>>", "System.Action<FakeItEasy.IOutputWriter>"}, true)
+                },
+                ["Microsoft.AspNetCore.Http.HttpResponse"] = new List<MethodCall>
+                {
+                    new MethodCall("RegisterForDispose", new [] {"System.IDisposable"}, false)
                 }
             };
             TrackingFactoryMethods = new Dictionary<string, IReadOnlyCollection<MethodCall>>

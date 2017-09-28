@@ -117,13 +117,13 @@ namespace DisposableFixer.Configuration
             var methodName = method.Name;
             var @namespace = originalDefinition.ContainingType.GetFullNamespace(); 
 
-            var extensionMethods =
+            var methodCalls =
                 _configuration.TrackingMethods.Where(tm => tm.Key == @namespace)
                 .Select(tm => tm.Value)
                 .ToArray();
-            if (!extensionMethods.Any()) return false;
+            if (!methodCalls.Any()) return false;
 
-            return extensionMethods.Any(tm => tm.Any(mc => mc.Name == methodName));
+            return methodCalls.Any(tm => tm.Any(mc => mc.Name == methodName));
         }
 
         private bool AnalyseExtensionMethodCall(IMethodSymbol method)
