@@ -53,6 +53,7 @@
     <Compile Include="DisposeableFixerAnalyzerSpecs\Async\If_Analyser_runs_on_class_that_opens_a_filestream_async_using_configure_await.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\Async\If_Analyser_runs_on_class_that_opens_a_filestream_async.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\DisposeableFixerAnalyzerSpec.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\DisposeOutSideOfDisposeMethod\If_Analsyser_runs_on_field_disposed_in_dispose_pattern_method.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\DisposeOutSideOfDisposeMethod\If_Analsyser_runs_on_field_dispose_in_method_decorected_with_attribute_named_TearDown.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\DisposeOutSideOfDisposeMethod\If_Analsyser_runs_on_field_dispose_in_method_called_Cleanup.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\ExtensionMethods\If_Analyser_runs_on_class_that_has_a_using_block_in_its_ctor_that_is_not_used_for_the_MemoryStream.cs" />

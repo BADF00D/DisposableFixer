@@ -222,8 +222,17 @@ namespace DisposableFixer.Extensions
 
         private static bool IsDisposingMethod(MethodDeclarationSyntax mds, IConfiguration configuration, SemanticModel semanticModel)
         {
+            var parametersymbols = mds.ParameterList.Parameters.Select(p => semanticModel.GetSymbolInfo(p.Type))
+                .ToArray();
+            IReadOnlyCollection<MethodCall> disposeMethods;
+            if (configuration.DisposingMethods.TryGetValue(mds.Identifier.Text, out disposeMethods))
+            {
+                if (disposeMethods.Any(dm => dm.Parameter.Length == mds.ParameterList.Parameters.Count))
+                    return true;
+            }
+
+
             return mds.IsDisposeMethod() 
-                || configuration.DisposingMethods.Contains(mds.Identifier.Text)
                 || mds.AttributeLists
                     .SelectMany(als => als.Attributes)
                     .Select(a => semanticModel.GetTypeInfo(a).Type)

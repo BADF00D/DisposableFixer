@@ -89,9 +89,17 @@ namespace DisposableFixer.Configuration {
                 }
             };
 
-		    DisposingMethods = new HashSet<string>
+		    DisposingMethods = new Dictionary<string, IReadOnlyCollection<MethodCall>>
 		    {
-                "Cleanup"
+                ["Cleanup"] = new List<MethodCall>
+                {
+                    new MethodCall("Cleanup",Empty.Array<string>(), false),
+                },
+                ["Dispose"] = new List<MethodCall>
+                {
+                    new MethodCall("Dispose", Empty.Array<string>(), false),
+                    new MethodCall("Dispose", new[] {"System.Boolean"}, false),
+                }
 		    };
 		    DisposingAttributes = new HashSet<string>
 		    {
@@ -101,7 +109,7 @@ namespace DisposableFixer.Configuration {
         public HashSet<string> IgnoredTypes { get; }
 		public HashSet<string> IgnoredInterfaces { get; }
 		public HashSet<string> TrackingTypes { get; }
-	    public HashSet<string> DisposingMethods { get; }
+	    public Dictionary<string, IReadOnlyCollection<MethodCall>> DisposingMethods { get; }
 	    public HashSet<string> DisposingAttributes { get; }
 	    public Dictionary<string,IReadOnlyCollection<CtorCall>> IgnoredTrackingTypeCtorCalls { get; }
 	    public Dictionary<string, IReadOnlyCollection<MethodCall>> TrackingMethods { get; }

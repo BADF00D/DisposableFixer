@@ -13,7 +13,7 @@ namespace DisposableFixer.Configuration {
         /// List of method names that are evaluated when trying to detect whether fields/properties get disposed.
         /// A call to Dispose() of fields is treated just as if there where made in Dispose method.
         /// </summary>
-        HashSet<string> DisposingMethods { get; }
+        Dictionary<string, IReadOnlyCollection<MethodCall>> DisposingMethods { get; }
 
         /// <summary>
         /// A methods marked with on of this attributes, is treated just as if this is the dispose method. 
