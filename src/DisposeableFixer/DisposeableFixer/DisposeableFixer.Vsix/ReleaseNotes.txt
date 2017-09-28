@@ -1,4 +1,9 @@
-﻿
+﻿Release 0.33
+* Issue 38: Added support for ILoggerFactory from Asp.Net Core.
+* Issue 63: Added support for IWindsorContainer.Regsiter methods.
+* Issue 65: Added support for virtual Dispose pattern: https://docs.microsoft.com/pt-br/dotnet/standard/design-guidelines/dispose-pattern
+* Issue 68: Added support for HttpResponse.RegisterForDispose method from Asp.Net Core.
+
 Release 0.32
 * Issue 64: Fixed NullReferenceException when using property initializer.
 * Issue 66: When using MethodIncocations in Properties that doesn't implement IDisposable, there is no longer a Diagnsotic.
