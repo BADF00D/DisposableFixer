@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using FakeItEasy;
+﻿using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.FakeItEasy
+namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.ThirdParty.FakeItEasy
 {
     internal class FakeItEasyTests : DisposeableFixerAnalyzerSpec
     {
