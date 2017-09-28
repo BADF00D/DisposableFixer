@@ -9,12 +9,21 @@ namespace UsingAspDotNetILoggerFactory
         {
             var factory = new LoggerFactory();
             var provider = new LoggerProvider();
-            factory.AddConsole();
+            factory.AddConsole(new Configuration());
 
             factory.AddProvider(provider);
 
             provider.Dispose();
 
+        }
+
+        private class Configuration : IConfiguration
+        {
+            public string this[string key]
+            {
+                get { throw new NotImplementedException(); }
+                set { throw new NotImplementedException(); }
+            }
         }
 
         private class LoggerFactory : ILoggerFactory

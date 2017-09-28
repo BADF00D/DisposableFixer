@@ -4,13 +4,20 @@ using NUnit.Framework;
 
 namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.ThirdParty.AspDotNetCore
 {
-    internal class ASPDotNetCoreTests : DisposeableFixerAnalyzerSpec
+    internal partial class ASPDotNetCoreTests : DisposeableFixerAnalyzerSpec
     {
         private static IEnumerable<TestCaseData> TestCases
         {
             get
             {
-                yield return AFakeOfT();
+                yield return HttpResponse_RegisterForDispose();
+                yield return ILoggerFactory_AddConsole();
+                yield return ILoggerFactory_AddConsole_Boolean();
+                yield return ILoggerFactory_AddConsole_LogLevel();
+                yield return ILoggerFactory_AddConsole_LogLevel_Boolean();
+                yield return ILoggerFactory_AddConsole_Func_string_LogLevel_to_Boolean();
+                yield return ILoggerFactory_AddConsole_IConsoleLoggerSettings();
+                yield return ILoggerFactory_AddConsole_IConfiguration();
             }
         }
 
@@ -20,45 +27,6 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.ThirdParty.AspDotNe
         {
             var diagnostics = MyHelper.RunAnalyser(code, Sut);
             diagnostics.Length.Should().Be(numberOfDiagnostics);
-        }
-
-        private static TestCaseData AFakeOfT()
-        {
-            const string code = @"using System;
-using System.IO;
-using Microsoft.AspNetCore.Http;
-
-namespace UsingRegisterForDispose
-{
-    internal class SomeClass
-    {
-        public SomeClass()
-        {
-            var response = new MyHttpResponse();
-            var stream = new MemoryStream();
-            response.RegisterForDispose(stream);
-        }
-
-        private class MyHttpResponse : HttpResponse
-        {
-        }
-    }
-}
-
-namespace Microsoft.AspNetCore.Http
-{
-    public abstract class HttpResponse
-    {
-        public virtual void RegisterForDispose(IDisposable disposable)
-        {
-        }
-    }
-}";
-
-
-
-            return new TestCaseData(code, 0)
-                .SetName("HttpResponseRegisterForDispose");
-        }
+        }   
     }
 }
