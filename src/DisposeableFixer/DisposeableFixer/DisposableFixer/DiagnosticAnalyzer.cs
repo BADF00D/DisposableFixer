@@ -369,7 +369,12 @@ namespace DisposableFixer
 
         private static bool IsIgnoredTypeOrImplementsIgnoredInterface(INamedTypeSymbol type)
         {
+            if (!type.IsType) return false;
             if (Detector.IsIgnoredType(type)) return true;
+            /* maybe the given type symbol is a interface. We cannot check if a type
+             * is a interface, so we simply take the brute force approach and check,
+             * if this type is in list of ignored interfaces */
+            if (Detector.IsIgnoredInterface(type)) return true;
 
             var inter = type.AllInterfaces.Select(ai => ai);
             return inter.Any(@if => Detector.IsIgnoredInterface(@if));

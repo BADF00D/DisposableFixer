@@ -66,6 +66,10 @@ namespace DisposableFixer.Configuration {
                 ["Microsoft.AspNetCore.Http.HttpResponse"] = new List<MethodCall>
                 {
                     new MethodCall("RegisterForDispose", new [] {"System.IDisposable"}, false)
+                },
+                ["Microsoft.Extensions.Logging"] = new List<MethodCall>
+                {
+                    new MethodCall("AddConsole", Empty.Array<string>(), true)
                 }
             };
             TrackingFactoryMethods = new Dictionary<string, IReadOnlyCollection<MethodCall>>
