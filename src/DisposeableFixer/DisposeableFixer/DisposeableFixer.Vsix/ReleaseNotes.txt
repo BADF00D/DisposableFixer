@@ -1,4 +1,6 @@
-﻿Release 0.33
+﻿Release 0.34
+* Issue 69: DataColumn, DataViewManager, DataSet and DataTable from System.Data now get ignored durign analysis.
+Release 0.33
 * Issue 38: Added support for ILoggerFactory from Asp.Net Core.
 * Issue 63: Added support for IWindsorContainer.Regsiter methods.
 * Issue 65: Added support for virtual Dispose pattern: https://docs.microsoft.com/pt-br/dotnet/standard/design-guidelines/dispose-pattern
