@@ -25,7 +25,11 @@ namespace DisposableFixer.Configuration {
                 "Microsoft.Extensions.Logging.ILoggerFactory"
             };
 			IgnoredTypes = new HashSet<string> {
-				"System.Threading.Tasks.Task",
+                "System.Threading.Tasks.Task",
+                "System.Data.DataColumn",
+                "System.Data.DataSet",
+                "System.Data.DataTable",
+                "System.Data.DataViewManager",
             };
 			IgnoredTrackingTypeCtorCalls = new Dictionary<string, IReadOnlyCollection<CtorCall>> {
 					["System.IO.BinaryReader"] =  new [] {
