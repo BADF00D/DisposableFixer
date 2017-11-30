@@ -229,9 +229,7 @@ namespace DisposableFixer.Extensions
                     return true;
             }
 
-
-            return mds.IsDisposeMethod() 
-                || mds.AttributeLists
+            return mds.AttributeLists
                     .SelectMany(als => als.Attributes)
                     .Select(a => semanticModel.GetTypeInfo(a).Type)
                     .Any(attribute => configuration.DisposingAttributes.Contains(attribute.GetFullNamespace()));
