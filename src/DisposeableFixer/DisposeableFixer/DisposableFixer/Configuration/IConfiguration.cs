@@ -14,8 +14,15 @@ namespace DisposableFixer.Configuration {
         /// A call to Dispose() of fields is treated just as if there where made in Dispose method.
         /// </summary>
         Dictionary<string, IReadOnlyCollection<MethodCall>> DisposingMethods { get; }
-
+        
         /// <summary>
+        /// These are ordanary methods of arbitary clases that are handled as Dispose call. 
+        /// E.g SerialPort.Close() internally calls Dispose method.
+        /// The key is the full qualified class name, the MethodCall the method.
+        /// </summary>
+        Dictionary<string, IReadOnlyCollection<MethodCall>> DisposingMethodsAtSpecialClasses { get; }
+
+            /// <summary>
         /// A methods marked with on of this attributes, is treated just as if this is the dispose method. 
         /// </summary>
         /// <remarks>Name of attributes should contains its namespace.</remarks>

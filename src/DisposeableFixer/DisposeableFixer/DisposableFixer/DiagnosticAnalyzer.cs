@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using DisposableFixer.Configuration;
@@ -155,8 +157,41 @@ namespace DisposableFixer
             if (ExistsDisposeCall(localVariableName, invocationExpressions)) return;
             if (IsArgumentInTrackingMethod(context, localVariableName, invocationExpressions)) return;
             if (IsArgumentInConstructorOfTrackingType(context, localVariableName, parentScope)) return;
+            if (IsCallToMethodThatIsConsideredAsDisposeCall(invocationExpressions, context)) return;
             
             context.ReportNotDisposedLocalDeclaration();
+        }
+
+        private static bool IsCallToMethodThatIsConsideredAsDisposeCall(InvocationExpressionSyntax[] invocations,
+            SyntaxNodeAnalysisContext context)
+        {
+            var fullName = GetReturnOrReceivedType(context);
+            IReadOnlyCollection<MethodCall> methodCalls;
+            if (Configuration.DisposingMethodsAtSpecialClasses.TryGetValue(fullName, out methodCalls))
+            {
+                //todo check parameres of each ies
+                return methodCalls
+                    .Any(
+                        mc =>
+                            invocations.Any(ies => (ies.Expression as MemberAccessExpressionSyntax)?.Name.Identifier.Text == mc.Name));
+                
+            }
+            return false;
+        }
+
+        private static string GetReturnOrReceivedType(SyntaxNodeAnalysisContext context)
+        {
+            var node = context.Node;
+            var typeInfo = context.SemanticModel.GetSymbolInfo(context.Node);
+            if (node is ObjectCreationExpressionSyntax)
+            {
+                return ((typeInfo.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol).GetFullNamespace();
+            }
+            else if(node is InvocationExpressionSyntax)
+            {
+                return ((typeInfo.Symbol as IMethodSymbol)?.ReturnType as INamedTypeSymbol).GetFullNamespace();
+            }
+            throw new ArgumentException($"Unexpected Node Type: '{node.GetType()}'");
         }
 
         private static bool IsArgumentInConstructorOfTrackingTypeWithinUsing(SyntaxNodeAnalysisContext context, IdentifierNameSyntax[] localVariableInsideUsing)

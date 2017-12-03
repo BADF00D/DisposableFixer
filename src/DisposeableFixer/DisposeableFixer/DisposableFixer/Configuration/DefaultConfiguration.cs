@@ -113,11 +113,19 @@ namespace DisposableFixer.Configuration {
 		    {
                 "NUnit.Framework.TearDownAttribute"
             };
+		    DisposingMethodsAtSpecialClasses = new Dictionary<string, IReadOnlyCollection<MethodCall>>
+		    {
+		        ["System.IO.Ports.SerialPort"] = new[]
+		        {
+		            new MethodCall("Close", Empty.Array<string>(), false)
+		        }
+		    };
 		}
         public HashSet<string> IgnoredTypes { get; }
 		public HashSet<string> IgnoredInterfaces { get; }
 		public HashSet<string> TrackingTypes { get; }
 	    public Dictionary<string, IReadOnlyCollection<MethodCall>> DisposingMethods { get; }
+	    public Dictionary<string, IReadOnlyCollection<MethodCall>> DisposingMethodsAtSpecialClasses { get; }
 	    public HashSet<string> DisposingAttributes { get; }
 	    public Dictionary<string,IReadOnlyCollection<CtorCall>> IgnoredTrackingTypeCtorCalls { get; }
 	    public Dictionary<string, IReadOnlyCollection<MethodCall>> TrackingMethods { get; }
