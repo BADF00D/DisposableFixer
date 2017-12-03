@@ -131,7 +131,7 @@
     <Compile Include="DisposeableFixerAnalyzerSpecs\ObjectCreations\If_Analyser_runs_ObjectCreation_that_is_part_of_expression_body_of_a_property_that_is_disposed.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\ObjectCreations\If_analyser_runs_on_an_disposable_local_variable_created_by_factory_method.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\ThirdParty\SystemData\SystemDataTests.cs" />
-    <Compile Include="DisposeableFixerAnalyzerSpecs\ThirdParty\SystemIO\SystemIOPorsSerialPortTests.cs" />
+    <Compile Include="DisposeableFixerAnalyzerSpecs\DisposeOutSideOfDisposeMethod\SpecialDisposeMethods\SystemIOPorsSerialPortTests.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\Tracked\If_a_stream_delivered_by_a_factory_is_stored_local_and_given_to_ctor_of_tracking_class_that_id_not_disposed.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\Tracked\If_a_stream_is_created_and_stored_local_and_given_to_ctor_of_tracking_class_that_is_not_disposed.cs" />
     <Compile Include="DisposeableFixerAnalyzerSpecs\Tracked\If_a_stream_is_created_and_stored_local_and_given_to_ctor_of_tracking_class_within_using.cs" />
