@@ -213,33 +213,18 @@ namespace DisposableFixer.Extensions
 
             var disposeMethods = classDeclarationSyntax
                 .DescendantNodes<MethodDeclarationSyntax>()
-                .Where(mds => IsDisposingMethod(mds, configuration, semanticModel))
+                .Where(mds => mds.IsDisposeMethod(configuration, semanticModel))
                 .ToArray();
             return disposeMethods
                 .SelectMany(disposeMethod => disposeMethod.DescendantNodes<InvocationExpressionSyntax>())
-                .Any(mes => mes.IsCallToDisposeFor(nameOfVariable));
+                .Any(ies => ies.IsCallToDisposeFor(nameOfVariable, semanticModel, configuration));
         }
 
-        private static bool IsDisposingMethod(MethodDeclarationSyntax mds, IConfiguration configuration, SemanticModel semanticModel)
-        {
-            IReadOnlyCollection<MethodCall> disposeMethods;
-            if (configuration.DisposingMethods.TryGetValue(mds.Identifier.Text, out disposeMethods))
-            {
-                if (disposeMethods.Any(dm => dm.Parameter.Length == mds.ParameterList.Parameters.Count))
-                    return true;
-            }
-
-            return mds.AttributeLists
-                    .SelectMany(als => als.Attributes)
-                    .Select(a => semanticModel.GetTypeInfo(a).Type)
-                    .Any(attribute => configuration.DisposingAttributes.Contains(attribute.GetFullNamespace()));
-        }
-
-        public static bool ContainsDisposeCallFor(this SyntaxNode node, string name)
+        public static bool ContainsDisposeCallFor(this SyntaxNode node, string name, SemanticModel semanticModel, IConfiguration configuration)
         {
             return node
                 .DescendantNodes<InvocationExpressionSyntax>()
-                .Any(ies => ies.IsCallToDisposeFor(name));
+                .Any(ies => ies.IsCallToDisposeFor(name, semanticModel, configuration));
         }
 
         /// <summary>

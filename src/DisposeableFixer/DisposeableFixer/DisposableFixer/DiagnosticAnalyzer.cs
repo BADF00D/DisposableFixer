@@ -154,7 +154,7 @@ namespace DisposableFixer
                 return;
             }
             var invocationExpressions = parentScope.DescendantNodes<InvocationExpressionSyntax>().ToArray();
-            if (ExistsDisposeCall(localVariableName, invocationExpressions)) return;
+            if (ExistsDisposeCall(localVariableName, invocationExpressions, context.SemanticModel)) return;
             if (IsArgumentInTrackingMethod(context, localVariableName, invocationExpressions)) return;
             if (IsArgumentInConstructorOfTrackingType(context, localVariableName, parentScope)) return;
             if (IsCallToMethodThatIsConsideredAsDisposeCall(invocationExpressions, context)) return;
@@ -209,9 +209,9 @@ namespace DisposableFixer
                 });
         }
 
-        private static bool ExistsDisposeCall(string localVariableName, InvocationExpressionSyntax[] invocationExpressions)
+        private static bool ExistsDisposeCall(string localVariableName, InvocationExpressionSyntax[] invocationExpressions, SemanticModel semanticModel)
         {
-            return invocationExpressions.Any(ies => localVariableName != null && ies.IsCallToDisposeFor(localVariableName));
+            return invocationExpressions.Any(ies => localVariableName != null && ies.IsCallToDisposeFor(localVariableName, semanticModel, Configuration));//todo fix this
         }
 
         private static bool IsArgumentInTrackingMethod(SyntaxNodeAnalysisContext context, string localVariableName, InvocationExpressionSyntax[] invocationExpressions)
@@ -247,7 +247,7 @@ namespace DisposableFixer
             SyntaxNode node, string nameOfVariable, DisposableSource source)
         {
             if (node.IsDisposedInDisposingMethod(nameOfVariable, Configuration, context.SemanticModel)) return;
-
+            
             context.ReportNotDisposedField(source);
         }
 
@@ -261,7 +261,7 @@ namespace DisposableFixer
             MethodDeclarationSyntax containingMethod;
             if (node.TryFindContainingMethod(out containingMethod))
             {
-                if (containingMethod.ContainsDisposeCallFor(variableName)) return;
+                if (containingMethod.ContainsDisposeCallFor(variableName, context.SemanticModel, Configuration)) return;
 
                 if (containingMethod.HasDecendentVariableDeclaratorFor(variableName))
                 {
@@ -299,7 +299,7 @@ namespace DisposableFixer
                         AnalyseNodeInArgumentList(context, node, source);
                         return;
                     }
-                    if (ctor.ContainsDisposeCallFor(variableName)) return;
+                    if (ctor.ContainsDisposeCallFor(variableName, context.SemanticModel, Configuration)) return;
                     context.ReportNotDisposedLocalDeclaration();
                 }
                 else //field or property

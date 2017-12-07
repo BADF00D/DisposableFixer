@@ -88,7 +88,7 @@ namespace bla
         private SerialPort Create(){
             return new SerialPort();
         }
-        public void Dispose()
+        public void Dispose(bool heho)
         {
             _sp.Close();
         }
@@ -113,7 +113,7 @@ namespace bla
         {
             _sp = new SerialPort();
         }
-        public void Dispose()
+        public void Dispose(bool heho)
         {
             _sp.Close();
         }
@@ -121,7 +121,7 @@ namespace bla
 }
 ";
             return new TestCaseData(code, 0)
-                .SetName("Close on SerialPort internally calls Dispose - field assigned by factory method");
+                .SetName("Close on SerialPort internally calls Dispose - field assigned by object creation");
         }
 
         private static TestCaseData CloseSerialPortOfProertyByFactoryMethod() {
@@ -167,7 +167,7 @@ namespace bla
             _sp = new SerialPort();
         }
 
-        public void Dispose()
+        public void Dispose(bool heho)
         {
             _sp.Close();
         }

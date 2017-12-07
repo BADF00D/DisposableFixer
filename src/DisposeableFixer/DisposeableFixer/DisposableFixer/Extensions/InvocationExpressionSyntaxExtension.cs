@@ -1,13 +1,14 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using DisposableFixer.Configuration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace DisposableFixer.Extensions
 {
-    public static class InvocationExpressionSyntaxExtension
+    internal static class InvocationExpressionSyntaxExtension
     {
-        public static bool IsCallToDisposeFor(this InvocationExpressionSyntax node, string identifier)
+        public static bool IsCallToDisposeFor(this InvocationExpressionSyntax node, string identifier, SemanticModel semanticModel, IConfiguration configuration)
         {
             var syntax = node.Parent as ConditionalAccessExpressionSyntax;
             if (syntax != null)
@@ -17,8 +18,12 @@ namespace DisposableFixer.Extensions
                 if (identifierSyntax == null) return false;
                 var expression = node.Expression as MemberBindingExpressionSyntax;
 
-                return identifierSyntax.Identifier.Text == identifier
-                       && expression.Name.Identifier.Text == "Dispose";
+                if (identifierSyntax.Identifier.Text == identifier
+                    && expression.Name.Identifier.Text == "Dispose") return true;
+
+                //todo check memeber type
+
+                return false;
             }
             else
             {
@@ -27,8 +32,21 @@ namespace DisposableFixer.Extensions
                 var identifierSyntax = expression?.Expression as IdentifierNameSyntax;
                 if (identifierSyntax == null) return false;
 
-                return identifierSyntax.Identifier.Text == identifier
-                       && expression.Name.Identifier.Text == "Dispose";
+                if(identifierSyntax.Identifier.Text == identifier && expression.Name.Identifier.Text == "Dispose") return true;
+
+                
+                var memberType = semanticModel.GetTypeInfo(identifierSyntax).Type.GetFullNamespace();
+                IReadOnlyCollection<MethodCall> _specialDispose;
+                if (!configuration.DisposingMethodsAtSpecialClasses.TryGetValue(memberType, out _specialDispose))
+                    return false;
+
+                var partlyEqual = _specialDispose.Any(mc => 
+                    !mc.IsStatic 
+                    && mc.Name == expression.Name.Identifier.Text
+                    && mc.Parameter.Length == node.ArgumentList.Arguments.Count);
+                /* We have to check the parameter types, but unfortunatelly such an example and unittest does not exists jet.
+                       For now, we have enought information */
+                return partlyEqual;
             }
         }
 
