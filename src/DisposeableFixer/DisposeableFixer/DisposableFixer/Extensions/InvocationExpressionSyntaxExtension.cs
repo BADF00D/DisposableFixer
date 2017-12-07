@@ -21,9 +21,18 @@ namespace DisposableFixer.Extensions
                 if (identifierSyntax.Identifier.Text == identifier
                     && expression.Name.Identifier.Text == "Dispose") return true;
 
-                //todo check memeber type
+                var memberType = semanticModel.GetTypeInfo(identifierSyntax).Type.GetFullNamespace();
+                IReadOnlyCollection<MethodCall> _specialDispose;
+                if (!configuration.DisposingMethodsAtSpecialClasses.TryGetValue(memberType, out _specialDispose))
+                    return false;
 
-                return false;
+                var partlyEqual = _specialDispose.Any(mc =>
+                    !mc.IsStatic
+                    && mc.Name == expression.Name.Identifier.Text
+                    && mc.Parameter.Length == node.ArgumentList.Arguments.Count);
+                /* We have to check the parameter types, but unfortunatelly such an example and unittest does not exists jet.
+                       For now, we have enought information */
+                return partlyEqual;
             }
             else
             {
