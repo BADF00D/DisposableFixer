@@ -16,6 +16,12 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.DisposeOutSideOfDis
                 yield return CloseSerialPortOfFieldByObjectCreation();
                 yield return CloseSerialPortOfPropertyByObjectCreation();
                 yield return CloseSerialPortOfProertyByFactoryMethod();
+                yield return CloseSerialPortCreatedByObjectCreationWithConditionalAccess();
+                yield return CloseSerialPortOfFactoryMethodWithConditionalAccess();
+                yield return CloseSerialPortOfFieldByFactoryMethodWithConditionalAccess();
+                yield return CloseSerialPortOfFieldByObjectCreationWithConditionalAccess();
+                yield return CloseSerialPortOfPropertyByObjectCreationWithConditionalAccess();
+                yield return CloseSerialPortOfProertyByFactoryMethodWithConditionalAccess();
             }
         }
 
@@ -176,6 +182,158 @@ namespace bla
 ";
             return new TestCaseData(code, 0)
                 .SetName("Close on SerialPort internally calls Dispose - property assigned by object creation");
+        }
+
+
+        private static TestCaseData CloseSerialPortCreatedByObjectCreationWithConditionalAccess() {
+            const string code = @"
+using System.Data;
+
+namespace bla
+{
+    internal class SomeClass
+    {
+        public SomeClass()
+        {
+            var sp = new System.IO.Ports.SerialPort(); 
+            sp?.Close();
+        }
+    }
+}
+";
+            return new TestCaseData(code, 0)
+                .SetName("Close on SerialPort internally calls Dispose - ObjectCreation and conditional access");
+        }
+
+        private static TestCaseData CloseSerialPortOfFactoryMethodWithConditionalAccess() {
+            const string code = @"
+using System.Data;
+using System.IO.Ports;
+
+namespace bla
+{
+    internal class SomeClass
+    {
+        public SomeClass()
+        {
+            var sp = Create();
+            sp?.Close();
+        }
+        private SerialPort Create(){
+            return new SerialPort();
+        }
+    }
+}
+";
+            return new TestCaseData(code, 0)
+                .SetName("Close on SerialPort internally calls Dispose - Factory method with conditional access");
+        }
+
+        private static TestCaseData CloseSerialPortOfFieldByFactoryMethodWithConditionalAccess() {
+            const string code = @"
+using System.Data;
+using System.IO.Ports;
+
+namespace bla
+{
+    internal class SomeClass : IDisposable
+    {
+        private SerialPort _sp;
+        public SomeClass()
+        {
+            _sp = Create();
+        }
+        private SerialPort Create(){
+            return new SerialPort();
+        }
+        public void Dispose(bool heho)
+        {
+            _sp?.Close();
+        }
+    }
+}
+";
+            return new TestCaseData(code, 0)
+                .SetName("Close on SerialPort internally calls Dispose - field assigned by factory method with conditional access");
+        }
+
+        private static TestCaseData CloseSerialPortOfFieldByObjectCreationWithConditionalAccess() {
+            const string code = @"
+using System.Data;
+using System.IO.Ports;
+
+namespace bla
+{
+    internal class SomeClass : IDisposable
+    {
+        private SerialPort _sp;
+        public SomeClass()
+        {
+            _sp = new SerialPort();
+        }
+        public void Dispose(bool heho)
+        {
+            _sp?.Close();
+        }
+    }
+}
+";
+            return new TestCaseData(code, 0)
+                .SetName("Close on SerialPort internally calls Dispose - field assigned by object creation with conditional access");
+        }
+
+        private static TestCaseData CloseSerialPortOfProertyByFactoryMethodWithConditionalAccess() {
+            const string code = @"
+using System.Data;
+using System.IO.Ports;
+
+namespace bla
+{
+    internal class SomeClass : IDisposable
+    {
+        private SerialPort _sp {get; set;}
+        public SomeClass()
+        {
+            _sp = Create();
+        }
+        private SerialPort Create(){
+            return new SerialPort();
+        }
+        public void Dispose()
+        {
+            _sp?.Close();
+        }
+    }
+}
+";
+            return new TestCaseData(code, 0)
+                .SetName("Close on SerialPort internally calls Dispose - property assigned by factory method with conditional access");
+        }
+
+        private static TestCaseData CloseSerialPortOfPropertyByObjectCreationWithConditionalAccess() {
+            const string code = @"
+using System;
+using System.IO.Ports;
+
+namespace bla
+{
+    internal class SomeClass : IDisposable
+    {
+        private SerialPort _sp {get; set;}
+        public SomeClass()
+        {
+            _sp = new SerialPort();
+        }
+
+        public void Dispose(bool heho)
+        {
+            _sp?.Close();
+        }
+    }
+}
+";
+            return new TestCaseData(code, 0)
+                .SetName("Close on SerialPort internally calls Dispose - property assigned by object creation with conditional access");
         }
     }
 }
