@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DisposableFixer.Configuration;
@@ -12,26 +13,19 @@ internal static class MethodDeclarationSyntaxExtension
     public static bool IsDisposeMethod(this MethodDeclarationSyntax method,
         IConfiguration configuration, SemanticModel semanticModel)
     {
+        var parameterTypes = new Lazy<string[]>(() =>
+        {
+            return method.ParameterList.Parameters
+                .Select(p => (semanticModel.GetSymbolInfo(p.Type).Symbol as INamedTypeSymbol).GetFullNamespace())
+                .ToArray();
+        });
+
         IReadOnlyCollection<MethodCall> methods;
         if (configuration.DisposingMethods.TryGetValue(method.Identifier.Text, out methods))
         {
-            if (methods.Any(mc =>
-            {
-                var partlyEquals = mc.IsStatic == method.IsMissing
-                                   && mc.Parameter.Length == method.ParameterList.Parameters.Count;
-                if (!partlyEquals) return false;
-
-
-                //todo optimize this, this should only be excecuted once.
-                var parameterTypes = method.ParameterList.Parameters
-                    .Select(p => (semanticModel.GetSymbolInfo(p.Type).Symbol as INamedTypeSymbol).GetFullNamespace())
-                    .ToArray();
-
-                return parameterTypes.SequenceEqual(mc.Parameter);
-            }))
-            {
-                return true;
-            } 
+            return methods.Any(mc => mc.IsStatic == method.IsStatic()
+                                     && mc.Parameter.Length == method.ParameterList.Parameters.Count 
+                                     && parameterTypes.Value.SequenceEqual(mc.Parameter));
         }
         return method.AttributeLists
                     .SelectMany(als => als.Attributes)

@@ -211,7 +211,7 @@ namespace DisposableFixer
 
         private static bool ExistsDisposeCall(string localVariableName, InvocationExpressionSyntax[] invocationExpressions, SemanticModel semanticModel)
         {
-            return invocationExpressions.Any(ies => localVariableName != null && ies.IsCallToDisposeFor(localVariableName, semanticModel, Configuration));//todo fix this
+            return invocationExpressions.Any(ies => localVariableName != null && ies.IsCallToDisposeFor(localVariableName, semanticModel, Configuration));
         }
 
         private static bool IsArgumentInTrackingMethod(SyntaxNodeAnalysisContext context, string localVariableName, InvocationExpressionSyntax[] invocationExpressions)
