@@ -37,4 +37,10 @@ internal static class MethodDeclarationSyntaxExtension
     {
         return method.Modifiers.Any(SyntaxKind.StaticKeyword);
     }
+    public static bool Returns(this MethodDeclarationSyntax method, string name) {
+        if (name == null) return false;
+        return method.DescendantNodes<ReturnStatementSyntax>()
+            .Select(rss => rss.DescendantNodes<IdentifierNameSyntax>())
+            .Any(inss => inss.Any(ins => ins.Identifier.Text == name));
+    }
 }

@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DisposableFixer.Configuration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace DisposableFixer.Extensions
 {
@@ -190,21 +188,6 @@ namespace DisposableFixer.Extensions
             return func != null && func.Returns(localVariable);
         }
 
-        public static bool Returns(this MethodDeclarationSyntax method, string name)
-        {
-            if (name == null) return false;
-            return method.DescendantNodes<ReturnStatementSyntax>()
-                .Select(rss => rss.DescendantNodes<IdentifierNameSyntax>())
-                .Any(inss => inss.Any(ins => ins.Identifier.Text == name));
-        }
-
-        public static bool Returns(this ParenthesizedLambdaExpressionSyntax method, string name) {
-            if (name == null) return false;
-            return method.DescendantNodes<ReturnStatementSyntax>()
-                .Select(rss => rss.DescendantNodes<IdentifierNameSyntax>())
-                .Any(inss => inss.Any(ins => ins.Identifier.Text == name));
-        }
-
         /// <summary>
         /// Returns true, if field/property is disposed in Dispose or a DisposingMethod.
         /// </summary>
@@ -266,13 +249,6 @@ namespace DisposableFixer.Extensions
             return node?.Parent is ArgumentSyntax
                    && node?.Parent.Parent is ArgumentListSyntax
                    && node?.Parent?.Parent?.Parent is InvocationExpressionSyntax;
-        }
-
-        internal static bool IsMaybePartOfMethodChainUsingTrackingExtensionMethod(
-            this InvocationExpressionSyntax invocationExpression)
-        {
-            return invocationExpression?.Parent is MemberAccessExpressionSyntax
-                   && invocationExpression?.Parent?.Parent is InvocationExpressionSyntax;
         }
 
         public static bool IsParentADisposeCallIgnoringParenthesis(this SyntaxNode node)
@@ -491,30 +467,6 @@ namespace DisposableFixer.Extensions
 
                 temp = temp.Parent;
             }
-        }
-
-        public static string GetFullNamespace(this INamespaceOrTypeSymbol @namespace)
-        {
-            var stack = new Stack<string>();
-            while (@namespace.ContainingNamespace != null)
-            {
-                stack.Push(@namespace.Name);
-                @namespace = @namespace.ContainingNamespace;
-            }
-            return string.Join(".", stack);
-        }
-
-        /// <summary>
-        ///     Searches for inner SyntaxNode of the ArgumentSyntax at given position.
-        /// </summary>
-        /// <param name="node"></param>
-        /// <param name="position"></param>
-        /// <returns></returns>
-        public static SyntaxNode GetContentArgumentAtPosition(this ObjectCreationExpressionSyntax node, int position)
-        {
-            return node.ArgumentList.Arguments.Count < position
-                ? null
-                : node.ArgumentList.Arguments[position].DescendantNodes().FirstOrDefault();
         }
     }
 }

@@ -89,5 +89,11 @@ namespace DisposableFixer.Extensions
                 .Select(arg => arg.Expression as IdentifierNameSyntax)
                 .Any(identifier => identifier?.Identifier.Text == variable);
         }
+
+        internal static bool IsMaybePartOfMethodChainUsingTrackingExtensionMethod(
+            this InvocationExpressionSyntax invocationExpression) {
+            return invocationExpression?.Parent is MemberAccessExpressionSyntax
+                   && invocationExpression?.Parent?.Parent is InvocationExpressionSyntax;
+        }
     }
 }

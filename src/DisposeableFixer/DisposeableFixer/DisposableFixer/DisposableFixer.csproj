@@ -53,6 +53,9 @@
     <Compile Include="Extensions\ClassDeclarationSyntaxExtensions.cs" />
     <Compile Include="Extensions\InvocationExpressionSyntaxExtension.cs" />
     <Compile Include="Extensions\MethodDeclarationSyntaxExtension.cs" />
+    <Compile Include="Extensions\NamespaceOrTypeSymbolExtension.cs" />
+    <Compile Include="Extensions\ObjectCreationExpressionSyntaxExtension.cs" />
+    <Compile Include="Extensions\ParenthesizedLambdaExpressionSyntaxExtension.cs" />
     <Compile Include="Extensions\SymanticModelExtension.cs" />
     <Compile Include="Extensions\SyntaxNodeAnalysisContextExtension.cs" />
     <Compile Include="Extensions\SyntaxNodeExtensions.cs" />
