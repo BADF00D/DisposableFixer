@@ -14,11 +14,9 @@ namespace DisposableFixer
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class DisposableFixerAnalyzer : DiagnosticAnalyzer
     {
-        public const string Category = "Wrong Usage";
-
         private const string DisposableInterface = "IDisposable";
 
-	    private static readonly IDetector Detector = new TrackingTypeDetector();
+        private static readonly IDetector Detector = new TrackingTypeDetector();
         private static readonly IConfiguration Configuration = ConfigurationManager.Instance;
 
         // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.

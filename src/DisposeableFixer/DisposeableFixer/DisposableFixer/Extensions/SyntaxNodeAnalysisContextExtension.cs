@@ -13,7 +13,7 @@ namespace DisposableFixer.Extensions
         public const string IdForAssignmendFromMethodInvocationToFieldNotDisposed = "DF0021";
         public const string IdForAssignmendFromObjectCreationToPropertyNotDisposed = "DF0022";
         public const string IdForAssignmendFromMethodInvocationToPropertyNotDisposed = "DF0023";
-
+        private const string Category = "Wrong Usage";
 
         #region AnonymousObjectFromMethod
         private static readonly LocalizableString AnonymousObjectFromMethodInvocationTitle = new LocalizableResourceString(
@@ -31,7 +31,7 @@ namespace DisposableFixer.Extensions
             IdForAnonymousMethodInvocation,
             AnonymousObjectFromMethodInvocationTitle,
             AnonymousObjectFromMethodInvocationMessageFormat,
-            DisposableFixerAnalyzer.Category,
+            Category,
             DiagnosticSeverity.Warning, true, AnonymousObjectFromMethodInvocationDescription);
         #endregion
         
@@ -52,7 +52,7 @@ namespace DisposableFixer.Extensions
             IdForAnonymousObjectFromObjectCreation,
             AnonymousObjectFromObjectCreationTitle,
             AnonymousObjectFromObjectCreationMessageFormat,
-            DisposableFixerAnalyzer.Category,
+            Category,
             DiagnosticSeverity.Warning, true, AnonymousObjectFromObjectCreationDescription);
         #endregion
 
@@ -73,7 +73,7 @@ namespace DisposableFixer.Extensions
             IdForNotDisposedLocalVariable,
             NotDisposedLocalVariableTitle,
             NotDisposedLocalVariableMessageFormat,
-            DisposableFixerAnalyzer.Category,
+            Category,
             DiagnosticSeverity.Warning, true, NotDisposedLocalVariableDescription);
 
         #endregion NotDisposedLocalVariable
@@ -95,7 +95,7 @@ namespace DisposableFixer.Extensions
           IdForAssignmendFromObjectCreationToPropertyNotDisposed,
            AssignmendFromObjectCreationToPropertyNotDisposedTitle,
            AssignmendFromObjectCreationToPropertyNotDisposedMessageFormat,
-           DisposableFixerAnalyzer.Category,
+           Category,
            DiagnosticSeverity.Warning, true, AssignmendFromObjectCreationToPropertyNotDisposedDescription);
 
         #endregion
@@ -117,7 +117,7 @@ namespace DisposableFixer.Extensions
           IdForAssignmendFromObjectCreationToFieldNotDisposed,
            AssignmendFromObjectCreationToFieldNotDisposedTitle,
            AssignmendFromObjectCreationToFieldNotDisposedMessageFormat,
-           DisposableFixerAnalyzer.Category,
+           Category,
            DiagnosticSeverity.Warning, true, AssignmendFromObjectCreationToFieldNotDisposedDescription);
 
         #endregion
@@ -139,7 +139,7 @@ namespace DisposableFixer.Extensions
           IdForAssignmendFromMethodInvocationToFieldNotDisposed,
            AssignmendFromMethodInvocationToFieldNotDisposedTitle,
            AssignmendFromMethodInvocationToFieldNotDisposedMessageFormat,
-           DisposableFixerAnalyzer.Category,
+           Category,
            DiagnosticSeverity.Warning, true, AssignmendFromMethodInvocationToFieldNotDisposedDescription);
 
         #endregion
@@ -162,7 +162,7 @@ namespace DisposableFixer.Extensions
           IdForAssignmendFromMethodInvocationToPropertyNotDisposed,
            AssignmendFromMethodInvocationToPropertyNotDisposedTitle,
            AssignmendFromMethodInvocationToPropertyNotDisposedMessageFormat,
-           DisposableFixerAnalyzer.Category,
+           Category,
            DiagnosticSeverity.Warning, true, AssignmendFromMethodInvocationToPropertyNotDisposedDescription);
 
         #endregion
