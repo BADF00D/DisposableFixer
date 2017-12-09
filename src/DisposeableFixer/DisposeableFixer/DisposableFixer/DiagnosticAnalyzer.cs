@@ -53,7 +53,7 @@ namespace DisposableFixer
             var type = (symbolInfo.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
             if (type == null) { }
             else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new MemoryStream()).Dispose()
-            else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } 
+            else if (Detector.IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } 
             else if (node.IsReturnedInProperty()) AnalyseNodeInReturnStatementOfProperty(context, node, DisposableSource.ObjectCreation);
             else if (node.IsPartOfReturnStatementInMethod()) { }
             else if (node.IsReturnValueInLambdaExpression()) { }
@@ -354,7 +354,7 @@ namespace DisposableFixer
             else if (node.IsPartOfAwaitExpression()) AnalyseInvokationExpressionInsideAwaitExpression(context, node);
             else if (!type.IsDisposeableOrImplementsDisposable()) return;
             else if (node.IsReturnedInProperty()) AnalyseNodeInReturnStatementOfProperty(context, node, DisposableSource.InvokationExpression);
-            else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } //GetEnumerator()
+            else if (Detector.IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } //GetEnumerator()
             else if (Detector.IsTrackingMethodCall(node, context.SemanticModel)) { }//ignored extension methods
             else if (Detector.IsIgnoredFactoryMethod(node, context.SemanticModel)) return; //A.Fake<IDisposable>
             else if (node.IsMaybePartOfMethodChainUsingTrackingExtensionMethod())
@@ -397,7 +397,7 @@ namespace DisposableFixer
             var awaitExpressionInfo = context.SemanticModel.GetAwaitExpressionInfo(awaitExpression);
             var returnType = awaitExpressionInfo.GetResultMethod.ReturnType as INamedTypeSymbol;
             if (!returnType.IsDisposeableOrImplementsDisposable()) return;
-            if (IsIgnoredTypeOrImplementsIgnoredInterface(returnType)) return;
+            if (Detector.IsIgnoredTypeOrImplementsIgnoredInterface(returnType)) return;
             if (awaitExpression.IsDescendantOfUsingHeader()) return;
             if (awaitExpression.IsPartOfVariableDeclaratorInsideAUsingDeclaration()) return;
             if (awaitExpression.IsPartOfReturnStatementInMethod()) return;
@@ -410,19 +410,6 @@ namespace DisposableFixer
             {
                 context.ReportNotDisposedAnonymousObject(DisposableSource.InvokationExpression);
             }
-        }
-
-        private static bool IsIgnoredTypeOrImplementsIgnoredInterface(INamedTypeSymbol type)
-        {
-            if (!type.IsType) return false;
-            if (Detector.IsIgnoredType(type)) return true;
-            /* maybe the given type symbol is a interface. We cannot check if a type
-             * is a interface, so we simply take the brute force approach and check,
-             * if this type is in list of ignored interfaces */
-            if (Detector.IsIgnoredInterface(type)) return true;
-
-            var inter = type.AllInterfaces.Select(ai => ai);
-            return inter.Any(@if => Detector.IsIgnoredInterface(@if));
         }
     }
 }
