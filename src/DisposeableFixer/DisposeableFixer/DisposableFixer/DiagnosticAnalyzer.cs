@@ -59,7 +59,7 @@ namespace DisposableFixer
             else if (node.IsReturnValueInLambdaExpression()) { }
             else if (node.IsReturnedLaterWithinMethod()) { }
             else if (node.IsReturnedLaterWithinParenthesizedLambdaExpression()) { }
-            else if (!IsDisposeableOrImplementsDisposable(type)) { }
+            else if (!type.IsDisposeableOrImplementsDisposable()) { }
             else if (node.IsPartOfMethodCall())
             {
                 var methodInvocation = node.Parent.Parent.Parent as InvocationExpressionSyntax;
@@ -352,7 +352,7 @@ namespace DisposableFixer
             if (type == null) { }
             else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new object()).AsDisposable().Dispose()
             else if (node.IsPartOfAwaitExpression()) AnalyseInvokationExpressionInsideAwaitExpression(context, node);
-            else if (!IsDisposeableOrImplementsDisposable(type)) return;
+            else if (!type.IsDisposeableOrImplementsDisposable()) return;
             else if (node.IsReturnedInProperty()) AnalyseNodeInReturnStatementOfProperty(context, node, DisposableSource.InvokationExpression);
             else if (IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } //GetEnumerator()
             else if (Detector.IsTrackingMethodCall(node, context.SemanticModel)) { }//ignored extension methods
@@ -367,7 +367,7 @@ namespace DisposableFixer
                     if (Detector.IsTrackingMethodCall(baseNode, context.SemanticModel)) return;
                 }
             }
-            else if (!IsDisposeableOrImplementsDisposable(type)) { } 
+            else if (!type.IsDisposeableOrImplementsDisposable()) { } 
             else if (node.IsPartOfMethodCall()) {
                 var methodInvocation = node.Parent.Parent.Parent as InvocationExpressionSyntax;
                 if (Detector.IsTrackingMethodCall(methodInvocation, context.SemanticModel)) return;
@@ -396,7 +396,7 @@ namespace DisposableFixer
             var awaitExpression = node.Parent as AwaitExpressionSyntax;
             var awaitExpressionInfo = context.SemanticModel.GetAwaitExpressionInfo(awaitExpression);
             var returnType = awaitExpressionInfo.GetResultMethod.ReturnType as INamedTypeSymbol;
-            if (!IsDisposeableOrImplementsDisposable(returnType)) return;
+            if (!returnType.IsDisposeableOrImplementsDisposable()) return;
             if (IsIgnoredTypeOrImplementsIgnoredInterface(returnType)) return;
             if (awaitExpression.IsDescendantOfUsingHeader()) return;
             if (awaitExpression.IsPartOfVariableDeclaratorInsideAUsingDeclaration()) return;
@@ -423,21 +423,6 @@ namespace DisposableFixer
 
             var inter = type.AllInterfaces.Select(ai => ai);
             return inter.Any(@if => Detector.IsIgnoredInterface(@if));
-        }
-
-        private static bool IsDisposeableOrImplementsDisposable(ITypeSymbol typeInfo)
-        {
-            return IsIDisposable(typeInfo) || ImplementsIDisposable(typeInfo);
-        }
-
-        private static bool IsIDisposable(ISymbol typeInfo)
-        {
-            return typeInfo.Name == DisposableInterface;
-        }
-
-        private static bool ImplementsIDisposable(ITypeSymbol typeInfo)
-        {
-            return typeInfo.AllInterfaces.Any(i => i.Name == DisposableInterface);
         }
     }
 }
