@@ -259,7 +259,7 @@ namespace DisposableFixer.Extensions
                 }
                 var memberAccessExpressionSyntax = parent as MemberAccessExpressionSyntax;
                 if (memberAccessExpressionSyntax != null)
-                    return memberAccessExpressionSyntax.Name.Identifier.Text == "Dispose";
+                    return memberAccessExpressionSyntax.IsDisposeCall();
                 var conditionalAccessExpression = parent as ConditionalAccessExpressionSyntax;
                 if (conditionalAccessExpression != null)
                 {

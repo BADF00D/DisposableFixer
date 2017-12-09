@@ -53,6 +53,7 @@
     <Compile Include="Extensions\ClassDeclarationSyntaxExtensions.cs" />
     <Compile Include="Extensions\DetectorExtension.cs" />
     <Compile Include="Extensions\InvocationExpressionSyntaxExtension.cs" />
+    <Compile Include="Extensions\MemberAccessExpressionSyntaxExpression.cs" />
     <Compile Include="Extensions\MethodDeclarationSyntaxExtension.cs" />
     <Compile Include="Extensions\NamespaceOrTypeSymbolExtension.cs" />
     <Compile Include="Extensions\ObjectCreationExpressionSyntaxExtension.cs" />
