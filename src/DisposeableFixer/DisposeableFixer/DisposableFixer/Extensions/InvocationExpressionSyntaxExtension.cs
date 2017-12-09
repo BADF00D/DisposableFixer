@@ -55,11 +55,11 @@ namespace DisposableFixer.Extensions
 
                 
                 var memberType = semanticModel.GetTypeInfo(identifierSyntax).Type.GetFullNamespace();
-                IReadOnlyCollection<MethodCall> _specialDispose;
-                if (!configuration.DisposingMethodsAtSpecialClasses.TryGetValue(memberType, out _specialDispose))
+                IReadOnlyCollection<MethodCall> specialDispose;
+                if (!configuration.DisposingMethodsAtSpecialClasses.TryGetValue(memberType, out specialDispose))
                     return false;
 
-                var partlyEqual = _specialDispose.Any(mc => 
+                var partlyEqual = specialDispose.Any(mc => //node.IsCallToMethod(mc)
                     !mc.IsStatic 
                     && mc.Name == expression.Name.Identifier.Text
                     && mc.Parameter.Length == node.ArgumentList.Arguments.Count);
@@ -94,6 +94,21 @@ namespace DisposableFixer.Extensions
             this InvocationExpressionSyntax invocationExpression) {
             return invocationExpression?.Parent is MemberAccessExpressionSyntax
                    && invocationExpression?.Parent?.Parent is InvocationExpressionSyntax;
+        }
+
+        internal static bool IsCallToMethod(this InvocationExpressionSyntax invocationExpressionSyntax,
+            MethodCall method)
+        {
+            var memberAccessExpression = invocationExpressionSyntax.Expression as MemberAccessExpressionSyntax;
+            var isPartlyCorrect =  
+                memberAccessExpression?.Name.Identifier.Text == method.Name
+                && invocationExpressionSyntax.ArgumentList.Arguments.Count == method.Parameter.Length;
+            if (!isPartlyCorrect) return false;
+
+            //todo check parameres of each ies
+            
+            return true;
+
         }
     }
 }

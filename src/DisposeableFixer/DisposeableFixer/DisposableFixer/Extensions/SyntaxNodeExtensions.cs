@@ -21,13 +21,6 @@ namespace DisposableFixer.Extensions
             }
         }
 
-        public static bool IsPartOfNullPropagation(this SyntaxNode node)
-        {
-            return node?.Parent is ExpressionSyntax
-                   && node.Parent?.Parent is ParenthesizedExpressionSyntax
-                   && node.Parent.Parent?.Parent is ConditionalAccessExpressionSyntax;
-        }
-
         public static bool ContainsUsingsOfVariableNamed(this SyntaxNode node, string variableName)
         {
             return node.DescendantNodes()

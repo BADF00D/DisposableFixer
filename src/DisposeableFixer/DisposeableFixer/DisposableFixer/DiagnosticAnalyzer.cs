@@ -14,8 +14,6 @@ namespace DisposableFixer
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class DisposableFixerAnalyzer : DiagnosticAnalyzer
     {
-        private const string DisposableInterface = "IDisposable";
-
         private static readonly IDetector Detector = new TrackingTypeDetector();
         private static readonly IConfiguration Configuration = ConfigurationManager.Instance;
 
@@ -82,20 +80,7 @@ namespace DisposableFixer
             else if (node.IsPartOfAssignmentExpression()) AnalyseNodeInAssignmentExpression(context, node, DisposableSource.ObjectCreation);
             else if (node.IsPartOfPropertyExpressionBody())  AnalyseNodeInAutoPropertyOrPropertyExpressionBody(context, node, DisposableSource.ObjectCreation);
             else if (node.IsPartOfAutoProperty()) AnalyseNodeInAutoPropertyOrPropertyExpressionBody(context, node, DisposableSource.ObjectCreation);
-            else if (node.IsPartOfNullPropagation()) AnalyseNodeInNullPropagation(context, node, DisposableSource.ObjectCreation);
-            
             else context.ReportNotDisposedAnonymousObject(DisposableSource.ObjectCreation); //new MemoryStream();
-        }
-
-        private static void AnalyseNodeInNullPropagation(SyntaxNodeAnalysisContext context, ObjectCreationExpressionSyntax node, DisposableSource source)
-        {
-            var conditionalAccessExpression = node.Parent.Parent.Parent as ConditionalAccessExpressionSyntax;
-            var isDisposed = conditionalAccessExpression
-                .DescendantNodes<InvocationExpressionSyntax>()
-                .Any(ies => ies.IsCallToDispose());
-            if (isDisposed) return;
-
-            context.ReportNotDisposedAnonymousObject(source);
         }
 
         private static void CheckIfObjectCreationTracksNode(SyntaxNodeAnalysisContext context,ObjectCreationExpressionSyntax objectCreation, DisposableSource source)
@@ -180,10 +165,7 @@ namespace DisposableFixer
             if (Configuration.DisposingMethodsAtSpecialClasses.TryGetValue(fullName, out methodCalls))
             {
                 //todo check parameres of each ies
-                return methodCalls
-                    .Any(
-                        mc =>
-                            invocations.Any(ies => (ies.Expression as MemberAccessExpressionSyntax)?.Name.Identifier.Text == mc.Name));
+                return methodCalls.Any(mc => invocations.Any(ies => ies.IsCallToMethod(mc)));
                 
             }
             return false;
