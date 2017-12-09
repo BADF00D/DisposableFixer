@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using DisposableFixer.Configuration;
 using DisposableFixer.Extensions;
@@ -84,8 +85,20 @@ namespace DisposableFixer
             else if (node.IsPartOfAssignmentExpression()) AnalyseNodeInAssignmentExpression(context, node, DisposableSource.ObjectCreation);
             else if (node.IsPartOfPropertyExpressionBody())  AnalyseNodeInAutoPropertyOrPropertyExpressionBody(context, node, DisposableSource.ObjectCreation);
             else if (node.IsPartOfAutoProperty()) AnalyseNodeInAutoPropertyOrPropertyExpressionBody(context, node, DisposableSource.ObjectCreation);
+            else if (node.IsPartOfNullPropagation()) AnalyseNodeInNUllPropagation(context, node, DisposableSource.ObjectCreation);
             
             else context.ReportNotDisposedAnonymousObject(DisposableSource.ObjectCreation); //new MemoryStream();
+        }
+
+        private static void AnalyseNodeInNUllPropagation(SyntaxNodeAnalysisContext context, ObjectCreationExpressionSyntax node, DisposableSource source)
+        {
+            var conditionalAccessExpression = node.Parent.Parent.Parent as ConditionalAccessExpressionSyntax;
+            var isDisposed = conditionalAccessExpression
+                .DescendantNodes<InvocationExpressionSyntax>()
+                .Any(ies => ies.IsCallToDispose());
+            if (isDisposed) return;
+
+            context.ReportNotDisposedAnonymousObject(source);
         }
 
         private static void CheckIfObjectCreationTracksNode(SyntaxNodeAnalysisContext context,ObjectCreationExpressionSyntax objectCreation, DisposableSource source)

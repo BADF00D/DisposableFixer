@@ -72,19 +72,15 @@ namespace DisposableFixer.Extensions
         public static bool IsCallToDispose(this InvocationExpressionSyntax node) {
             var syntax = node.Parent as ConditionalAccessExpressionSyntax;
             if (syntax != null) {
-                var condAccess = syntax;
-                var identifierSyntax = condAccess.Expression as InvocationExpressionSyntax;
-                if (identifierSyntax == null) return false;
                 var mbe = node.Expression as MemberBindingExpressionSyntax;
                 return mbe?.Name.Identifier.Text == "Dispose";
-            } else {
-                var expression = node.Expression as MemberAccessExpressionSyntax;
-
-                var identifierSyntax = expression?.Expression as IdentifierNameSyntax;
-                if (identifierSyntax == null) return false;
-
-                return expression.Name.Identifier.Text == "Dispose";
             }
+            var expression = node.Expression as MemberAccessExpressionSyntax;
+
+            var identifierSyntax = expression?.Expression as IdentifierNameSyntax;
+            if (identifierSyntax == null) return false;
+
+            return expression.Name.Identifier.Text == "Dispose";
         }
 
         public static bool UsesVariableInArguments(this InvocationExpressionSyntax invocationExpression, string variable)
