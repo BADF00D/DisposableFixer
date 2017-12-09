@@ -31,6 +31,6 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("0.33.*")]
-[assembly: AssemblyFileVersion("0.33.0.0")]
+[assembly: AssemblyVersion("0.35.*")]
+[assembly: AssemblyFileVersion("0.35.0.0")]
 [assembly: InternalsVisibleTo("DisposableFixer.Test")]

@@ -1,5 +1,10 @@
-﻿Release 0.34
+﻿Release 0.35
+* Issue 70: Added support for Dispose methods, that are only valid for certains classes. E.g. SerialPort.Close internally calls Dispose.
+* Issue 71: Added support to detect objects disposed via null propagation.
+
+Release 0.34
 * Issue 69: DataColumn, DataViewManager, DataSet and DataTable from System.Data now get ignored durign analysis.
+
 Release 0.33
 * Issue 38: Added support for ILoggerFactory from Asp.Net Core.
 * Issue 63: Added support for IWindsorContainer.Regsiter methods.
