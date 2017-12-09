@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using DisposableFixer.Configuration;
 using Microsoft.CodeAnalysis;
@@ -13,26 +14,36 @@ namespace DisposableFixer.Extensions
             var syntax = node.Parent as ConditionalAccessExpressionSyntax;
             if (syntax != null)
             {
+                /** indentifier?.Dispose or (identifier as IDisposbale)?.Dispose **/
                 var condAccess = syntax;
                 var identifierSyntax = condAccess.Expression as IdentifierNameSyntax;
-                if (identifierSyntax == null) return false;
-                var expression = node.Expression as MemberBindingExpressionSyntax;
+                if (identifierSyntax != null)
+                {
+                    var expression = node.Expression as MemberBindingExpressionSyntax;
 
-                if (identifierSyntax.Identifier.Text == identifier
-                    && expression.Name.Identifier.Text == "Dispose") return true;
+                    if (identifierSyntax.Identifier.Text == identifier
+                        && expression.Name.Identifier.Text == "Dispose") return true;
 
-                var memberType = semanticModel.GetTypeInfo(identifierSyntax).Type.GetFullNamespace();
-                IReadOnlyCollection<MethodCall> _specialDispose;
-                if (!configuration.DisposingMethodsAtSpecialClasses.TryGetValue(memberType, out _specialDispose))
-                    return false;
+                    var memberType = semanticModel.GetTypeInfo(identifierSyntax).Type.GetFullNamespace();
+                    IReadOnlyCollection<MethodCall> _specialDispose;
+                    if (!configuration.DisposingMethodsAtSpecialClasses.TryGetValue(memberType, out _specialDispose))
+                        return false;
 
-                var partlyEqual = _specialDispose.Any(mc =>
-                    !mc.IsStatic
-                    && mc.Name == expression.Name.Identifier.Text
-                    && mc.Parameter.Length == node.ArgumentList.Arguments.Count);
-                /* We have to check the parameter types, but unfortunatelly such an example and unittest does not exists jet.
+                    var partlyEqual = _specialDispose.Any(mc =>
+                        !mc.IsStatic
+                        && mc.Name == expression.Name.Identifier.Text
+                        && mc.Parameter.Length == node.ArgumentList.Arguments.Count);
+                    /* We have to check the parameter types, but unfortunatelly such an example and unittest does not exists jet.
                        For now, we have enought information */
-                return partlyEqual;
+                    return partlyEqual;
+                }
+                var parenthesizedExpressionSyntax = condAccess.Expression as ParenthesizedExpressionSyntax;
+                if (parenthesizedExpressionSyntax == null) return false;
+                {
+                    var binaryExpression = parenthesizedExpressionSyntax.Expression as BinaryExpressionSyntax;
+                    if (binaryExpression == null) return false;
+                    return (binaryExpression.Left as IdentifierNameSyntax)?.Identifier.Text == identifier;
+                }
             }
             else
             {
