@@ -38,9 +38,9 @@ namespace DisposableFixer.Configuration
             if (!_configuration.IgnoredTrackingTypeCtorCalls.TryGetValue(name, out nonTrackingCtorsForThisType))
                 return true;
 
-            var nonTrackingCtorsWithSameParameterCount =
-                nonTrackingCtorsForThisType.Where(c => c.Parameter.Length == node.ArgumentList.Arguments.Count)
-                    .ToArray();
+            var nonTrackingCtorsWithSameParameterCount = nonTrackingCtorsForThisType
+                .Where(c => c.Parameter.Length == node.ArgumentList.Arguments.Count)
+                .ToArray();
 
             if (!nonTrackingCtorsWithSameParameterCount.Any()) return true;
 
@@ -115,15 +115,12 @@ namespace DisposableFixer.Configuration
             //todo merge with AnalyseExtensionMethodCall
             var originalDefinition = method.OriginalDefinition;
             var methodName = method.Name;
-            var @namespace = originalDefinition.ContainingType.GetFullNamespace(); 
+            var @namespace = originalDefinition.ContainingType.GetFullNamespace();
 
-            var methodCalls =
-                _configuration.TrackingMethods.Where(tm => tm.Key == @namespace)
+            return _configuration.TrackingMethods
+                .Where(tm => tm.Key == @namespace)
                 .Select(tm => tm.Value)
-                .ToArray();
-            if (!methodCalls.Any()) return false;
-
-            return methodCalls.Any(tm => tm.Any(mc => mc.Name == methodName));
+                .Any(tm => tm.Any(mc => mc.Name == methodName));
         }
 
         private bool AnalyseExtensionMethodCall(IMethodSymbol method)
@@ -131,21 +128,16 @@ namespace DisposableFixer.Configuration
             var originalDefinition = method.OriginalDefinition;
             var methodName = method.Name;
             var @namespace = originalDefinition.ContainingType.GetFullNamespace(); //does not work classname missing
-            
-            var extensionMethods =
-                _configuration.TrackingMethods.Where(tm => tm.Key == @namespace).Select(tm => tm.Value).ToArray();
-            if (!extensionMethods.Any()) return false;
 
             var numberOfParameter = originalDefinition.Parameters.Count();
-            return extensionMethods.Any(tm => tm.Any(mc => 
-                mc.Name == methodName
-                && mc.IsStatic
-                && mc.Parameter.Length -1 == numberOfParameter
-            ));
+            return _configuration.TrackingMethods
+                .Where(tm => tm.Key == @namespace)
+                .Select(tm => tm.Value)
+                .Any(tm => tm.Any(mc => mc.Name == methodName && mc.IsStatic && mc.Parameter.Length -1 == numberOfParameter));
         }
 
         private static CtorCall GetCtorConfiguration(IMethodSymbol ctorInUse,
-            CtorCall[] nonTrackingCtorsWithSameParameterCount)
+            IEnumerable<CtorCall> nonTrackingCtorsWithSameParameterCount)
         {
             foreach (var ctorCall in nonTrackingCtorsWithSameParameterCount)
             {

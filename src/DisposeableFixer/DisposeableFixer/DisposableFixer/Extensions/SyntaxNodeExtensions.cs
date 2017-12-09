@@ -201,11 +201,9 @@ namespace DisposableFixer.Extensions
             var classDeclarationSyntax = nodeInClass.FindContainingClass();
             if (classDeclarationSyntax == null) return false;
 
-            var disposeMethods = classDeclarationSyntax
+            return classDeclarationSyntax
                 .DescendantNodes<MethodDeclarationSyntax>()
                 .Where(mds => mds.IsDisposeMethod(configuration, semanticModel))
-                .ToArray();
-            return disposeMethods
                 .SelectMany(disposeMethod => disposeMethod.DescendantNodes<InvocationExpressionSyntax>())
                 .Any(ies => ies.IsCallToDisposeFor(nameOfVariable, semanticModel, configuration));
         }
@@ -272,8 +270,9 @@ namespace DisposableFixer.Extensions
                 var conditionalAccessExpression = parent as ConditionalAccessExpressionSyntax;
                 if (conditionalAccessExpression != null)
                 {
-                    var invocationExpressions = conditionalAccessExpression.DescendantNodes<InvocationExpressionSyntax>().ToArray();
-                    return invocationExpressions.Any(ies => ies.IsCallToDispose());
+                    return conditionalAccessExpression
+                        .DescendantNodes<InvocationExpressionSyntax>()
+                        .Any(ies => ies.IsCallToDispose());
                 }
 
                 parent = parent.Parent;

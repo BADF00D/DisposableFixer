@@ -82,12 +82,12 @@ namespace DisposableFixer
             else if (node.IsPartOfAssignmentExpression()) AnalyseNodeInAssignmentExpression(context, node, DisposableSource.ObjectCreation);
             else if (node.IsPartOfPropertyExpressionBody())  AnalyseNodeInAutoPropertyOrPropertyExpressionBody(context, node, DisposableSource.ObjectCreation);
             else if (node.IsPartOfAutoProperty()) AnalyseNodeInAutoPropertyOrPropertyExpressionBody(context, node, DisposableSource.ObjectCreation);
-            else if (node.IsPartOfNullPropagation()) AnalyseNodeInNUllPropagation(context, node, DisposableSource.ObjectCreation);
+            else if (node.IsPartOfNullPropagation()) AnalyseNodeInNullPropagation(context, node, DisposableSource.ObjectCreation);
             
             else context.ReportNotDisposedAnonymousObject(DisposableSource.ObjectCreation); //new MemoryStream();
         }
 
-        private static void AnalyseNodeInNUllPropagation(SyntaxNodeAnalysisContext context, ObjectCreationExpressionSyntax node, DisposableSource source)
+        private static void AnalyseNodeInNullPropagation(SyntaxNodeAnalysisContext context, ObjectCreationExpressionSyntax node, DisposableSource source)
         {
             var conditionalAccessExpression = node.Parent.Parent.Parent as ConditionalAccessExpressionSyntax;
             var isDisposed = conditionalAccessExpression
@@ -172,7 +172,7 @@ namespace DisposableFixer
             context.ReportNotDisposedLocalDeclaration();
         }
 
-        private static bool IsCallToMethodThatIsConsideredAsDisposeCall(InvocationExpressionSyntax[] invocations,
+        private static bool IsCallToMethodThatIsConsideredAsDisposeCall(IEnumerable<InvocationExpressionSyntax> invocations,
             SyntaxNodeAnalysisContext context)
         {
             var fullName = GetReturnOrReceivedType(context);
@@ -197,14 +197,14 @@ namespace DisposableFixer
             {
                 return ((typeInfo.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol).GetFullNamespace();
             }
-            else if(node is InvocationExpressionSyntax)
+            if(node is InvocationExpressionSyntax)
             {
                 return ((typeInfo.Symbol as IMethodSymbol)?.ReturnType as INamedTypeSymbol).GetFullNamespace();
             }
             throw new ArgumentException($"Unexpected Node Type: '{node.GetType()}'");
         }
 
-        private static bool IsArgumentInConstructorOfTrackingTypeWithinUsing(SyntaxNodeAnalysisContext context, IdentifierNameSyntax[] localVariableInsideUsing)
+        private static bool IsArgumentInConstructorOfTrackingTypeWithinUsing(SyntaxNodeAnalysisContext context, IEnumerable<IdentifierNameSyntax> localVariableInsideUsing)
         {
             return localVariableInsideUsing
                 .Select(id => id.Parent?.Parent?.Parent)
@@ -219,12 +219,12 @@ namespace DisposableFixer
                 });
         }
 
-        private static bool ExistsDisposeCall(string localVariableName, InvocationExpressionSyntax[] invocationExpressions, SemanticModel semanticModel)
+        private static bool ExistsDisposeCall(string localVariableName, IEnumerable<InvocationExpressionSyntax> invocationExpressions, SemanticModel semanticModel)
         {
             return invocationExpressions.Any(ies => localVariableName != null && ies.IsCallToDisposeFor(localVariableName, semanticModel, Configuration));
         }
 
-        private static bool IsArgumentInTrackingMethod(SyntaxNodeAnalysisContext context, string localVariableName, InvocationExpressionSyntax[] invocationExpressions)
+        private static bool IsArgumentInTrackingMethod(SyntaxNodeAnalysisContext context, string localVariableName, IEnumerable<InvocationExpressionSyntax> invocationExpressions)
         {
             return invocationExpressions.Any(ie => ie.UsesVariableInArguments(localVariableName) && Detector.IsTrackingMethodCall(ie, context.SemanticModel));
         }
