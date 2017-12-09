@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.NullPropagation
 {
     [TestFixture]
-    internal class If_Analyser_runs_on_property_disposed_via_null_propagation :
+    internal class If_Analyser_runs_on_property_created_via_ObjectCreation_disposed_via_null_propagation :
         DisposeableFixerAnalyzerSpec
     {
         private Diagnostic[] _diagnostics;

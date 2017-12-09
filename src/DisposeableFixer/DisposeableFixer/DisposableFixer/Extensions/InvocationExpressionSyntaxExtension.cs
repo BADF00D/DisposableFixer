@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using DisposableFixer.Configuration;
 using Microsoft.CodeAnalysis;

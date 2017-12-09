@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.NullPropagation
 {
     [TestFixture]
-    internal class If_Analyser_runs_on_a_local_variable_disposed_via_null_propagation :
+    internal class If_Analyser_runs_on_a_local_variable_created_via_MethodInvocation_disposed_via_null_propagation :
         DisposeableFixerAnalyzerSpec
     {
         private Diagnostic[] _diagnostics;
@@ -19,15 +19,17 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.NullPropagation
 using System;
 using System.IO;
 
-namespace StoreObjectAsNonDispsable
-{
-    internal class AndUseAsIDisposableWithNUllPropagationToDisposeIt
-    {
-        public AndUseAsIDisposableWithNUllPropagationToDisposeIt()
-        {
-            object ms = new MemoryStream();
+namespace StoreObjectAsNonDispsable {
+    internal class AndUseAsIDisposableWithNUllPropagationToDisposeIt {
+        public AndUseAsIDisposableWithNUllPropagationToDisposeIt() {
+            object ms = Create();
 
             (ms as IDisposable)?.Dispose();
+        }
+
+        private IDisposable Create()
+        {
+            return new MemoryStream();
         }
     }
 }
