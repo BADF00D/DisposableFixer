@@ -178,6 +178,7 @@
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_57.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_63.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_65.cs" />
+    <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_71.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_70.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_69.cs" />
     <Compile Include="IssueTests\If_Analyser_runs_on_code_from_issue_68.cs" />
