@@ -1,4 +1,7 @@
-﻿Release 0.35
+﻿Release 0.36
+* Issue 42. Added CodeFix for undisposed fields and proeprties. NOT TESTED YET.
+
+Release 0.35
 * Issue 70: Added support for Dispose methods, that are only valid for certains classes. E.g. SerialPort.Close internally calls Dispose.
 * Issue 71: Added support to detect objects disposed via null propagation.
 
