@@ -178,8 +178,8 @@ namespace DisposableFixer.Extensions
             properties.Add(Constants.Variablename, variableName);
 
             context.ReportDiagnostic(source == DisposableSource.InvokationExpression
-                ? Diagnostic.Create(AssignmendFromMethodInvocationToFieldNotDisposedDescriptor, location, properties)
-                : Diagnostic.Create(AssignmendFromObjectCreationToFieldNotDisposedDescriptor, location, properties));
+                ? Diagnostic.Create(AssignmendFromMethodInvocationToFieldNotDisposedDescriptor, location, properties.ToImmutable())
+                : Diagnostic.Create(AssignmendFromObjectCreationToFieldNotDisposedDescriptor, location, properties.ToImmutable()));
         }
 
         public static void ReportNotDisposedProperty(this SyntaxNodeAnalysisContext context, string variableName,  DisposableSource source) {
