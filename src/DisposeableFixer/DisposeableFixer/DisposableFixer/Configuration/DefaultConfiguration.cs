@@ -14,9 +14,9 @@ namespace DisposableFixer.Configuration {
 				"System.Resources.ResourceReader",
 				"System.Resources.ResourceSet",
 				"System.Resources.ResourceWriter",
-                "Newtonsoft.Json.JsonTextWriter",
-                "Newtonsoft.Json.Bson.BsonWriter",
-                "Newtonsoft.Json.Bson.BsonWriter",
+                //"Newtonsoft.Json.JsonTextWriter",
+                //"Newtonsoft.Json.Bson.BsonWriter",
+                //"Newtonsoft.Json.Bson.BsonWriter",
                 "System.Reactive.Disposables.CompositeDisposable",
                 "LumenWorks.Framework.IO.Csv.CsvReader"
             };
