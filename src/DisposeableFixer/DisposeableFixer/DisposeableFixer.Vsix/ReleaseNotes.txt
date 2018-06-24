@@ -1,4 +1,7 @@
-﻿Release 0.36
+﻿Release 0.37
+* Issue 73. Added support for Newtonsoft.Json.JsonTextReader
+
+Release 0.36
 * Issue 42. Added CodeFix for undisposed fields and proeprties. NOT TESTED YET.
 
 Release 0.35
