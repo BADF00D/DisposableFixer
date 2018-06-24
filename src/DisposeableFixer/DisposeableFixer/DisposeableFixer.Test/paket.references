@@ -1,7 +1,0 @@
-FakeItEasy
-FluentAssertions
-JetBrains.dotMemoryUnit
-Microsoft.CodeAnalysis.CSharp.Workspaces
-Microsoft.CodeAnalysis.VisualBasic.Workspaces
-NUnit
-NUnit.Runners

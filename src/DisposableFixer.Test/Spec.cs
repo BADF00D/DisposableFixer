@@ -14,12 +14,11 @@ namespace DisposableFixer.Test
 
         public Spec()
         {
-            ServicePointManager.Expect100Continue = false;
             SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
         }
 
         [DebuggerStepThrough]
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void TestFixtureSetUp()
         {
             EstablishContext();
@@ -27,7 +26,7 @@ namespace DisposableFixer.Test
         }
 
         [DebuggerStepThrough]
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public void TearDown()
         {
             foreach (var dispose_action in _dispose_actions)
