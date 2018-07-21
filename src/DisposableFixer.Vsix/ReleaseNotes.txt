@@ -1,4 +1,7 @@
-﻿Release 0.37
+﻿Release 0.38
+* Upgrade to latest version of Roslyn. Switch to .Net Standard.
+
+Release 0.37
 * Issue 73. Added support for Newtonsoft.Json.JsonTextReader
 
 Release 0.36
