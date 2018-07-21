@@ -1,3 +1,4 @@
+using System.Data;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using NUnit.Framework;
@@ -23,7 +24,41 @@ namespace bla
             var dmv = new DataViewManager();
         }
     }
-}";
+}
+namespace System.Data
+{
+    public class DataSet : IDisposable {
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+    }
+    public class DataTable : IDisposable {
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+    }
+    public class DataView : IDisposable {
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+    }
+    public class DataColumn : IDisposable {
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+    }
+    public class DataViewManager : IDisposable {
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+    }
+}
+";
 
         private Diagnostic[] _diagnostics;
 

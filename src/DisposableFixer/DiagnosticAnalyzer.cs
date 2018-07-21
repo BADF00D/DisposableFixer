@@ -195,6 +195,7 @@ namespace DisposableFixer
                 .Any(ocs =>
                 {
                     var sym = context.SemanticModel.GetSymbolInfo(ocs);
+                    var s = context.SemanticModel.GetDeclaredSymbol(ocs);
                     var type2 = (sym.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
 
                     return Detector.IsTrackedType(type2, ocs, context.SemanticModel);

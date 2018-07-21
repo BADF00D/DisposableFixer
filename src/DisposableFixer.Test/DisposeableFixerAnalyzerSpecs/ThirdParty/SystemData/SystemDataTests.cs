@@ -31,6 +31,39 @@ namespace bla
         }
     }
 }
+namespace System.Data
+{
+    public class DataSet : IDisposable {
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+    }
+    public class DataTable : IDisposable {
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+    }
+    public class DataView : IDisposable {
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+    }
+    public class DataColumn : IDisposable {
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+    }
+    public class DataViewManager : IDisposable {
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+    }
+}
 ";
 
         [Test, TestCaseSource(nameof(TestCases))]
