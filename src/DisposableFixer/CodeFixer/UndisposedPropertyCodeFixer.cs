@@ -11,7 +11,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Text;
 
 namespace DisposableFixer.CodeFixer
 {
@@ -61,62 +60,51 @@ namespace DisposableFixer.CodeFixer
             var node = oldRoot.FindNode(context.Span);
             var variableName = context.Diagnostics.First().Properties[Constants.Variablename];
 
-            ClassDeclarationSyntax oldClass;
-            if (node.TryFindParentClass(out oldClass))
+            var editor = await DocumentEditor.CreateAsync(context.Document, context.CancellationToken);
+
+            if (node.TryFindParentClass(out var oldClass))
             {
                 var model = await context.Document.GetSemanticModelAsync(cancel);
+                var containingSymbol = model.GetEnclosingSymbol(context.Span.Start, cancel).ContainingSymbol;
                 var @classtype =
-                    model.GetEnclosingSymbol(context.Span.Start, cancel).ContainingSymbol as INamedTypeSymbol;
+                    containingSymbol as INamedTypeSymbol;
                 if (@classtype == null) return context.Document;
 
+
+                if (!(oldClass.BaseList != null && oldClass.BaseList.Types.Any(bts =>
+                         bts.DescendantNodes<IdentifierNameSyntax>().Any(ins => ins.Identifier.Text == "IDisposable"))))
+                {
+                    var disposeDeclaration = SyntaxFactory.IdentifierName("IDisposable");
+                    editor.AddBaseType(oldClass, disposeDeclaration);
+                }
 
                 var disposeMethods = oldClass
                     .DescendantNodes<MethodDeclarationSyntax>()
                     .Where(mds => mds.Identifier.Text == Constants.Dispose && mds.ParameterList.Parameters.Count == 0)
                     .ToArray();
-                SyntaxNode newRoot;
+
                 if (disposeMethods.Any())
                 {
                     var oldDisposeMethod = disposeMethods.First();
-                    var disposeCall = SyntaxFactory
-                        .ExpressionStatement(
-                            SyntaxFactory.InvocationExpression(
-                                SyntaxFactory.MemberAccessExpression(
-                                    SyntaxKind.SimpleMemberAccessExpression,
-                                    SyntaxFactory.IdentifierName(variableName),
-                                    SyntaxFactory.IdentifierName(Constants.Dispose))))
-                        .NormalizeWhitespace();
-                    var newdisposeMethod = oldDisposeMethod.AddBodyStatements(disposeCall);
-
-                    var implementsIDisposable =
-                        @classtype.AllInterfaces.Any(i => i.GetFullNamespace() == Constants.SystemIDisposable);
-                    ClassDeclarationSyntax newClass;
-                    if (implementsIDisposable)
-                    {
-                        newClass = oldClass;
-                    }
-                    else if (oldClass.BaseList == null)
-                    {
-                        newClass = SyntaxFactory
-                            .ClassDeclaration(oldClass.Identifier.Text)
-                            .WithModifiers(oldClass.Modifiers)
-                            .WithBaseList(
-                                SyntaxFactory.BaseList(
-                                    SyntaxFactory.SingletonSeparatedList<BaseTypeSyntax>(ImplementIDisposable())))
-                            .WithMembers(oldClass.Members)
-                            .NormalizeWhitespace();
-                    }
-                    else
-                    {
-                        var newBaseList =
-                            oldClass.BaseList.AddTypes(
-                                SyntaxFactory.SimpleBaseType(SyntaxFactory.IdentifierName(Constants.IDisposable))
-                                    .NormalizeWhitespace());
-                        newClass = oldClass.ReplaceNode(oldClass.BaseList, newBaseList);
-                    }
-
-                    newClass = newClass.ReplaceNode(oldDisposeMethod, newdisposeMethod);
-                    newRoot = oldRoot.ReplaceNode(oldClass, newClass);
+                    var oldStatements = oldDisposeMethod.Body.Statements;
+                    var newStatements = oldStatements
+                        .Add(SyntaxFactory.ExpressionStatement(
+                            SyntaxFactory.ConditionalAccessExpression(
+                                SyntaxFactory.IdentifierName(variableName),
+                                SyntaxFactory.InvocationExpression(
+                                    SyntaxFactory.MemberBindingExpression(
+                                        SyntaxFactory.IdentifierName(Constants.Dispose))))));
+                    var newDisposeMethod = SyntaxFactory
+                        .MethodDeclaration(
+                            SyntaxFactory.PredefinedType(
+                                SyntaxFactory.Token(SyntaxKind.VoidKeyword)),
+                            SyntaxFactory.Identifier(Constants.Dispose))
+                        .WithModifiers(
+                            SyntaxFactory.TokenList(
+                                SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
+                        .WithBody(SyntaxFactory.Block(newStatements))
+                        .WithoutAnnotations(Formatter.Annotation);
+                    editor.ReplaceNode(oldDisposeMethod, newDisposeMethod);
                 }
                 else
                 {
@@ -132,54 +120,27 @@ namespace DisposableFixer.CodeFixer
                             SyntaxFactory.Block(
                                 SyntaxFactory.SingletonList<StatementSyntax>(
                                     SyntaxFactory.ExpressionStatement(
-                                        SyntaxFactory.InvocationExpression(
-                                            SyntaxFactory.MemberAccessExpression(
-                                                SyntaxKind.SimpleMemberAccessExpression,
-                                                SyntaxFactory.IdentifierName(variableName),
-                                                SyntaxFactory.IdentifierName(Constants.Dispose)))))))
+                                        SyntaxFactory.ConditionalAccessExpression(
+                                            SyntaxFactory.IdentifierName(variableName),
+                                            SyntaxFactory.InvocationExpression(SyntaxFactory.MemberBindingExpression(SyntaxFactory.IdentifierName(Constants.Dispose))))).WithSemicolonToken(SyntaxFactory.MissingToken(SyntaxKind.SemicolonToken)))))
                         .NormalizeWhitespace();
-
-                    var implementsIDisposable =
-                        @classtype.AllInterfaces.Any(i => i.GetFullNamespace() == Constants.SystemIDisposable);
-                    ClassDeclarationSyntax newClass;
-                    if (implementsIDisposable)
-                    {
-                        newClass = oldClass;
-                    }
-                    else if (oldClass.BaseList == null)
-                    {
-                        newClass = SyntaxFactory
-                            .ClassDeclaration(oldClass.Identifier.Text)
-                            .WithModifiers(oldClass.Modifiers)
-                            .WithBaseList(
-                                SyntaxFactory.BaseList(
-                                    SyntaxFactory.SingletonSeparatedList<BaseTypeSyntax>(ImplementIDisposable())))
-                            .WithMembers(oldClass.Members)
-                            .NormalizeWhitespace();
-                    }
-                    else
-                    {
-                        var newBaseList =
-                            oldClass.BaseList.AddTypes(
-                                SyntaxFactory.SimpleBaseType(SyntaxFactory.IdentifierName(Constants.IDisposable))
-                                    .NormalizeWhitespace());
-                        newClass = oldClass.ReplaceNode(oldClass.BaseList, newBaseList);
-                    }
-
-                    newRoot = oldRoot.ReplaceNode(oldClass, newClass.AddMembers(disposeMethod));
+                    editor.AddMember(oldClass,disposeMethod);
                 }
-                //var editor = await DocumentEditor.CreateAsync(context.Document, context.CancellationToken);
-                
-                return context.Document.WithSyntaxRoot(newRoot);
+
+                var usings = oldRoot.DescendantNodes<UsingDirectiveSyntax>()
+                    .ToArray();
+                var systemImport = usings
+                    .SelectMany(uds => uds.DescendantNodes<QualifiedNameSyntax>())
+                    .Select(qns => qns.DescendantNodes<IdentifierNameSyntax>().ToArray())
+                    .FirstOrDefault(inss => inss.Length == 1 && inss[0].Identifier.Text == "System");
+
+                if (systemImport == null)
+                {
+                    var newSystemImport = SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("System"));
+                    editor.InsertAfter(usings.Last(), new []{ newSystemImport });
+                }
             }
-
-            return context.Document;
-        }
-
-        private static SimpleBaseTypeSyntax ImplementIDisposable()
-        {
-            return SyntaxFactory.SimpleBaseType(
-                SyntaxFactory.IdentifierName(Constants.IDisposable));
+            return editor.GetChangedDocument();
         }
     }
 }
