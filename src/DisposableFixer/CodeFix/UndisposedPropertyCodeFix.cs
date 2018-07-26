@@ -12,10 +12,10 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Formatting;
 
-namespace DisposableFixer.CodeFixer
+namespace DisposableFixer.CodeFix
 {
-    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UndisposedPropertyCodeFixer)), Shared]
-    public class UndisposedPropertyCodeFixer : CodeFixProvider
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UndisposedPropertyCodeFix)), Shared]
+    public class UndisposedPropertyCodeFix : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(

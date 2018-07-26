@@ -58,6 +58,39 @@ namespace TestHelper
             VerifyFix(LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), GetBasicCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
         }
 
+        protected string ApplyCSharpCodeFix(string oldSource, int? codeFixIndex = null)
+        {
+            var analyzer = GetCSharpDiagnosticAnalyzer();
+            var codeFixProvider = GetCSharpCodeFixProvider();
+            var document = CreateDocument(oldSource);
+            var analyzerDiagnostics = GetSortedDiagnosticsFromDocuments(analyzer, new[] { document });
+            var attempts = analyzerDiagnostics.Length;
+
+            for (var i = 0; i < attempts; ++i)
+            {
+                var actions = new List<CodeAction>();
+                var context = new CodeFixContext(document, analyzerDiagnostics[0], (a, d) => actions.Add(a), CancellationToken.None);
+                codeFixProvider.RegisterCodeFixesAsync(context).Wait();
+
+                if (!actions.Any())
+                {
+                    return oldSource;
+                }
+
+                if (codeFixIndex != null)
+                {
+                    document = ApplyFix(document, actions.ElementAt((int)codeFixIndex));
+                    break;
+                }
+
+                document = ApplyFix(document, actions.ElementAt(0));
+                analyzerDiagnostics = GetSortedDiagnosticsFromDocuments(analyzer, new[] { document });
+            }
+
+            //after applying all of the code fixes, compare the resulting string to the inputted one
+            return GetStringFromDocument(document);
+        }
+
         /// <summary>
         /// General verifier for codefixes.
         /// Creates a Document from the source string, then gets diagnostics on it and applies the relevant codefixes.
