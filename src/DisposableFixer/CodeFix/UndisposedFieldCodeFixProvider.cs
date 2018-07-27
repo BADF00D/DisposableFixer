@@ -14,8 +14,8 @@ namespace DisposableFixer.CodeFix
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(
-                SyntaxNodeAnalysisContextExtension.IdForAssignmendFromMethodInvocationToPropertyNotDisposed,
-                SyntaxNodeAnalysisContextExtension.IdForAssignmendFromObjectCreationToPropertyNotDisposed
+                SyntaxNodeAnalysisContextExtension.IdForAssignmendFromMethodInvocationToFieldNotDisposed,
+                SyntaxNodeAnalysisContextExtension.IdForAssignmendFromObjectCreationToFieldNotDisposed
             );
 
         public override Task RegisterCodeFixesAsync(CodeFixContext context)

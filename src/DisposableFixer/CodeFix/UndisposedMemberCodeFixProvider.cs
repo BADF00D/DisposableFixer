@@ -12,7 +12,6 @@ using Microsoft.CodeAnalysis.Formatting;
 
 namespace DisposableFixer.CodeFix
 {
-    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UndisposedMemberCodeFixProvider)), Shared]
     public abstract class UndisposedMemberCodeFixProvider : CodeFixProvider
     {
         protected static async Task<Document> CreateDisposeCallInParameterlessDisposeMethod(CodeFixContext context, CancellationToken cancel)
