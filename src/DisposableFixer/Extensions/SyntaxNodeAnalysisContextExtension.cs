@@ -9,7 +9,7 @@ namespace DisposableFixer.Extensions
     public static class SyntaxNodeAnalysisContextExtension
     {
         public const string IdForAnonymousObjectFromObjectCreation = "DF0000";
-        public const string IdForAnonymousMethodInvocation = "DF0001";
+        public const string IdForAnonymousObjectFromMethodInvocation = "DF0001";
         public const string IdForNotDisposedLocalVariable = "DF0010";
         public const string IdForAssignmendFromObjectCreationToFieldNotDisposed = "DF0020";
         public const string IdForAssignmendFromMethodInvocationToFieldNotDisposed = "DF0021";
@@ -30,7 +30,7 @@ namespace DisposableFixer.Extensions
                 typeof(Resources));
 
         public static readonly DiagnosticDescriptor AnonymousObjectFromMethodInvocationDescriptor = new DiagnosticDescriptor(
-            IdForAnonymousMethodInvocation,
+            IdForAnonymousObjectFromMethodInvocation,
             AnonymousObjectFromMethodInvocationTitle,
             AnonymousObjectFromMethodInvocationMessageFormat,
             Category,

@@ -61,6 +61,74 @@ namespace SomeNamespace
 }
 ";
 
+        private const string CodeWithObjectCreationThatIsAParameter = @"
+using System;
+using System.IO;
+
+namespace SomeNamespace
+{
+    public class SomeClass
+    {
+        public SomeClass()
+        {
+            using (var writer = new SomeNonTrackingWriter(new MemoryStream()))
+            {
+                writer.Write(0);
+            }
+        }
+
+        private static void Write(TextWriter stream, byte b)
+        {
+            stream.WriteLine(b);
+        }
+
+        private class SomeNonTrackingWriter : IDisposable
+        {
+            public SomeNonTrackingWriter(Stream stream){}
+            public void Write(byte b) { }
+
+            public void Dispose(){}
+        }
+    }
+}
+";
+        private const string CodeWithMethodInvaocationThatIsAParameter = @"
+using System;
+using System.IO;
+
+namespace SomeNamespace
+{
+    public class SomeClass
+    {
+        public SomeClass()
+        {
+            using (var writer = new SomeNonTrackingWriter(Create()))
+            {
+                writer.Write(0);
+            }
+        }
+
+        private static Stream Create()
+        {
+            return new MemoryStream();
+        }
+
+        private static void Write(TextWriter stream, byte b)
+        {
+            stream.WriteLine(b);
+        }
+
+        private class SomeNonTrackingWriter : IDisposable
+        {
+            public SomeNonTrackingWriter(Stream stream){}
+            public void Write(byte b) { }
+
+            public void Dispose(){}
+        }
+    }
+}
+";
+
         private static IEnumerable<TestCaseData> TestCases
         {
             get
@@ -71,9 +139,19 @@ namespace SomeNamespace
                 yield return new TestCaseData(CodeWithAnonymousObjectCreationAndOtherCode,
                         SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation)
                     .SetName("Anonymous ObjectCreation and other code");
+                yield return new TestCaseData(CodeWithObjectCreationThatIsAParameter,
+                        SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation)
+                    .SetName("Anonymous ObjectCreation that is a parameter");
+
                 yield return new TestCaseData(CodeWithMethodInvocationAndOtherCode,
-                        SyntaxNodeAnalysisContextExtension.IdForAnonymousMethodInvocation)
+                        SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromMethodInvocation)
                     .SetName("Anonymous MethodInvocation and other code");
+                yield return new TestCaseData(CodeWithObjectCreationThatIsAParameter,
+                        SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation)
+                    .SetName("Anonymous ObjectCreation that is a parameter");
+                yield return new TestCaseData(CodeWithMethodInvaocationThatIsAParameter,
+                        SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromMethodInvocation)
+                    .SetName("Anonymous MethodInvocation that is a parameter");
             }
         }
 
@@ -94,7 +172,7 @@ namespace SomeNamespace
             PrintFixedCode(fixedCode);
 
             MyHelper.RunAnalyser(fixedCode, GetCSharpDiagnosticAnalyzer())
-                .Should().NotContain(d => d.Id == preFixDiagnisticId, "this should have been fixed");
+                .Should().BeEmpty();
         }
     }
 }

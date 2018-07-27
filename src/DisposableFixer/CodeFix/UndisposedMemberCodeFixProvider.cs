@@ -23,7 +23,7 @@ namespace DisposableFixer.CodeFix
 
             var editor = await DocumentEditor.CreateAsync(context.Document, context.CancellationToken);
 
-            if (node.TryFindParentClass(out var oldClass))
+            if (node.TryFindParent<ClassDeclarationSyntax>(out var oldClass))
             {
                 var model = await context.Document.GetSemanticModelAsync(cancel);
                 var containingSymbol = model.GetEnclosingSymbol(context.Span.Start, cancel).ContainingSymbol;
