@@ -32,9 +32,9 @@ namespace DisposableFixer.CodeFix
 
 
                 if (!(oldClass.BaseList != null && oldClass.BaseList.Types.Any(bts =>
-                         bts.DescendantNodes<IdentifierNameSyntax>().Any(ins => ins.Identifier.Text == "IDisposable"))))
+                         bts.DescendantNodes<IdentifierNameSyntax>().Any(ins => ins.Identifier.Text == Constants.IDisposable))))
                 {
-                    var disposeDeclaration = SyntaxFactory.IdentifierName("IDisposable");
+                    var disposeDeclaration = SyntaxFactory.IdentifierName(Constants.IDisposable);
                     editor.AddBaseType(oldClass, disposeDeclaration);
                 }
 
@@ -83,20 +83,20 @@ namespace DisposableFixer.CodeFix
                                         SyntaxFactory.ConditionalAccessExpression(
                                             SyntaxFactory.IdentifierName(variableName),
                                             SyntaxFactory.InvocationExpression(SyntaxFactory.MemberBindingExpression(SyntaxFactory.IdentifierName(Constants.Dispose))))))))
-                        .NormalizeWhitespace();
+                        .WithoutAnnotations(Formatter.Annotation);
                     editor.AddMember(oldClass,disposeMethod);
                 }
 
                 var usings = oldRoot.DescendantNodes<UsingDirectiveSyntax>()
                     .ToArray();
                 var systemImport = usings
-                    .SelectMany(uds => uds.DescendantNodes<QualifiedNameSyntax>())
-                    .Select(qns => qns.DescendantNodes<IdentifierNameSyntax>().ToArray())
-                    .FirstOrDefault(inss => inss.Length == 1 && inss[0].Identifier.Text == "System");
+                    .SelectMany(u => u.DescendantNodes<IdentifierNameSyntax>())
+                    .Where(ins => ins.Parent is UsingDirectiveSyntax)
+                    .FirstOrDefault(ins => ins.Identifier.Text == Constants.System);
 
                 if (systemImport == null)
                 {
-                    var newSystemImport = SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("System"));
+                    var newSystemImport = SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(Constants.System));
                     editor.InsertAfter(usings.Last(), new []{ newSystemImport });
                 }
             }
