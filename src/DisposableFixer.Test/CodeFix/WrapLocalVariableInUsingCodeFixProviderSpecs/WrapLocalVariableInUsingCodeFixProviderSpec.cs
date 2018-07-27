@@ -11,7 +11,7 @@ namespace DisposableFixer.Test.CodeFix.WrapLocalVariableInUsingCodeFixProviderSp
     [TestFixture]
     internal class WrapLocalVariableInUsingCodeFixProviderSpec : DisposableAnalyserCodeFixVerifierSpec
     {
-        private const string CodeWithUndisposedLocalVariableAndModeCode = @"
+        private const string CodeWithUndisposedLocalVariableAndTrailingCode = @"
 using System;
 using System.IO;
 
@@ -26,6 +26,28 @@ namespace SomeNamespace
         }
 
         private static IDisposable Create()
+        {
+            return new MemoryStream();
+        }
+    }
+}
+";
+        private const string CodeWithUndisposedLocalVariableAndPreceedingCode = @"
+using System;
+using System.IO;
+
+namespace SomeNamespace
+{
+    public class SomeClass
+    {
+        public SomeClass()
+        {
+            var y = 3;
+            var variable = Create(y);
+            var x = 3;
+        }
+
+        private static IDisposable Create(int dummy)
         {
             return new MemoryStream();
         }
@@ -51,12 +73,15 @@ namespace SomeNamespace
 
         private static IEnumerable<TestCaseData> TestCases {
             get {
-                yield return new TestCaseData(CodeWithUndisposedLocalVariableAndModeCode,
+                yield return new TestCaseData(CodeWithUndisposedLocalVariableAndTrailingCode,
                         SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable)
                     .SetName("Local variable and more code");
                 yield return new TestCaseData(CodeWithUndisposedLocalVariableAndAMethodInvocation,
                         SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable)
-                    .SetName("Local variable and and a MethodInvocation");
+                    .SetName("Local variable and trailing code");
+                yield return new TestCaseData(CodeWithUndisposedLocalVariableAndPreceedingCode,
+                        SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable)
+                    .SetName("Local variable and preceeding code");
             }
         }
 
