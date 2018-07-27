@@ -16,7 +16,7 @@ namespace DisposableFixer.CodeFix
 {
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UndisposedMemberCodeFixProvider))]
     [Shared]
-    public class WrapInUsingCodeFixProvider : CodeFixProvider
+    public class WrapAnounymousObjectsInUsingCodeFixProvider : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(

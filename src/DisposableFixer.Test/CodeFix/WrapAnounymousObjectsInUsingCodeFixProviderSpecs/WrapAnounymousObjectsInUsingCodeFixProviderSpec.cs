@@ -5,9 +5,9 @@ using FluentAssertions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using NUnit.Framework;
 
-namespace DisposableFixer.Test.CodeFix.WrapInUsingCodeFixProviderSpecs
+namespace DisposableFixer.Test.CodeFix.WrapAnounymousObjectsInUsingCodeFixProviderSpecs
 {
-    public class WrapInUsingCodeFixProviderSpec : DisposableAnalyserCodeFixVerifierSpec
+    public class WrapAnounymousObjectsInUsingCodeFixProviderSpec : DisposableAnalyserCodeFixVerifierSpec
     {
         private const string CodeWithAnonymousObjectCreation = @"
 using System.IO;
@@ -79,7 +79,7 @@ namespace SomeNamespace
 
         protected override CodeFixProvider GetCSharpCodeFixProvider()
         {
-            return new WrapInUsingCodeFixProvider();
+            return new WrapAnounymousObjectsInUsingCodeFixProvider();
         }
 
         [Test]
