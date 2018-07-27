@@ -20,7 +20,8 @@ namespace DisposableFixer.CodeFix
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(
-                SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation
+                SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation,
+                SyntaxNodeAnalysisContextExtension.IdForAnonymousMethodInvocation
             );
 
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
@@ -28,16 +29,20 @@ namespace DisposableFixer.CodeFix
             var id = context.Diagnostics.First().Id;
             if (id == SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation)
                 context.RegisterCodeFix(
-                    CodeAction.Create("Wrap in using", c => WrapInUsing(context, c)),
+                    CodeAction.Create("Wrap in using", c => WrapExpressionSyntaxInUsing(context, c)),
                     context.Diagnostics);
-
+            if (id == SyntaxNodeAnalysisContextExtension.IdForAnonymousMethodInvocation)
+                context.RegisterCodeFix(
+                    CodeAction.Create("Wrap in using", c => WrapExpressionSyntaxInUsing(context, c)),
+                    context.Diagnostics
+                );
             return Task.FromResult(1);
         }
 
-        private async Task<Document> WrapInUsing(CodeFixContext context, CancellationToken cancel)
+        private async Task<Document> WrapExpressionSyntaxInUsing(CodeFixContext context, CancellationToken cancel)
         {
             var oldRoot = await context.Document.GetSyntaxRootAsync(cancel);
-            var node = oldRoot.FindNode(context.Span) as ObjectCreationExpressionSyntax;
+            var node = oldRoot.FindNode(context.Span) as ExpressionSyntax;
 
             var editor = await DocumentEditor.CreateAsync(context.Document, context.CancellationToken);
             var @using = SyntaxFactory.UsingStatement(SyntaxFactory.Block())
