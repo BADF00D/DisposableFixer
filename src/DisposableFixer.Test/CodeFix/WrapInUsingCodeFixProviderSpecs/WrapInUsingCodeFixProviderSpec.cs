@@ -22,6 +22,22 @@ namespace SomeNamespace
     }
 }
 ";
+        private const string CodeWithAnonymousObjectCreationAndOtherCode = @"
+using System;
+using System.IO;
+
+namespace SomeNamespace
+{
+    public class SomeClass
+    {
+        public SomeClass()
+        {
+            new MemoryStream();
+            Console.WriteLine();
+        }
+    }
+}
+";
 
         private static IEnumerable<TestCaseData> TestCases
         {
@@ -30,6 +46,9 @@ namespace SomeNamespace
                 yield return new TestCaseData(CodeWithAnonymousObjectCreation,
                         SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation)
                     .SetName("Anonymous ObjectCreation");
+                yield return new TestCaseData(CodeWithAnonymousObjectCreationAndOtherCode,
+                        SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation)
+                    .SetName("Anonymous ObjectCreation and other code");
             }
         }
 
