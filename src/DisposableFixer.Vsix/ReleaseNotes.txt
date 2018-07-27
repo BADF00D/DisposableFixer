@@ -1,11 +1,17 @@
-﻿Release 0.38
+﻿Release 0.39
+* Issue 74: Assignments of object to properties get marked correctly.
+* Issue 21: Anonymous variables and local variables can be wrapped into using.
+* Some improvements when disposing fields and properties.
+* Added lots of test to verify CodeFixes.
+
+Release 0.38
 * Upgrade to latest version of Roslyn. Switch to .Net Standard.
 
 Release 0.37
-* Issue 73. Added support for Newtonsoft.Json.JsonTextReader
+* Issue 73: Added support for Newtonsoft.Json.JsonTextReader
 
 Release 0.36
-* Issue 42. Added CodeFix for undisposed fields and proeprties. NOT TESTED YET.
+* Issue 42: Added CodeFix for undisposed fields and proeprties. NOT TESTED YET.
 
 Release 0.35
 * Issue 70: Added support for Dispose methods, that are only valid for certains classes. E.g. SerialPort.Close internally calls Dispose.
