@@ -3,19 +3,13 @@ using System.Collections.Generic;
 using DisposableFixer.CodeFix;
 using FluentAssertions;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using NUnit.Framework;
-using TestHelper;
 
 namespace DisposableFixer.Test.CodeFix.UndisposedPropertyCodeFixProviderSpecs
 {
     [TestFixture]
-    internal class If_CodeFix_get_applied_to_undisposed_Property : CodeFixVerifier
+    internal class If_CodeFix_get_applied_to_undisposed_Property : DisposableAnalyserCodeFixVerifierSpec
     {
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-        {
-            return new DisposableFixerAnalyzer();
-        }
         protected override CodeFixProvider GetCSharpCodeFixProvider()
         {
             return new UndisposedPropertyCodeFixProvider();
@@ -24,13 +18,11 @@ namespace DisposableFixer.Test.CodeFix.UndisposedPropertyCodeFixProviderSpecs
         [Test, TestCaseSource(nameof(TestCases))]
         public void Should_there_be_no_Diagnostic(string code)
         {
-            Console.WriteLine("Code to fix:");
-            Console.WriteLine(code);
+            PrintCodeToFix(code);
             MyHelper.RunAnalyser(code, GetCSharpDiagnosticAnalyzer())
                 .Should().HaveCount(1, "there should be something to fix");
             var fixedCode = ApplyCSharpCodeFix(code, 0);
-            Console.WriteLine("Fixed code:");
-            Console.WriteLine(fixedCode);
+            PrintFixedCode(fixedCode);
 
             var diagostics = MyHelper.RunAnalyser(fixedCode, GetCSharpDiagnosticAnalyzer());
             diagostics.Should().HaveCount(0);

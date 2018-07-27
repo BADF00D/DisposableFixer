@@ -82,7 +82,7 @@ namespace DisposableFixer.CodeFix
                                     SyntaxFactory.ExpressionStatement(
                                         SyntaxFactory.ConditionalAccessExpression(
                                             SyntaxFactory.IdentifierName(variableName),
-                                            SyntaxFactory.InvocationExpression(SyntaxFactory.MemberBindingExpression(SyntaxFactory.IdentifierName(Constants.Dispose))))).WithSemicolonToken(SyntaxFactory.MissingToken(SyntaxKind.SemicolonToken)))))
+                                            SyntaxFactory.InvocationExpression(SyntaxFactory.MemberBindingExpression(SyntaxFactory.IdentifierName(Constants.Dispose))))))))
                         .NormalizeWhitespace();
                     editor.AddMember(oldClass,disposeMethod);
                 }

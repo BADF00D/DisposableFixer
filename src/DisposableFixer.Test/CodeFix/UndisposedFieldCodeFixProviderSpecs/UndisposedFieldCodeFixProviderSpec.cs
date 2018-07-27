@@ -3,20 +3,13 @@ using System.Collections.Generic;
 using DisposableFixer.CodeFix;
 using FluentAssertions;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using NUnit.Framework;
-using TestHelper;
 
 namespace DisposableFixer.Test.CodeFix.UndisposedFieldCodeFixProviderSpecs
 {
     [TestFixture]
-    internal class If_CodeFix_get_applied_to_undisposed_Field : CodeFixVerifier
+    internal class UndisposedFieldCodeFixProviderSpec : DisposableAnalyserCodeFixVerifierSpec
     {
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-        {
-            return new DisposableFixerAnalyzer();
-        }
-
         protected override CodeFixProvider GetCSharpCodeFixProvider()
         {
             return new UndisposedFieldCodeFixProvider();
@@ -24,16 +17,20 @@ namespace DisposableFixer.Test.CodeFix.UndisposedFieldCodeFixProviderSpecs
         [Test, TestCaseSource(nameof(TestCases))]
         public void Should_there_be_no_Diagnostic(string code)
         {
-            Console.WriteLine("Code to fix:");
-            Console.WriteLine(code);
+            PrintCodeToFix(code);
             MyHelper.RunAnalyser(code, GetCSharpDiagnosticAnalyzer())
                 .Should().HaveCount(1, "there should be something to fix");
 
-            var sut = ApplyCSharpCodeFix(code, 0);
-            Console.WriteLine("Fixed code:");
-            Console.WriteLine(sut);
+            var fixedCode = ApplyCSharpCodeFix(code, 0);
+            PrintFixedCode(fixedCode);
 
-            var diagostics = MyHelper.RunAnalyser(sut, GetCSharpDiagnosticAnalyzer());
+            //assert
+            var cSharpCompilerDiagnostics = GetCSharpCompilerErrors(fixedCode);
+            PrintFixedCodeDiagnostics(cSharpCompilerDiagnostics);
+            cSharpCompilerDiagnostics
+                .Should().HaveCount(0, "we dont want to introduce bugs");
+
+            var diagostics = MyHelper.RunAnalyser(fixedCode, GetCSharpDiagnosticAnalyzer());
             diagostics.Should().HaveCount(0);
         }
 
@@ -72,8 +69,8 @@ namespace DisposableFixer.Test.CodeFix.UndisposedFieldCodeFixProviderSpecs
                 .Replace("##usingSystem##", useSystem ? "using System;" : string.Empty)
                 .Replace("##interfaceDeclaration##", implementIDisposable ? ": IDisposable" : string.Empty)
                 .Replace("##FieldInitializer##", location == Location.PropertyOrField ? " = new MemoryStream()" : string.Empty)
-                .Replace("##CtorInitializer##", location == Location.Ctor ? "CodeWithUndisposedField = new MemoryStream()" : string.Empty)
-                .Replace("##MethodInitializer##", location == Location.Method ? "CodeWithUndisposedField = new MemoryStream()" : string.Empty)
+                .Replace("##CtorInitializer##", location == Location.Ctor ? "CodeWithUndisposedField = new MemoryStream();" : string.Empty)
+                .Replace("##MethodInitializer##", location == Location.Method ? "CodeWithUndisposedField = new MemoryStream();" : string.Empty)
                 .Replace("##DisposeMethod##", hasDisposeMethod ? "public void Dispose(){}" : String.Empty);
 
             return new TestCaseData(code)
