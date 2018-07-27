@@ -456,6 +456,20 @@ namespace DisposableFixer.Extensions
             return ctorOrMethod != null;
         }
 
+        public static bool TryFindContainigBlock(this SyntaxNode node, out BlockSyntax block)
+        {
+            block = default(BlockSyntax);
+            var result = node;
+            while (result != null && !(result is BlockSyntax))
+            {
+                result = result.Parent;
+            }
+
+            block = result as BlockSyntax;
+            return block != null;
+
+        }
+
         private static TOut FindParent<TOut, TBreak>(this SyntaxNode node)
             where TBreak : SyntaxNode
             where TOut : SyntaxNode

@@ -33,14 +33,23 @@ namespace DisposableFixer.CodeFix
             var oldRoot = await context.Document.GetSyntaxRootAsync(cancel);
             var node = oldRoot.FindNode(context.Span) as ExpressionSyntax;
 
-            if (node != null && node.IsDescendantOfVariableDeclarator())
+            if (node == null || !node.IsDescendantOfVariableDeclarator()) return context.Document;
+
+            var variableDeclaration = node.Parent.Parent.Parent as VariableDeclarationSyntax;
+            var localDeclarationStatement = variableDeclaration.Parent as LocalDeclarationStatementSyntax;
+
+            if (variableDeclaration.TryFindContainigBlock(out var block))
             {
                 var editor = await DocumentEditor.CreateAsync(context.Document, context.CancellationToken);
-                var variableDeclaration = node.Parent.Parent.Parent as VariableDeclarationSyntax;
-                var @using = SyntaxFactory.UsingStatement(SyntaxFactory.Block())
+                var statements = block.Statements.Where(s => s != localDeclarationStatement);
+                
+                var @using = SyntaxFactory.UsingStatement(SyntaxFactory.Block(statements))
                     .WithDeclaration(variableDeclaration);
-                editor.ReplaceNode(variableDeclaration, @using);
-                return editor.GetChangedDocument();
+
+                var newBlock = SyntaxFactory.Block(@using);
+                editor.ReplaceNode(block, newBlock);
+                var wrapLocalVariableInUsing = editor.GetChangedDocument();
+                return wrapLocalVariableInUsing;
             }
 
             return context.Document;

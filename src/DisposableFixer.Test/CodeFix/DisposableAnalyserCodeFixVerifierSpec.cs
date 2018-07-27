@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using NUnit.Framework;
 using TestHelper;
@@ -81,15 +83,27 @@ namespace DisposableFixer.Test.CodeFix
             _disposeActions.Add(() => disposable?.Dispose());
         }
 
-        protected void PrintCodeToFix(string code)
+        protected static void PrintCodeToFix(string code)
         {
             Console.WriteLine("Code to fix:");
             Console.WriteLine(code);
         }
-        protected void PrintFixedCode(string code)
+        protected static void PrintFixedCode(string code)
         {
             Console.WriteLine("Fixed code:");
             Console.WriteLine(code);
+        }
+
+        protected static void PrintFixedCodeDiagnostics(Diagnostic[] diagnostics)
+        {
+            if (diagnostics.Any())
+            {
+                Console.WriteLine("Diagnostics in fixed code:");
+                foreach (var diagnostic in diagnostics)
+                {
+                    Console.WriteLine($"   {diagnostic.Id}: {diagnostic.GetMessage()}");
+                }
+            }
         }
     }
 }

@@ -157,5 +157,16 @@ namespace TestHelper
             var actual = GetStringFromDocument(document);
             Assert.AreEqual(newSource, actual);
         }
+
+        /// <summary>
+        /// Verifies that code has not compiler diagnostics
+        /// </summary>
+        protected Diagnostic[] GetCSharpCompilerErrors(string oldSource)
+        {
+            var document = CreateDocument(oldSource, LanguageNames.CSharp);
+            return GetCompilerDiagnostics(document)
+                .Where(d => d.Severity == DiagnosticSeverity.Error)
+                .ToArray();
+        }
     }
 }
