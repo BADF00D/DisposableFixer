@@ -41,12 +41,16 @@ namespace DisposableFixer.CodeFix
             if (variableDeclaration.TryFindContainigBlock(out var block))
             {
                 var editor = await DocumentEditor.CreateAsync(context.Document, context.CancellationToken);
-                var statements = block.Statements.Where(s => s != localDeclarationStatement);
+
+                var statemmentsBeforeVariableDeclaration =
+                    block.Statements.TakeWhile(s => s != localDeclarationStatement);
+                var statementsAfterVariableDeclaration =
+                    block.Statements.SkipWhile(s => s != localDeclarationStatement).Skip(1);
                 
-                var @using = SyntaxFactory.UsingStatement(SyntaxFactory.Block(statements))
+                var @using = SyntaxFactory.UsingStatement(SyntaxFactory.Block(statementsAfterVariableDeclaration))
                     .WithDeclaration(variableDeclaration);
 
-                var newBlock = SyntaxFactory.Block(@using);
+                var newBlock = SyntaxFactory.Block(statemmentsBeforeVariableDeclaration.Concat(@using));
                 editor.ReplaceNode(block, newBlock);
                 var wrapLocalVariableInUsing = editor.GetChangedDocument();
                 return wrapLocalVariableInUsing;

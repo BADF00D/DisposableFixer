@@ -70,6 +70,25 @@ namespace SomeNamespace
     }
 }
 ";
+        private const string CodeWithUndisposedLocalVariableThatIsAlsoAParameter = @"
+using System.IO;
+namespace SomeNamespace
+{
+    public class SomeClass
+    {
+        public SomeClass()
+        {
+            var stream = new MemoryStream();
+            Write(stream, 0);
+        }
+
+        private void Write(Stream stream, byte b)
+        {
+            stream.WriteByte(b);
+        }
+    }
+}
+";
 
         private static IEnumerable<TestCaseData> TestCases {
             get {
@@ -78,7 +97,10 @@ namespace SomeNamespace
                     .SetName("Local variable and more code");
                 yield return new TestCaseData(CodeWithUndisposedLocalVariableAndAMethodInvocation,
                         SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable)
-                    .SetName("Local variable and trailing code");
+                    .SetName("Local variable and trailing code that makes a MethodInvocation to variable");
+                yield return new TestCaseData(CodeWithUndisposedLocalVariableThatIsAlsoAParameter,
+                        SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable)
+                    .SetName("Local variable that is a parameter");
                 yield return new TestCaseData(CodeWithUndisposedLocalVariableAndPreceedingCode,
                         SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable)
                     .SetName("Local variable and preceeding code");
