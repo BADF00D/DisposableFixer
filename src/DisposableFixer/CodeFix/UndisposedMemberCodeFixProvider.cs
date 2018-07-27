@@ -1,11 +1,9 @@
-﻿using System.Collections.Immutable;
-using System.Composition;
+﻿using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DisposableFixer.Extensions;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -14,47 +12,10 @@ using Microsoft.CodeAnalysis.Formatting;
 
 namespace DisposableFixer.CodeFix
 {
-    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UndisposedPropertyCodeFix)), Shared]
-    public class UndisposedPropertyCodeFix : CodeFixProvider
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UndisposedMemberCodeFixProvider)), Shared]
+    public abstract class UndisposedMemberCodeFixProvider : CodeFixProvider
     {
-        public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-            ImmutableArray.Create(
-                SyntaxNodeAnalysisContextExtension.IdForAssignmendFromMethodInvocationToPropertyNotDisposed,
-                SyntaxNodeAnalysisContextExtension.IdForAssignmendFromObjectCreationToPropertyNotDisposed,
-                SyntaxNodeAnalysisContextExtension.IdForAssignmendFromMethodInvocationToFieldNotDisposed,
-                SyntaxNodeAnalysisContextExtension.IdForAssignmendFromObjectCreationToFieldNotDisposed
-                );
-
-        public override Task RegisterCodeFixesAsync(CodeFixContext context)
-        {
-            RegisterCodeActionsForUndisposedProperties(context);
-            RegisterCodeActionsForUndisposedFields(context);
-            
-            return Task.FromResult(1);
-        }
-
-        private static void RegisterCodeActionsForUndisposedProperties(CodeFixContext context)
-        {
-            var id = context.Diagnostics.First().Id;
-            if (id == SyntaxNodeAnalysisContextExtension.IdForAssignmendFromObjectCreationToPropertyNotDisposed
-                || id  == SyntaxNodeAnalysisContextExtension.IdForAssignmendFromMethodInvocationToPropertyNotDisposed) {
-                context.RegisterCodeFix(
-                    CodeAction.Create("Dispose property in Dispose() method", c => CreateDisposeCallInParameterlessDisposeMethod(context, c)),
-                    context.Diagnostics);
-            }
-        }
-
-        private static void RegisterCodeActionsForUndisposedFields(CodeFixContext context) {
-            var id = context.Diagnostics.First().Id;
-            if (id == SyntaxNodeAnalysisContextExtension.IdForAssignmendFromObjectCreationToFieldNotDisposed
-                || id == SyntaxNodeAnalysisContextExtension.IdForAssignmendFromMethodInvocationToFieldNotDisposed) {
-                context.RegisterCodeFix(
-                    CodeAction.Create("Dispose field in Dispose() method", c => CreateDisposeCallInParameterlessDisposeMethod(context, c)),
-                    context.Diagnostics);
-            }
-        }
-
-        private static async Task<Document> CreateDisposeCallInParameterlessDisposeMethod(CodeFixContext context, CancellationToken cancel)
+        protected static async Task<Document> CreateDisposeCallInParameterlessDisposeMethod(CodeFixContext context, CancellationToken cancel)
         {
             var oldRoot = await context.Document.GetSyntaxRootAsync(cancel);
             var node = oldRoot.FindNode(context.Span);
