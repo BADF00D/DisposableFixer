@@ -44,7 +44,7 @@ namespace DisposableFixer
 
         private static void AnalyseObjectCreationExpressionStatement(SyntaxNodeAnalysisContext context)
         {
-            var node = context.Node as ObjectCreationExpressionSyntax;
+             var node = context.Node as ObjectCreationExpressionSyntax;
             if (node == null) return; //something went wrong
 
             var symbolInfo = context.SemanticModel.GetSymbolInfo(node);
@@ -270,14 +270,21 @@ namespace DisposableFixer
                     context.ReportNotDisposedLocalDeclaration();
                     return;
                 }
-                //field declaration
                 if (node.IsDisposedInDisposingMethod(variableName, Configuration, context.SemanticModel)) return;
                 if (node.IsArgumentInObjectCreation())
                 {
                     AnalyseNodeInArgumentList(context, node, source);
                     return;
                 }
-                context.ReportNotDisposedField(variableName, source);
+
+                //assignment to field or property
+                var containingClass = node.FindContainingClass();
+                if (containingClass == null) return;
+                if (containingClass.FindFieldNamed(variableName) != null)
+                    context.ReportNotDisposedField(variableName, source);
+                else
+                    context.ReportNotDisposedProperty(variableName, source);
+
                 return;
             }
             ConstructorDeclarationSyntax ctor;

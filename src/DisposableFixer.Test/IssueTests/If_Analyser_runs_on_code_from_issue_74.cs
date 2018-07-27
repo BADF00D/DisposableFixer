@@ -37,7 +37,7 @@ namespace MyNamespace
             _diagnostics.Length.Should().Be(1);
 
             _diagnostics[0].Id.Should().Be(SyntaxNodeAnalysisContextExtension
-                .IdForAssignmendFromMethodInvocationToPropertyNotDisposed);
+                .IdForAssignmendFromObjectCreationToPropertyNotDisposed);
         }
     }
 }
