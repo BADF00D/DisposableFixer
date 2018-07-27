@@ -354,29 +354,23 @@ namespace DisposableFixer.Extensions
             return ctor != null;
         }
 
-        public static bool TryFindParentClass(this SyntaxNode node, out ClassDeclarationSyntax @class)
+        public static bool TryFindParent<T>(this SyntaxNode start, out T scope) where T : SyntaxNode
         {
-            SyntaxNode result;
-            if (node.TryFindParentOfType<ClassDeclarationSyntax>(default(SyntaxNode), out result))
-            {
-                @class = result as ClassDeclarationSyntax;
-                return true;
-            }
-            @class = default(ClassDeclarationSyntax);
-            return false;
+            return TryFindParent<T>(start, default(SyntaxNode), out scope);
         }
 
-        public static bool TryFindParentOfType<T>(this SyntaxNode start, SyntaxNode @break, out SyntaxNode scope)
+        public static bool TryFindParent<T>(this SyntaxNode start, SyntaxNode @break, out T scope)
             where T : SyntaxNode
         {
+            var tmp = start;
             while (true)
             {
-                if (start is T)
+                if (start is T result)
                 {
-                    scope = start;
+                    scope = result;
                     return true;
                 }
-                if (start == @break)
+                if (tmp == @break)
                 {
                     scope = null;
                     return false;
@@ -396,12 +390,14 @@ namespace DisposableFixer.Extensions
             ConstructorDeclarationSyntax ctor;
             if (node.TryFindContainingCtor(out ctor))
             {
-                if (node.TryFindParentOfType<SimpleLambdaExpressionSyntax>(ctor, out parentScope))
+                if (node.TryFindParent<SimpleLambdaExpressionSyntax>(ctor, out var sles))
                 {
+                    parentScope = sles;
                     return true;
                 }
-                if (node.TryFindParentOfType<ParenthesizedLambdaExpressionSyntax>(ctor, out parentScope))
+                if (node.TryFindParent<ParenthesizedLambdaExpressionSyntax>(ctor, out var ples))
                 {
+                    parentScope = ples;
                     return true;
                 }
                 parentScope = ctor;
@@ -410,12 +406,14 @@ namespace DisposableFixer.Extensions
             MethodDeclarationSyntax method;
             if (node.TryFindContainingMethod(out method))
             {
-                if (node.TryFindParentOfType<SimpleLambdaExpressionSyntax>(method, out parentScope))
+                if (node.TryFindParent<SimpleLambdaExpressionSyntax>(method, out var sles))
                 {
+                    parentScope = sles;
                     return true;
                 }
-                if (node.TryFindParentOfType<ParenthesizedLambdaExpressionSyntax>(method, out parentScope))
+                if (node.TryFindParent<ParenthesizedLambdaExpressionSyntax>(method, out var ples))
                 {
+                    parentScope = ples;
                     return true;
                 }
                 parentScope = method;
@@ -424,12 +422,14 @@ namespace DisposableFixer.Extensions
             PropertyDeclarationSyntax property;
             if (node.TryFindContainingPropery(out property))
             {
-                if (node.TryFindParentOfType<SimpleLambdaExpressionSyntax>(property, out parentScope))
+                if (node.TryFindParent<SimpleLambdaExpressionSyntax>(property, out var sles))
                 {
+                    parentScope = sles;
                     return true;
                 }
-                if (node.TryFindParentOfType<ParenthesizedLambdaExpressionSyntax>(property, out parentScope))
+                if (node.TryFindParent<ParenthesizedLambdaExpressionSyntax>(property, out var ples))
                 {
+                    parentScope = ples;
                     return true;
                 }
                 parentScope = property;
