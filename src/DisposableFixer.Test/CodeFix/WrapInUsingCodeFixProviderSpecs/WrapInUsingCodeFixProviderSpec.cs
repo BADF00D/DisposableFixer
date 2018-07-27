@@ -39,6 +39,28 @@ namespace SomeNamespace
 }
 ";
 
+        private const string CodeWithMethodInvocationAndOtherCode = @"
+using System;
+using System.IO;
+
+namespace SomeNamespace
+{
+    public class SomeClass
+    {
+        public SomeClass()
+        {
+            Create();
+            Console.WriteLine();
+        }
+
+        private static IDisposable Create()
+        {
+            return new MemoryStream();
+        }
+    }
+}
+";
+
         private static IEnumerable<TestCaseData> TestCases
         {
             get
@@ -49,6 +71,9 @@ namespace SomeNamespace
                 yield return new TestCaseData(CodeWithAnonymousObjectCreationAndOtherCode,
                         SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation)
                     .SetName("Anonymous ObjectCreation and other code");
+                yield return new TestCaseData(CodeWithMethodInvocationAndOtherCode,
+                        SyntaxNodeAnalysisContextExtension.IdForAnonymousMethodInvocation)
+                    .SetName("Anonymous MethodInvocation and other code");
             }
         }
 
