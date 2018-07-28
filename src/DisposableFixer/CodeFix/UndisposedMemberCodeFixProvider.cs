@@ -1,14 +1,13 @@
-﻿using System.Composition;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DisposableFixer.CodeFix.Extensions;
 using DisposableFixer.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
-using Microsoft.CodeAnalysis.Formatting;
 
 namespace DisposableFixer.CodeFix
 {
@@ -31,74 +30,20 @@ namespace DisposableFixer.CodeFix
                 if (@classtype == null) return context.Document;
 
 
-                if (!(oldClass.BaseList != null && oldClass.BaseList.Types.Any(bts =>
-                         bts.DescendantNodes<IdentifierNameSyntax>().Any(ins => ins.Identifier.Text == Constants.IDisposable))))
-                {
-                    var disposeDeclaration = SyntaxFactory.IdentifierName(Constants.IDisposable);
-                    editor.AddBaseType(oldClass, disposeDeclaration);
-                }
+                editor.AddBaseTypeIfNeeded(oldClass, SyntaxFactory.IdentifierName(Constants.IDisposable));
 
-                var disposeMethods = oldClass
-                    .DescendantNodes<MethodDeclarationSyntax>()
-                    .Where(mds => mds.Identifier.Text == Constants.Dispose && mds.ParameterList.Parameters.Count == 0)
-                    .ToArray();
+                var disposeMethods = oldClass.GetParameterlessMethodNamed(Constants.Dispose);
 
                 if (disposeMethods.Any())
                 {
-                    var oldDisposeMethod = disposeMethods.First();
-                    var oldStatements = oldDisposeMethod.Body.Statements;
-                    var newStatements = oldStatements
-                        .Add(SyntaxFactory.ExpressionStatement(
-                            SyntaxFactory.ConditionalAccessExpression(
-                                SyntaxFactory.IdentifierName(variableName),
-                                SyntaxFactory.InvocationExpression(
-                                    SyntaxFactory.MemberBindingExpression(
-                                        SyntaxFactory.IdentifierName(Constants.Dispose))))));
-                    var newDisposeMethod = SyntaxFactory
-                        .MethodDeclaration(
-                            SyntaxFactory.PredefinedType(
-                                SyntaxFactory.Token(SyntaxKind.VoidKeyword)),
-                            SyntaxFactory.Identifier(Constants.Dispose))
-                        .WithModifiers(
-                            SyntaxFactory.TokenList(
-                                SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
-                        .WithBody(SyntaxFactory.Block(newStatements))
-                        .WithoutAnnotations(Formatter.Annotation);
-                    editor.ReplaceNode(oldDisposeMethod, newDisposeMethod);
+                    editor.AddDisposeCallToMemberInDisposeMethod(disposeMethods.First(), variableName);
                 }
                 else
                 {
-                    var disposeMethod = SyntaxFactory
-                        .MethodDeclaration(
-                            SyntaxFactory.PredefinedType(
-                                SyntaxFactory.Token(SyntaxKind.VoidKeyword)),
-                            SyntaxFactory.Identifier(Constants.Dispose))
-                        .WithModifiers(
-                            SyntaxFactory.TokenList(
-                                SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
-                        .WithBody(
-                            SyntaxFactory.Block(
-                                SyntaxFactory.SingletonList<StatementSyntax>(
-                                    SyntaxFactory.ExpressionStatement(
-                                        SyntaxFactory.ConditionalAccessExpression(
-                                            SyntaxFactory.IdentifierName(variableName),
-                                            SyntaxFactory.InvocationExpression(SyntaxFactory.MemberBindingExpression(SyntaxFactory.IdentifierName(Constants.Dispose))))))))
-                        .WithoutAnnotations(Formatter.Annotation);
-                    editor.AddMember(oldClass,disposeMethod);
+                    editor.AddDisposeMethodAndDisposeCallToMember(oldClass, variableName);
                 }
 
-                var usings = oldRoot.DescendantNodes<UsingDirectiveSyntax>()
-                    .ToArray();
-                var systemImport = usings
-                    .SelectMany(u => u.DescendantNodes<IdentifierNameSyntax>())
-                    .Where(ins => ins.Parent is UsingDirectiveSyntax)
-                    .FirstOrDefault(ins => ins.Identifier.Text == Constants.System);
-
-                if (systemImport == null)
-                {
-                    var newSystemImport = SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(Constants.System));
-                    editor.InsertAfter(usings.Last(), new []{ newSystemImport });
-                }
+                editor.AddImportIfNeeded(Constants.System);
             }
             return editor.GetChangedDocument();
         }

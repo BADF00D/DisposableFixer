@@ -34,6 +34,14 @@ namespace DisposableFixer.Extensions
             return @class
                 .DescendantNodes<MethodDeclarationSyntax>()
                 .Where(mds => mds.IsDisposeMethod(configuration, context.SemanticModel));
-        } 
+        }
+
+        public static IEnumerable<MethodDeclarationSyntax> GetParameterlessMethodNamed(
+            this ClassDeclarationSyntax @class, string name)
+        {
+            return @class
+                .DescendantNodes<MethodDeclarationSyntax>()
+                .Where(mds => mds.Identifier.Text == name && mds.ParameterList.Parameters.Count == 0);
+        }
     }
 }
