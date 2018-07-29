@@ -1,4 +1,7 @@
-﻿Release 0.39
+﻿Release 0.40
+* Issue 75: anonymous objects and local variables can not be dispsoed via field that get disposed in Dispose method.
+
+Release 0.39
 * Issue 74: Assignments of object to properties get marked correctly.
 * Issue 21: Anonymous variables and local variables can be wrapped into using.
 * Some improvements when disposing fields and properties.
