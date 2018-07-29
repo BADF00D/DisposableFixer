@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
@@ -23,59 +22,104 @@ namespace DisposableFixer.CodeFix
             var diagnotic = context.Diagnostics.FirstOrDefault();
             if(diagnotic == null) return Task.CompletedTask;
 
-            if (diagnotic.Id == SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation ||
-                diagnotic.Id == SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromMethodInvocation)
-            {
-                context.RegisterCodeFix(
-                    CodeAction.Create("Create field and dispose in Dispose() method.", cancel => IntroduceFieldAndDisposeInDisposeMethod(context, cancel)),
-                    diagnotic
-                );
-            }
+            context.RegisterCodeFix(
+                IsUndisposedLocalVariable(context)
+                    ? CodeAction.Create("Create field and dispose in Dispose() method.",
+                        cancel => DisposeInDisposeMethod(context, cancel))
+                    : CodeAction.Create("Create field and dispose in Dispose() method.",
+                        cancel => IntroduceFieldAndDisposeInDisposeMethod(context, cancel)),
+                diagnotic
+            );
 
             return Task.CompletedTask;
         }
 
-        private static async Task<Document> IntroduceFieldAndDisposeInDisposeMethod(CodeFixContext context, CancellationToken cancel)
+        private static async Task<Document> DisposeInDisposeMethod(CodeFixContext context, CancellationToken cancel)
         {
-            var editor = await DocumentEditor.CreateAsync(context.Document, context.CancellationToken);
+            var editor = await DocumentEditor.CreateAsync(context.Document, cancel);
             var node = editor.OriginalRoot.FindNode(context.Span);
-            var variableName = "_disposable";
-            if (node.TryFindParent<ClassDeclarationSyntax>(out var oldClass))
+            var fieldName = RetrieveFieldName(context, node);
+
+            if (!node.TryFindParent<ClassDeclarationSyntax>(out var oldClass)) return editor.GetChangedDocument();
+
+            editor.AddBaseTypeIfNeeded(oldClass, SyntaxFactory.IdentifierName(Constants.IDisposable));
+            editor.AddUninitializedFieldNamed(oldClass, fieldName);
+
+            var assignment = SyntaxFactory.ExpressionStatement(
+                SyntaxFactory.AssignmentExpression(
+                    SyntaxKind.SimpleAssignmentExpression,
+                    SyntaxFactory.IdentifierName(fieldName),
+                    node as ExpressionSyntax
+                )
+            );
+            editor.ReplaceNode(node.Parent.Parent, assignment);
+
+            var disposeMethods = oldClass.GetParameterlessMethodNamed(Constants.Dispose).ToArray();
+
+            if (disposeMethods.Any())
             {
-                var model = await context.Document.GetSemanticModelAsync(cancel);
-                var containingSymbol = model.GetEnclosingSymbol(context.Span.Start, cancel).ContainingSymbol;
-                var @classtype =
-                    containingSymbol as INamedTypeSymbol;
-                if (@classtype == null) return context.Document;
-
-
-                editor.AddBaseTypeIfNeeded(oldClass, SyntaxFactory.IdentifierName(Constants.IDisposable));
-                editor.AddUninitializedFieldNamed(oldClass, variableName);
-
-                var assignment = SyntaxFactory.ExpressionStatement(
-                    SyntaxFactory.AssignmentExpression(
-                        SyntaxKind.SimpleAssignmentExpression,
-                        SyntaxFactory.IdentifierName(variableName),
-                        node as ExpressionSyntax
-                    )
-                );
-                editor.ReplaceNode(node.Parent,assignment);
-                
-                var disposeMethods = oldClass.GetParameterlessMethodNamed(Constants.Dispose);
-
-                if (disposeMethods.Any())
-                {
-                    editor.AddDisposeCallToMemberInDisposeMethod(disposeMethods.First(), variableName);
-                }
-                else
-                {
-                    editor.AddDisposeMethodAndDisposeCallToMember(oldClass, variableName);
-                }
-
-                editor.AddImportIfNeeded(Constants.System);
+                editor.AddDisposeCallToMemberInDisposeMethod(disposeMethods.First(), fieldName);
+            }
+            else
+            {
+                editor.AddDisposeMethodAndDisposeCallToMember(oldClass, fieldName);
             }
 
+            editor.AddImportIfNeeded(Constants.System);
+
             return editor.GetChangedDocument();
+        }
+
+        private static async Task<Document> IntroduceFieldAndDisposeInDisposeMethod(CodeFixContext context, CancellationToken cancel)
+        {
+            var editor = await DocumentEditor.CreateAsync(context.Document, cancel);
+            var node = editor.OriginalRoot.FindNode(context.Span);
+            var fieldName = RetrieveFieldName(context, node);
+
+            if (!node.TryFindParent<ClassDeclarationSyntax>(out var oldClass)) return editor.GetChangedDocument();
+
+            editor.AddBaseTypeIfNeeded(oldClass, SyntaxFactory.IdentifierName(Constants.IDisposable));
+            editor.AddUninitializedFieldNamed(oldClass, fieldName);
+
+            var assignment = SyntaxFactory.ExpressionStatement(
+                SyntaxFactory.AssignmentExpression(
+                    SyntaxKind.SimpleAssignmentExpression,
+                    SyntaxFactory.IdentifierName(fieldName),
+                    node as ExpressionSyntax
+                )
+            );
+            editor.ReplaceNode(node.Parent,assignment);
+                
+            var disposeMethods = oldClass.GetParameterlessMethodNamed(Constants.Dispose)
+                .ToArray();
+
+            if (disposeMethods.Any())
+            {
+                editor.AddDisposeCallToMemberInDisposeMethod(disposeMethods.First(), fieldName);
+            }
+            else
+            {
+                editor.AddDisposeMethodAndDisposeCallToMember(oldClass, fieldName);
+            }
+
+            editor.AddImportIfNeeded(Constants.System);
+
+            return editor.GetChangedDocument();
+        }
+
+        private static string RetrieveFieldName(CodeFixContext context, SyntaxNode node)
+        {
+            const string defaultName = "_disposable";
+            if (!IsUndisposedLocalVariable(context)) return defaultName;
+
+            var variableDeclarator = node.Parent?.Parent as VariableDeclaratorSyntax;
+            return variableDeclarator?.Identifier.Text ?? defaultName;
+        }
+
+        private static bool IsUndisposedLocalVariable(CodeFixContext context)
+        {
+            return context.Diagnostics.First().Id ==
+                   SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable;
         }
 
         public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(

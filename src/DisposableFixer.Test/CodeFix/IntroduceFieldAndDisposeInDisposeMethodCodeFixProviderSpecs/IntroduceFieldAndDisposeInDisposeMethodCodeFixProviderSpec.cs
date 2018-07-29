@@ -126,7 +126,6 @@ namespace MyNamespace
             return new MemoryStream();
         }
     }
-
 }
 ";
     }
