@@ -48,7 +48,7 @@ namespace DisposableFixer.CodeFix
                     block.Statements.SkipWhile(s => s != localDeclarationStatement).Skip(1);
                 
                 var @using = SyntaxFactory.UsingStatement(SyntaxFactory.Block(statementsAfterVariableDeclaration))
-                    .WithDeclaration(variableDeclaration);
+                    .WithDeclaration(variableDeclaration.WithoutTrivia());
 
                 var newBlock = SyntaxFactory.Block(statemmentsBeforeVariableDeclaration.Concat(@using));
                 editor.ReplaceNode(block, newBlock);
