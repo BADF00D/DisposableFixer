@@ -30,19 +30,27 @@ namespace DisposableFixer.CodeFix
             var diagnotic = context.Diagnostics.FirstOrDefault();
             if (diagnotic == null) return Task.CompletedTask;
 
-            context.RegisterCodeFix(
-                IsUndisposedLocalVariable(context)
-                    ? CodeAction.Create("Create field and dispose in Dispose() method.",
-                        cancel => DisposeInDisposeMethod(context, cancel))
-                    : CodeAction.Create("Create field and dispose in Dispose() method.",
+            if (diagnotic.Id == SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable)
+            {
+                context.RegisterCodeFix(
+                    CodeAction.Create("Create field and dispose in Dispose() method.",
+                        cancel => ConvertToFieldDisposeInDisposeMethod(context, cancel)),
+                    diagnotic
+                );
+            }else if (diagnotic.Id == SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation
+                      || diagnotic.Id == SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromMethodInvocation)
+            {
+                context.RegisterCodeFix(
+                    CodeAction.Create("Create field and dispose in Dispose() method.",
                         cancel => IntroduceFieldAndDisposeInDisposeMethod(context, cancel)),
-                diagnotic
-            );
+                    diagnotic
+                );
+            }
 
             return Task.CompletedTask;
         }
 
-        private static async Task<Document> DisposeInDisposeMethod(CodeFixContext context, CancellationToken cancel)
+        private static async Task<Document> ConvertToFieldDisposeInDisposeMethod(CodeFixContext context, CancellationToken cancel)
         {
             var editor = await DocumentEditor.CreateAsync(context.Document, cancel);
             var node = editor.OriginalRoot.FindNode(context.Span);
