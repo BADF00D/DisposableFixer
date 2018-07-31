@@ -87,14 +87,14 @@ namespace DisposableFixer.CodeFix.Extensions
             editor.AddMember(oldClass, disposeMethod);
         }
 
-        public static void AddUninitializedFieldNamed(this DocumentEditor editor, ClassDeclarationSyntax oldClass, string name)
+        public static void AddUninitializedFieldNamed(this DocumentEditor editor, ClassDeclarationSyntax oldClass, string name, string typeName)
         {
             var fieldDeclaration = SyntaxFactory.FieldDeclaration(
                     SyntaxFactory.VariableDeclaration(
-                            SyntaxFactory.IdentifierName("IDisposable")
+                            SyntaxFactory.IdentifierName(typeName)
                         )
                         .WithVariables(
-                            SyntaxFactory.SingletonSeparatedList<VariableDeclaratorSyntax>(
+                            SyntaxFactory.SingletonSeparatedList(
                                 SyntaxFactory.VariableDeclarator(
                                     SyntaxFactory.Identifier(name)
                                 )

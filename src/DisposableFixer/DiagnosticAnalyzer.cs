@@ -229,9 +229,8 @@ namespace DisposableFixer
 
                         //check if is tracking instance
                         var sym = context.SemanticModel.GetSymbolInfo(oce);
-                        var type2 = (sym.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
-
-                        return Detector.IsTrackedType(type2, oce, context.SemanticModel);
+                        return (sym.Symbol as IMethodSymbol)?.ReceiverType is INamedTypeSymbol type2 
+                               && Detector.IsTrackedType(type2, oce, context.SemanticModel);
                     });
                 });
         }

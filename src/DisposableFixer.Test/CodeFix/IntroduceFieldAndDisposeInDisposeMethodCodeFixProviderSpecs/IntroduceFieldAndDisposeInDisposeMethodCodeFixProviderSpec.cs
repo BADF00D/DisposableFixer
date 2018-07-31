@@ -68,6 +68,8 @@ namespace DisposableFixer.Test.CodeFix.IntroduceFieldAndDisposeInDisposeMethodCo
                     .SetName("Undisposed anonymous MethodInvocation");
                 yield return new TestCaseData(LocalVariable, SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable)
                     .SetName("Undisposed local variable");
+                yield return new TestCaseData(AnonymousObjectCreationThatIsAArgument, SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation)
+                    .SetName("Undisposed Anonymous variable that is an argument");
             }
         }
 
@@ -124,6 +126,25 @@ namespace MyNamespace
         private IDisposable Create()
         {
             return new MemoryStream();
+        }
+    }
+}
+";
+        private const string AnonymousObjectCreationThatIsAArgument = @"
+using System.IO;
+using System.Text;
+
+namespace Demo
+{
+    internal class Program
+    {
+        public Program()
+        {
+            var y = 0;
+            using (var reader = new StreamReader(new MemoryStream(), Encoding.ASCII, true, 1024, true))
+            {
+                var x = 1;
+            }
         }
     }
 }
