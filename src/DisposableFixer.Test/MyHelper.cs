@@ -1,10 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeActions;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Simplification;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestHelper;
@@ -76,6 +82,41 @@ namespace DisposableFixer.Test
             var results = diagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
             diagnostics.Clear();
             return results;
+        }
+
+        private static Document ApplyFix(Document document, CodeAction codeAction)
+        {
+            var operations = codeAction.GetOperationsAsync(CancellationToken.None).Result;
+            var solution = operations.OfType<ApplyChangesOperation>().Single().ChangedSolution;
+            return solution.GetDocument(document.Id);
+        }
+
+        public static string ApplyCSharpCodeFix(string oldSource, Diagnostic diagnostic, CodeFixProvider codeFix)
+        {
+            var document = GetDocumentFrom(oldSource)[0];
+
+            var actions = new List<CodeAction>();
+            var context = new CodeFixContext(document, diagnostic, (a,d) => actions.Add(a), CancellationToken.None);
+            codeFix.RegisterCodeFixesAsync(context).Wait();
+            if (!actions.Any()) return oldSource;
+            if (actions.Count == 1)
+            {
+                document = ApplyFix(document, actions.First());
+            }
+            else
+            {
+                throw new Exception("Which action should I chose?");
+            }
+
+            //after applying all of the code fixes, compare the resulting string to the inputted one
+            return GetStringFromDocument(document);
+        }
+        private static string GetStringFromDocument(Document document)
+        {
+            var simplifiedDoc = Simplifier.ReduceAsync(document, Simplifier.Annotation).Result;
+            var root = simplifiedDoc.GetSyntaxRootAsync().Result;
+            root = Formatter.Format(root, Formatter.Annotation, simplifiedDoc.Project.Solution.Workspace);
+            return root.GetText().ToString();
         }
 
 
