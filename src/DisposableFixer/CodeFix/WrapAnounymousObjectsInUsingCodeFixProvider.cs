@@ -57,7 +57,7 @@ namespace DisposableFixer.CodeFix
             {
                 if (node.TryFindContainigBlock(out var parentBlock))
                 {
-                    if(node.TryFindParent<UsingStatementSyntax>(parentBlock, out var @parentUsing))
+                    if(node.TryFindParent<StatementSyntax>(parentBlock, out var @parentUsing))
                     {
                         var preceedingStatements = parentBlock.Statements
                             .TakeWhile(s => s != parentUsing);
@@ -71,7 +71,7 @@ namespace DisposableFixer.CodeFix
                         var variableDeclaration  = SyntaxFactory.VariableDeclaration(
                                 SyntaxFactory.IdentifierName("var"))
                             .WithVariables(
-                                SyntaxFactory.SingletonSeparatedList<VariableDeclaratorSyntax>(
+                                SyntaxFactory.SingletonSeparatedList(
                                     SyntaxFactory.VariableDeclarator(
                                             SyntaxFactory.Identifier("variable"))
                                         .WithInitializer(
@@ -94,7 +94,8 @@ namespace DisposableFixer.CodeFix
                     
                 }
             }
-            throw new NotSupportedException();
+
+            return context.Document;
         }
     }
 }
