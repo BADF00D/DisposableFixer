@@ -31,13 +31,21 @@ namespace DisposableFixer.CodeFix.Extensions
             editor.InsertAfter(usings.Last(), new[] { newSystemImport });
         }
 
-        public static void AddBaseTypeIfNeeded(this DocumentEditor editor, ClassDeclarationSyntax oldClass,
+        public static void AddInterfaceIfNeeded(this DocumentEditor editor, ClassDeclarationSyntax oldClass,
             IdentifierNameSyntax baseClass)
         {
             if (oldClass.BaseList != null && oldClass.BaseList.Types.Any(bts =>
                     bts.DescendantNodes<IdentifierNameSyntax>()
                         .Any(ins => ins.Identifier.Text == baseClass.Identifier.Text)))
                 return;
+            var model = editor.SemanticModel;
+            var oc = model.GetDeclaredSymbol(oldClass);
+            
+            if (oc.AllInterfaces.Any(i => i.Name == baseClass.Identifier.Text))
+            {
+                return;
+            } 
+
             editor.AddBaseType(oldClass, baseClass);
         }
 

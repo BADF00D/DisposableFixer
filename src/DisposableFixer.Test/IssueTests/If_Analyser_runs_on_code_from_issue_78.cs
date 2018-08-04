@@ -35,7 +35,8 @@ namespace MyNs {
     internal class Dummy : IDoSomething {
         private MemoryStream Stream = new MemoryStream();
 
-        public void Dispose() {
+        public void Dispose()
+        {
             Stream?.Dispose();
         }
     }

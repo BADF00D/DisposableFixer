@@ -60,7 +60,7 @@ namespace DisposableFixer.CodeFix
 
             if (!node.TryFindParent<ClassDeclarationSyntax>(out var oldClass)) return editor.GetChangedDocument();
 
-            editor.AddBaseTypeIfNeeded(oldClass, SyntaxFactory.IdentifierName(Constants.IDisposable));
+            editor.AddInterfaceIfNeeded(oldClass, SyntaxFactory.IdentifierName(Constants.IDisposable));
             editor.AddUninitializedFieldNamed(oldClass, fieldName, type);
 
             var assignment = SyntaxFactory.ExpressionStatement(
@@ -95,7 +95,7 @@ namespace DisposableFixer.CodeFix
 
             if (!node.TryFindParent<ClassDeclarationSyntax>(out var oldClass)) return editor.GetChangedDocument();
 
-            editor.AddBaseTypeIfNeeded(oldClass, SyntaxFactory.IdentifierName(Constants.IDisposable));
+            editor.AddInterfaceIfNeeded(oldClass, SyntaxFactory.IdentifierName(Constants.IDisposable));
 
 
             switch (node)

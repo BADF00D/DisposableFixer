@@ -30,7 +30,7 @@ namespace DisposableFixer.CodeFix
                 if (@classtype == null) return context.Document;
 
 
-                editor.AddBaseTypeIfNeeded(oldClass, SyntaxFactory.IdentifierName(Constants.IDisposable));
+                editor.AddInterfaceIfNeeded(oldClass, SyntaxFactory.IdentifierName(Constants.IDisposable));
 
                 var disposeMethods = oldClass.GetParameterlessMethodNamed(Constants.Dispose);
 
