@@ -1,4 +1,9 @@
-﻿Release 0.40
+﻿Release 1.0.0
+* Issue 76: Anonymous variables that are argument cause no longer exceptions.
+* Issue 77: VariableDeclatations introduced by CodeFix now have no travia.
+* Issue 78: If BaseClass already implements IDisposable, interface declarations is no longer added to class.
+
+Release 0.40
 * Issue 75: anonymous objects and local variables can not be dispsoed via field that get disposed in Dispose method.
 
 Release 0.39
