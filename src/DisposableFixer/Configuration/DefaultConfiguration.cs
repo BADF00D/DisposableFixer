@@ -119,8 +119,12 @@ namespace DisposableFixer.Configuration {
 		        ["System.IO.Ports.SerialPort"] = new[]
 		        {
 		            new MethodCall("Close", Empty.Array<string>(), false)
-		        }
-		    };
+		        },
+                ["System.Data.SqlClient.SqlDataReader"] = new[]
+                {
+                    new MethodCall("Close", Empty.Array<string>(), false)
+                }
+            };
 		}
         public HashSet<string> IgnoredTypes { get; }
 		public HashSet<string> IgnoredInterfaces { get; }
