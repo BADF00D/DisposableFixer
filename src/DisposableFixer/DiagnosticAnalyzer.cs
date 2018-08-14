@@ -145,7 +145,7 @@ namespace DisposableFixer
                 }
                 if (IsArgumentInConstructorOfTrackingTypeWithinUsing(context, localVariableInsideUsing)) return;
 
-                context.ReportNotDisposedLocalDeclaration();
+                context.ReportNotDisposedLocalVariable();
                 return;
             }
             var invocationExpressions = parentScope.DescendantNodes<InvocationExpressionSyntax>().ToArray();
@@ -154,7 +154,7 @@ namespace DisposableFixer
             if (IsArgumentInConstructorOfTrackingType(context, localVariableName, parentScope)) return;
             if (IsCallToMethodThatIsConsideredAsDisposeCall(invocationExpressions, context)) return;
             
-            context.ReportNotDisposedLocalDeclaration();
+            context.ReportNotDisposedLocalVariable();
         }
 
         private static bool IsCallToMethodThatIsConsideredAsDisposeCall(IEnumerable<InvocationExpressionSyntax> invocations,
@@ -266,7 +266,7 @@ namespace DisposableFixer
                         return;
                     }
                     //is part of tracking call
-                    context.ReportNotDisposedLocalDeclaration();
+                    context.ReportNotDisposedLocalVariable();
                     return;
                 }
                 if (node.IsDisposedInDisposingMethod(variableName, Configuration, context.SemanticModel)) return;
@@ -299,7 +299,7 @@ namespace DisposableFixer
                         return;
                     }
                     if (ctor.ContainsDisposeCallFor(variableName, context.SemanticModel, Configuration)) return;
-                    context.ReportNotDisposedLocalDeclaration();
+                    context.ReportNotDisposedLocalVariable();
                 }
                 else //field or property
                 {
@@ -394,6 +394,9 @@ namespace DisposableFixer
             if (awaitExpression.IsDescendantOfVariableDeclarator())
             {
                 AnalyseNodeWithinVariableDeclarator(context, awaitExpression, DisposableSource.InvokationExpression);
+            }else if (awaitExpression.IsDescendantOfAssignmentExpressionSyntax())
+            {
+                context.ReportNotDisposedLocalVariable();
             }
             else
             {

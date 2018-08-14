@@ -193,7 +193,7 @@ namespace DisposableFixer.Extensions
                 );
         }
 
-        public static void ReportNotDisposedLocalDeclaration(this SyntaxNodeAnalysisContext context)
+        public static void ReportNotDisposedLocalVariable(this SyntaxNodeAnalysisContext context)
         {
             var location = context.Node.GetLocation();
 
