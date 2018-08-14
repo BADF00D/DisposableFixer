@@ -15,11 +15,18 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.ThirdParty.SystemDa
                 yield return DataView();
                 yield return DataViewManager();
                 yield return DataTable();
+                yield return CreateSutAndClose("DataTableReader");
+                yield return CreateSutAndClose("OdbcDataReader");
+                yield return CreateSutAndClose("OleDbDataReader");
+                yield return CreateSutAndClose("OracleDataReader");
+                yield return CreateSutAndClose("SqlDataReader");
+                yield return CreateSutAndClose("SqlDataReaderSmi");
             }
         }
 
         private const string Mock = @"
 using System.Data;
+using System.Data.SqlClient
 
 namespace bla
 {
@@ -64,6 +71,39 @@ namespace System.Data
         }
     }
 }
+namespace System.Data.SqlClient
+{
+    internal class SqlDataReader : IDisposable
+    {
+        public void Dispose(){}
+        public void Close(){}
+    }
+    internal class DataTableReader : IDisposable
+    {
+        public void Dispose(){}
+        public void Close(){}
+    }
+    internal class OdbcDataReader : IDisposable
+    {
+        public void Dispose() { }
+        public void Close() { }
+    }
+    internal class OleDbDataReader : IDisposable
+    {
+        public void Dispose() { }
+        public void Close() { }
+    }
+    internal class OracleDataReader : IDisposable
+    {
+        public void Dispose() { }
+        public void Close() { }
+    }
+    internal class SqlDataReaderSmi : IDisposable
+    {
+        public void Dispose() { }
+        public void Close() { }
+    }
+}
 ";
 
         [Test, TestCaseSource(nameof(TestCases))]
@@ -104,6 +144,14 @@ namespace System.Data
 
             return new TestCaseData(Mock.Replace("###SUT###", code), 0)
                 .SetName("DataViewManager should be ignored");
+        }
+
+        private static TestCaseData CreateSutAndClose(string type)
+        {
+            var code = $"var ds = new {type}();ds.Close()";
+
+            return new TestCaseData(Mock.Replace("###SUT###", code), 0)
+                .SetName($"{type} Close() should be ignored");
         }
     }
 }
