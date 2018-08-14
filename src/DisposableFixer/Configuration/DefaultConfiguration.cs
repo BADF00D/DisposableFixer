@@ -120,7 +120,27 @@ namespace DisposableFixer.Configuration {
 		        {
 		            new MethodCall("Close", Empty.Array<string>(), false)
 		        },
+                ["System.Data.SqlClient.DataTableReader"] = new[]
+                {
+                    new MethodCall("Close", Empty.Array<string>(), false)
+                },
+                ["System.Data.SqlClient.OdbcDataReader"] = new[]
+                {
+                    new MethodCall("Close", Empty.Array<string>(), false)
+                },
+                ["System.Data.SqlClient.OleDbDataReader"] = new[]
+                {
+                    new MethodCall("Close", Empty.Array<string>(), false)
+                },
+                ["System.Data.SqlClient.OracleDataReader"] = new[]
+                {
+                    new MethodCall("Close", Empty.Array<string>(), false)
+                },
                 ["System.Data.SqlClient.SqlDataReader"] = new[]
+                {
+                    new MethodCall("Close", Empty.Array<string>(), false)
+                },
+                ["System.Data.SqlClient.SqlDataReaderSmi"] = new[]
                 {
                     new MethodCall("Close", Empty.Array<string>(), false)
                 }
