@@ -68,8 +68,16 @@ namespace DisposableFixer.CodeFix
 
         private static string FindVariableName(SyntaxNode node)
         {
-            var variableDeclaration = node?.Parent?.Parent as VariableDeclaratorSyntax;
-            return variableDeclaration?.Identifier.Text;
+            if (node?.Parent is AwaitExpressionSyntax)
+            {
+                var variableDeclaration = node?.Parent?.Parent.Parent as VariableDeclaratorSyntax;
+                return variableDeclaration?.Identifier.Text;
+            }
+            else
+            {
+                var variableDeclaration = node?.Parent?.Parent as VariableDeclaratorSyntax;
+                return variableDeclaration?.Identifier.Text;
+            }
         }
     }
 }

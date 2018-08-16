@@ -46,12 +46,14 @@ namespace DisposableFixer.Test.CodeFix.DisposeLocalVariableAfterLastUsageCodeFix
         {
             get
             {
-                yield return new TestCaseData(AnonymousObjectCreation, SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable)
+                yield return new TestCaseData(LocalVariable, SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable)
                     .SetName("Undisposed local Variable");
+                yield return new TestCaseData(LocalVariableInAwait, SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable)
+                    .SetName("Undisposed local Variable in await");
             }
         }
 
-        private const string AnonymousObjectCreation = @"
+        private const string LocalVariable = @"
 using System.IO;
 
 namespace SomeNamespace {
@@ -64,7 +66,29 @@ namespace SomeNamespace {
             var z = 2;
         }
     }
-}
-";
+}";
+        private const string LocalVariableInAwait = @"
+using System.IO;
+using System.Threading.Tasks;
+
+namespace SomeNamespace
+{
+    internal class SomeClass
+    {
+        public async void SomeMethod()
+        {
+            var memoryStream = await Create();
+            var x = 0;
+            var y = 1;
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            var z = 2;
+        }
+
+        private Task<MemoryStream> Create()
+        {
+            return Task.FromResult(new MemoryStream());
+        }
+    }
+}";
     }
 }
