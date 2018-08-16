@@ -13,6 +13,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace DisposableFixer.CodeFix
 {
@@ -68,16 +69,25 @@ namespace DisposableFixer.CodeFix
 
         private static string FindVariableName(SyntaxNode node)
         {
-            if (node?.Parent is AwaitExpressionSyntax)
+            if (node?.Parent is AwaitExpressionSyntax awaitExpression)
             {
+                if (awaitExpression.Parent is AssignmentExpressionSyntax assignmentExpressionInAwait)
+                {
+                    return (assignmentExpressionInAwait.Left as IdentifierNameSyntax)?.Identifier.Text;
+                }
                 var variableDeclaration = node?.Parent?.Parent.Parent as VariableDeclaratorSyntax;
                 return variableDeclaration?.Identifier.Text;
             }
             else
             {
+                if (node?.Parent is AssignmentExpressionSyntax assignmentExpression)
+                {
+                    return (assignmentExpression.Left as IdentifierNameSyntax)?.Identifier.Text;
+                }
                 var variableDeclaration = node?.Parent?.Parent as VariableDeclaratorSyntax;
                 return variableDeclaration?.Identifier.Text;
             }
+            
         }
     }
 }

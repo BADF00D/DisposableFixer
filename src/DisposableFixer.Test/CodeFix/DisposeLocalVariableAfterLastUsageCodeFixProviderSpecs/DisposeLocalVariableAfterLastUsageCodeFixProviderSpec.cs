@@ -46,14 +46,18 @@ namespace DisposableFixer.Test.CodeFix.DisposeLocalVariableAfterLastUsageCodeFix
         {
             get
             {
-                yield return new TestCaseData(LocalVariable, SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable)
-                    .SetName("Undisposed local Variable");
-                yield return new TestCaseData(LocalVariableInAwait, SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable)
-                    .SetName("Undisposed local Variable in await");
+                yield return new TestCaseData(LocalVariableThatIsPartOfVariableDeclarator, SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable)
+                    .SetName("Undisposed local Variable in VariableDeclarator");
+                yield return new TestCaseData(LocalVariablesThatIsPartOfAssignment, SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable)
+                    .SetName("Undisposed local Variable in Assigment");
+                yield return new TestCaseData(LocalVariableInAwaitThatIsPartOfVariableDeclarator, SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable)
+                    .SetName("Undisposed local Variable in await in VariableDeclarator");
+                yield return new TestCaseData(LocalVariableInAwaitThatIsPartOfAssignment, SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable)
+                    .SetName("Undisposed local Variable in await in Assigment");
             }
         }
 
-        private const string LocalVariable = @"
+        private const string LocalVariableThatIsPartOfVariableDeclarator = @"
 using System.IO;
 
 namespace SomeNamespace {
@@ -67,7 +71,26 @@ namespace SomeNamespace {
         }
     }
 }";
-        private const string LocalVariableInAwait = @"
+
+        private const string LocalVariablesThatIsPartOfAssignment = @"
+using System.IO;
+
+namespace SomeNamespace
+{
+    internal class SomeClass
+    {
+        public async void SomeMethod()
+        {
+            MemoryStream memoryStream;
+            memoryStream = new MemoryStream();
+            var x = 0;
+            var y = 1;
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            var z = 2;
+        }
+    }
+}";
+        private const string LocalVariableInAwaitThatIsPartOfVariableDeclarator = @"
 using System.IO;
 using System.Threading.Tasks;
 
@@ -78,6 +101,31 @@ namespace SomeNamespace
         public async void SomeMethod()
         {
             var memoryStream = await Create();
+            var x = 0;
+            var y = 1;
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            var z = 2;
+        }
+
+        private Task<MemoryStream> Create()
+        {
+            return Task.FromResult(new MemoryStream());
+        }
+    }
+}";
+
+        private const string LocalVariableInAwaitThatIsPartOfAssignment = @"
+using System.IO;
+using System.Threading.Tasks;
+
+namespace SomeNamespace
+{
+    internal class SomeClass
+    {
+        public async void SomeMethod()
+        {
+            MemoryStream memoryStream;
+            memoryStream = await Create();
             var x = 0;
             var y = 1;
             memoryStream.Seek(0, SeekOrigin.Begin);
