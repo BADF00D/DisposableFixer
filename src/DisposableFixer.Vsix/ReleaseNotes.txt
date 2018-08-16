@@ -1,4 +1,8 @@
-﻿Release 1.0.0
+﻿Release 1.0.1
+* Issue 83: Extended Whitelist for type where Close is identical to Dispose
+* Issue 86: Undisposed Local variables get tagged with correct message and diagnostic id.
+
+Release 1.0.0
 * Issue 76: Anonymous variables that are argument cause no longer exceptions.
 * Issue 77: VariableDeclatations introduced by CodeFix now have no travia.
 * Issue 78: If BaseClass already implements IDisposable, interface declarations is no longer added to class.
