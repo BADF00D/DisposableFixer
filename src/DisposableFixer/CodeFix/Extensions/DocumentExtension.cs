@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using DisposableFixer.Extensions;
+using DisposableFixer.Misc;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -53,12 +54,7 @@ namespace DisposableFixer.CodeFix.Extensions
             MethodDeclarationSyntax oldDisposeMethod, string memberName)
         {
             var oldStatements = oldDisposeMethod.Body.Statements;
-            var disposeStatement = SyntaxFactory.ExpressionStatement(
-                SyntaxFactory.ConditionalAccessExpression(
-                    SyntaxFactory.IdentifierName(memberName),
-                    SyntaxFactory.InvocationExpression(
-                        SyntaxFactory.MemberBindingExpression(
-                            SyntaxFactory.IdentifierName(Constants.Dispose)))));
+            var disposeStatement = SyntaxCreator.CreateConditionalAccessDisposeCallFor(memberName);
             var newStatements = oldStatements.Add(disposeStatement);
             var newDisposeMethod = SyntaxFactory
                 .MethodDeclaration(

@@ -46,7 +46,7 @@ namespace DisposableFixer.Test.CodeFix.DisposeLocalVariableAfterLastUsageCodeFix
         {
             get
             {
-                yield return new TestCaseData(AnonymousObjectCreation, SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation)
+                yield return new TestCaseData(AnonymousObjectCreation, SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable)
                     .SetName("Undisposed local Variable");
             }
         }
