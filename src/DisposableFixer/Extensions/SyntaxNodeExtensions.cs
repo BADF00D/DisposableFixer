@@ -146,6 +146,12 @@ namespace DisposableFixer.Extensions
             return node.IsPartOfSimpleLambdaExpression() || node.IsPartOfParenthesizedExpression();
         }
 
+        public static bool IsArrowExpressionClauseOfMethod(this SyntaxNode node)
+        {
+            return node?.Parent is ArrowExpressionClauseSyntax
+                   && node?.Parent?.Parent is MethodDeclarationSyntax;
+        }
+
         public static bool IsReturnDirectlyOrLater(this SyntaxNode node)
         {
             return node.IsReturnValueInLambdaExpression()
