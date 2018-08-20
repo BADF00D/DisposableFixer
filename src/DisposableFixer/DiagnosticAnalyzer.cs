@@ -386,7 +386,8 @@ namespace DisposableFixer
         {
             var awaitExpression = node.Parent as AwaitExpressionSyntax;
             var awaitExpressionInfo = context.SemanticModel.GetAwaitExpressionInfo(awaitExpression);
-            var returnType = awaitExpressionInfo.GetResultMethod.ReturnType as INamedTypeSymbol;
+            var returnType = awaitExpressionInfo.GetResultMethod?.ReturnType as INamedTypeSymbol;
+            if (returnType == null) return;
             if (!returnType.IsDisposeableOrImplementsDisposable()) return;
             if (Detector.IsIgnoredTypeOrImplementsIgnoredInterface(returnType)) return;
             if (awaitExpression.IsDescendantOfUsingHeader()) return;
@@ -398,6 +399,14 @@ namespace DisposableFixer
                 AnalyseNodeWithinVariableDeclarator(context, awaitExpression, DisposableSource.InvokationExpression);
             }else if (awaitExpression.IsDescendantOfAssignmentExpressionSyntax())
             {
+                if (node.TryFindParentScope(out var parentScope))
+                {
+                    var assignment = awaitExpression.Parent as AssignmentExpressionSyntax;
+                    var localVariable = (assignment?.Left as IdentifierNameSyntax)?.Identifier.Text;
+                    var isDisposed = parentScope.DescendantNodes<MemberAccessExpressionSyntax>().Any(mae =>
+                        mae.IsDisposeCall() && (mae.Expression as IdentifierNameSyntax)?.Identifier.Text == localVariable);
+                    if (isDisposed) return;
+                }
                 context.ReportNotDisposedLocalVariable();
             }
             else
