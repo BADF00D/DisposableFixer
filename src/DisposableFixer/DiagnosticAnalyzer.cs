@@ -401,7 +401,7 @@ namespace DisposableFixer
             {
                 if (node.TryFindParentScope(out var parentScope))
                 {
-                    var assignment = awaitExpression.Parent as AssignmentExpressionSyntax;
+                    var assignment = awaitExpression?.Parent as AssignmentExpressionSyntax;
                     var localVariable = (assignment?.Left as IdentifierNameSyntax)?.Identifier.Text;
                     var isDisposed = parentScope.DescendantNodes<MemberAccessExpressionSyntax>().Any(mae =>
                         mae.IsDisposeCall() && (mae.Expression as IdentifierNameSyntax)?.Identifier.Text == localVariable);
