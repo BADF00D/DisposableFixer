@@ -1,4 +1,10 @@
-﻿Release 1.0.1
+﻿Release 1.1.0
+* Issue 79: Added CodeFix that disposes local variable after last usage.
+* Issue 85: Fixed crash that occured when using lamda as method body.
+* Issue 88: Diposed objects assigned via await are not detected correctly.
+* Issue 81: Improved issue template.
+
+Release 1.0.1
 * Issue 83: Extended Whitelist for type where Close is identical to Dispose
 * Issue 86: Undisposed Local variables get tagged with correct message and diagnostic id.
 
