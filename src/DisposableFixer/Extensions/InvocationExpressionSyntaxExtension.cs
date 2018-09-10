@@ -10,53 +10,51 @@ namespace DisposableFixer.Extensions
     {
         public static bool IsCallToDisposeFor(this InvocationExpressionSyntax node, string identifier, SemanticModel semanticModel, IConfiguration configuration)
         {
-            var syntax = node.Parent as ConditionalAccessExpressionSyntax;
-            if (syntax != null)
+            if (node.Parent is ConditionalAccessExpressionSyntax syntax)
             {
                 /** indentifier?.Dispose or (identifier as IDisposbale)?.Dispose **/
                 var condAccess = syntax;
-                var identifierSyntax = condAccess.Expression as IdentifierNameSyntax;
-                if (identifierSyntax != null)
+                switch (condAccess.Expression)
                 {
-                    var expression = node.Expression as MemberBindingExpressionSyntax;
+                    case IdentifierNameSyntax identifierSyntax:
+                        var expression = node.Expression as MemberBindingExpressionSyntax;
 
-                    if (identifierSyntax.Identifier.Text == identifier
-                        && expression.Name.Identifier.Text == "Dispose") return true;
+                        if (identifierSyntax.Identifier.Text == identifier
+                            && expression?.Name.Identifier.Text == "Dispose") return true;
 
-                    var memberType = semanticModel.GetTypeInfo(identifierSyntax).Type.GetFullNamespace();
-                    IReadOnlyCollection<MethodCall> _specialDispose;
-                    if (!configuration.DisposingMethodsAtSpecialClasses.TryGetValue(memberType, out _specialDispose))
-                        return false;
+                        var memberType = semanticModel.GetTypeInfo(identifierSyntax).Type.GetFullNamespace();
+                        if (!configuration.DisposingMethodsAtSpecialClasses.TryGetValue(memberType, out var specialDispose))
+                            return false;
 
-                    var partlyEqual = _specialDispose.Any(mc =>
-                        !mc.IsStatic
-                        && mc.Name == expression.Name.Identifier.Text
-                        && mc.Parameter.Length == node.ArgumentList.Arguments.Count);
-                    /* We have to check the parameter types, but unfortunatelly such an example and unittest does not exists jet.
+                        var partlyEqual = specialDispose.Any(mc =>
+                            !mc.IsStatic
+                            && mc.Name == expression?.Name.Identifier.Text
+                            && mc.Parameter.Length == node.ArgumentList.Arguments.Count);
+                        /* We have to check the parameter types, but unfortunatelly such an example and unittest does not exists jet.
                        For now, we have enought information */
-                    return partlyEqual;
+                        return partlyEqual;
+                    case ParenthesizedExpressionSyntax parenthesizedExpressionSyntax:
+                        if (!(parenthesizedExpressionSyntax.Expression is BinaryExpressionSyntax binaryExpression)) return false;
+                        return (binaryExpression.Left as IdentifierNameSyntax)?.Identifier.Text == identifier;
+                    case MemberAccessExpressionSyntax mae:
+                        //e.g. this.Member.Dispose();
+                        var isid = mae.Name.Identifier.Text == identifier;
+                        var wnn = condAccess.WhenNotNull as InvocationExpressionSyntax;
+                        var mbe = wnn?.Expression as MemberBindingExpressionSyntax;
+                        return isid && mbe?.Name.Identifier.Text == Constants.Dispose;
                 }
-                var parenthesizedExpressionSyntax = condAccess.Expression as ParenthesizedExpressionSyntax;
-                if (parenthesizedExpressionSyntax == null) return false;
-                {
-                    var binaryExpression = parenthesizedExpressionSyntax.Expression as BinaryExpressionSyntax;
-                    if (binaryExpression == null) return false;
-                    return (binaryExpression.Left as IdentifierNameSyntax)?.Identifier.Text == identifier;
-                }
+
+                return false;
             }
-            else
+
             {
                 var expression = node.Expression as MemberAccessExpressionSyntax;
 
-                var identifierSyntax = expression?.Expression as IdentifierNameSyntax;
-                if (identifierSyntax == null) return false;
-
-                if(identifierSyntax.Identifier.Text == identifier && expression.Name.Identifier.Text == "Dispose") return true;
-
+                if (!(expression?.Expression is IdentifierNameSyntax identifierSyntax)) return false;
+                if (identifierSyntax.Identifier.Text == identifier && expression.Name.Identifier.Text == "Dispose") return true;
                 
                 var memberType = semanticModel.GetTypeInfo(identifierSyntax).Type.GetFullNamespace();
-                IReadOnlyCollection<MethodCall> specialDispose;
-                if (!configuration.DisposingMethodsAtSpecialClasses.TryGetValue(memberType, out specialDispose))
+                if (!configuration.DisposingMethodsAtSpecialClasses.TryGetValue(memberType, out var specialDispose))
                     return false;
 
                 var partlyEqual = specialDispose.Any(mc => //node.IsCallToMethod(mc)
