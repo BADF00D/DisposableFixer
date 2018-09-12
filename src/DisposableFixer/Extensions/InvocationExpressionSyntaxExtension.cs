@@ -50,20 +50,29 @@ namespace DisposableFixer.Extensions
             {
                 var expression = node.Expression as MemberAccessExpressionSyntax;
 
-                if (!(expression?.Expression is IdentifierNameSyntax identifierSyntax)) return false;
-                if (identifierSyntax.Identifier.Text == identifier && expression.Name.Identifier.Text == "Dispose") return true;
-                
-                var memberType = semanticModel.GetTypeInfo(identifierSyntax).Type.GetFullNamespace();
-                if (!configuration.DisposingMethodsAtSpecialClasses.TryGetValue(memberType, out var specialDispose))
-                    return false;
+                if (expression?.Expression is IdentifierNameSyntax identifierSyntax)
+                {
+                    if (identifierSyntax.Identifier.Text == identifier && expression.Name.Identifier.Text == Constants.Dispose)
+                        return true;
 
-                var partlyEqual = specialDispose.Any(mc => //node.IsCallToMethod(mc)
-                    !mc.IsStatic 
-                    && mc.Name == expression.Name.Identifier.Text
-                    && mc.Parameter.Length == node.ArgumentList.Arguments.Count);
-                /* We have to check the parameter types, but unfortunatelly such an example and unittest does not exists jet.
-                       For now, we have enought information */
-                return partlyEqual;
+                    var memberType = semanticModel.GetTypeInfo(identifierSyntax).Type.GetFullNamespace();
+                    if (!configuration.DisposingMethodsAtSpecialClasses.TryGetValue(memberType, out var specialDispose))
+                        return false;
+
+                    var partlyEqual = specialDispose.Any(mc => //node.IsCallToMethod(mc)
+                        !mc.IsStatic
+                        && mc.Name == expression.Name.Identifier.Text
+                        && mc.Parameter.Length == node.ArgumentList.Arguments.Count);
+                    /* We have to check the parameter types, but unfortunatelly such an example and unittest does not exists jet.
+                           For now, we have enought information */
+                    return partlyEqual;
+                }
+                if (expression?.Expression is MemberAccessExpressionSyntax mae)
+                {
+                    return mae.Name.Identifier.Text == identifier && expression.Name.Identifier.Text == Constants.Dispose;
+                }
+
+                return false;
             }
         }
 
