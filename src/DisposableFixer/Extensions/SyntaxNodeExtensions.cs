@@ -130,6 +130,10 @@ namespace DisposableFixer.Extensions
         {
             return node.FindParent<ReturnStatementSyntax, MethodDeclarationSyntax>() != null;
         }
+        public static bool IsPartOfReturnStatementInBlock(this SyntaxNode node)
+        {
+            return node.FindParent<ReturnStatementSyntax, BlockSyntax>() != null;
+        }
 
         public static bool IsPartOfSimpleLambdaExpression(this SyntaxNode node)
         {

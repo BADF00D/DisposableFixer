@@ -53,7 +53,7 @@ namespace DisposableFixer
             else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new MemoryStream()).Dispose()
             else if (Detector.IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } 
             else if (node.IsReturnedInProperty()) AnalyseNodeInReturnStatementOfProperty(context, node, DisposableSource.ObjectCreation);
-            else if (node.IsPartOfReturnStatementInMethod()) { }
+            else if (node.IsPartOfReturnStatementInBlock()) { } // return new MemoryStream() or return Task.FromResult(new MemoryStream())
             else if (node.IsArrowExpressionClauseOfMethod()) { } // void Create()=>CreateMemoryStream()
             else if (node.IsReturnValueInLambdaExpression()) { }
             else if (node.IsReturnedLaterWithinMethod()) { }
@@ -362,8 +362,8 @@ namespace DisposableFixer
                 var methodInvocation = node.Parent.Parent.Parent as InvocationExpressionSyntax;
                 if (Detector.IsTrackingMethodCall(methodInvocation, context.SemanticModel)) return;
                 context.ReportNotDisposedAnonymousObject(DisposableSource.ObjectCreation);
-            } 
-            else if (node.IsPartOfReturnStatementInMethod()) { } //return new StreamReader()
+            }
+            else if (node.IsPartOfReturnStatementInBlock()) { } // return new MemoryStream() or return Task.FromResult(new MemoryStream())
             else if (node.IsArrowExpressionClauseOfMethod()) { } // void Create()=>new MemoryStream()
             else if (node.IsReturnValueInLambdaExpression()) { } //e.g. ()=> new MemoryStream
             else if (node.IsReturnedLaterWithinMethod()) { }
