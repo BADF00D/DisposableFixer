@@ -1,4 +1,8 @@
-﻿Release 1.1.0
+﻿Release 1.1.1
+* Issue 89: ThisExpression is now analyzed correctly.
+* Issue 90: Analyzer now ckecks if a variable is returned within block, not within method.
+
+Release 1.1.0
 * Issue 79: Added CodeFix that disposes local variable after last usage.
 * Issue 85: Fixed crash that occured when using lamda as method body.
 * Issue 88: Diposed objects assigned via await are not detected correctly.
