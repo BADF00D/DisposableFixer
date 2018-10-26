@@ -50,6 +50,7 @@ namespace DisposableFixer
             var symbolInfo = context.SemanticModel.GetSymbolInfo(node);
             var type = (symbolInfo.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
             if (type == null) { }
+            else if (!type.IsDisposeableOrImplementsDisposable()) return;
             else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new MemoryStream()).Dispose()
             else if (Detector.IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } 
             else if (node.IsReturnedInProperty()) AnalyseNodeInReturnStatementOfProperty(context, node, DisposableSource.ObjectCreation);

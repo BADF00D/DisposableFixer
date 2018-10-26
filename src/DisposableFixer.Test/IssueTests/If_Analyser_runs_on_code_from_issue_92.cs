@@ -1,5 +1,4 @@
 using System;
-using DisposableFixer.Extensions;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using NUnit.Framework;
