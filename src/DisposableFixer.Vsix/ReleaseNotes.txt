@@ -1,4 +1,8 @@
-﻿Release 1.1.1
+﻿Release 1.1.2
+* Issue 92: if a property returns an non IDisposable ObjectCreations, the ObjectCreations is no longer marked as not disposed.
+* Issue 93: When apply codefix that dispose a variable after last usage, no Exceptions is thrown.
+
+Release 1.1.1
 * Issue 89: ThisExpression is now analyzed correctly.
 * Issue 90: Analyzer now ckecks if a variable is returned within block, not within method.
 
