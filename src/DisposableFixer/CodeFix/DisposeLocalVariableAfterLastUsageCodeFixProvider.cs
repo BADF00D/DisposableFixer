@@ -40,7 +40,7 @@ namespace DisposableFixer.CodeFix
             if (node.TryFindContainigBlock(out var parentBlock))
             {
                 var lastUsage = parentBlock
-                    .DescendantNodes<IdentifierNameSyntax>()
+                    .DescendantNodes<VariableDeclaratorSyntax>()
                     .Last(ins => ins.Identifier.Text == variableName);
                 if(lastUsage.TryFindParent<StatementSyntax>(parentBlock, out var lastUsageStatement))
                 {
