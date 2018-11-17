@@ -47,7 +47,7 @@ namespace DisposableFixer.CodeFix.Extensions
                 return;
             } 
 
-            editor.AddBaseType(oldClass, baseClass);
+            editor.AddInterfaceType(oldClass, baseClass);
         }
 
         public static void AddDisposeCallToMemberInDisposeMethod(this DocumentEditor editor,
