@@ -28,74 +28,127 @@ namespace DisposableFixer.Test.CodeFix.UndisposedFieldCodeFixProviderSpecs
             var cSharpCompilerDiagnostics = GetCSharpCompilerErrors(fixedCode);
             PrintFixedCodeDiagnostics(cSharpCompilerDiagnostics);
             cSharpCompilerDiagnostics
-                .Should().HaveCount(0, "we dont want to introduce bugs");
+                .Should().HaveCount(0, "we don't want to introduce bugs");
 
             var diagostics = MyHelper.RunAnalyser(fixedCode, GetCSharpDiagnosticAnalyzer());
             diagostics.Should().HaveCount(0);
         }
 
-        private static IEnumerable<TestCaseData> TestCases {
+        public static IEnumerable<TestCaseData> TestCases {
             get {
-                yield return CreateTest(false, false, Location.PropertyOrField, false, false);
-                yield return CreateTest(true, false, Location.PropertyOrField, false, false);
-                yield return CreateTest(false, true, Location.PropertyOrField, false, false);
-                yield return CreateTest(true, true, Location.PropertyOrField, false, false);
-                yield return CreateTest(false, false, Location.Ctor, false, false);
-                yield return CreateTest(true, false, Location.Ctor, false, false);
-                yield return CreateTest(false, true, Location.Ctor, false, false);
-                yield return CreateTest(true, true, Location.Ctor, false, false);
-                yield return CreateTest(false, false, Location.Method, false, false);
-                yield return CreateTest(true, false, Location.Method, false, false);
-                yield return CreateTest(false, true, Location.Method, false, false);
-                yield return CreateTest(true, true, Location.Method, false, false);
-                yield return CreateTest(false, false, Location.PropertyOrField, true, false);
-                yield return CreateTest(true, false, Location.PropertyOrField, true, false);
-                yield return CreateTest(false, true, Location.PropertyOrField, true, false);
-                yield return CreateTest(true, true, Location.PropertyOrField, true, false);
-                yield return CreateTest(false, false, Location.Ctor, true, false);
-                yield return CreateTest(true, false, Location.Ctor, true, false);
-                yield return CreateTest(false, true, Location.Ctor, true, false);
-                yield return CreateTest(true, true, Location.Ctor, true, false);
-                yield return CreateTest(false, false, Location.Method, true, false);
-                yield return CreateTest(true, false, Location.Method, true, false);
-                yield return CreateTest(false, true, Location.Method, true, false);
-                yield return CreateTest(true, true, Location.Method, true, false);
+                yield return CreateTest(false, false, Location.PropertyOrField, false, false, false);
+                yield return CreateTest(true, false, Location.PropertyOrField, false, false, false);
+                yield return CreateTest(false, true, Location.PropertyOrField, false, false, false);
+                yield return CreateTest(true, true, Location.PropertyOrField, false, false, false);
+                yield return CreateTest(false, false, Location.Ctor, false, false, false);
+                yield return CreateTest(true, false, Location.Ctor, false, false, false);
+                yield return CreateTest(false, true, Location.Ctor, false, false, false);
+                yield return CreateTest(true, true, Location.Ctor, false, false, false);
+                yield return CreateTest(false, false, Location.Method, false, false, false);
+                yield return CreateTest(true, false, Location.Method, false, false, false);
+                yield return CreateTest(false, true, Location.Method, false, false, false);
+                yield return CreateTest(true, true, Location.Method, false, false, false);
+                yield return CreateTest(false, false, Location.PropertyOrField, true, false, false);
+                yield return CreateTest(true, false, Location.PropertyOrField, true, false, false);
+                yield return CreateTest(false, true, Location.PropertyOrField, true, false, false);
+                yield return CreateTest(true, true, Location.PropertyOrField, true, false, false);
+                yield return CreateTest(false, false, Location.Ctor, true, false, false);
+                yield return CreateTest(true, false, Location.Ctor, true, false, false);
+                yield return CreateTest(false, true, Location.Ctor, true, false, false);
+                yield return CreateTest(true, true, Location.Ctor, true, false, false);
+                yield return CreateTest(false, false, Location.Method, true, false, false);
+                yield return CreateTest(true, false, Location.Method, true, false, false);
+                yield return CreateTest(false, true, Location.Method, true, false, false);
+                yield return CreateTest(true, true, Location.Method, true, false, false);
 
-                yield return CreateTest(false, false, Location.PropertyOrField, false, true);
-                yield return CreateTest(true, false, Location.PropertyOrField, false, true);
-                yield return CreateTest(false, true, Location.PropertyOrField, false, true);
-                yield return CreateTest(true, true, Location.PropertyOrField, false, true);
-                yield return CreateTest(false, false, Location.Ctor, false, true);
-                yield return CreateTest(true, false, Location.Ctor, false, true);
-                yield return CreateTest(false, true, Location.Ctor, false, true);
-                yield return CreateTest(true, true, Location.Ctor, false, true);
-                yield return CreateTest(false, false, Location.Method, false, true);
-                yield return CreateTest(true, false, Location.Method, false, true);
-                yield return CreateTest(false, true, Location.Method, false, true);
-                yield return CreateTest(true, true, Location.Method, false, true);
-                yield return CreateTest(false, false, Location.PropertyOrField, true, true);
-                yield return CreateTest(true, false, Location.PropertyOrField, true, true);
-                yield return CreateTest(false, true, Location.PropertyOrField, true, true);
-                yield return CreateTest(true, true, Location.PropertyOrField, true, true);
-                yield return CreateTest(false, false, Location.Ctor, true, true);
-                yield return CreateTest(true, false, Location.Ctor, true, true);
-                yield return CreateTest(false, true, Location.Ctor, true, true);
-                yield return CreateTest(true, true, Location.Ctor, true, true);
-                yield return CreateTest(false, false, Location.Method, true, true);
-                yield return CreateTest(true, false, Location.Method, true, true);
-                yield return CreateTest(false, true, Location.Method, true, true);
-                yield return CreateTest(true, true, Location.Method, true, true);
+                yield return CreateTest(false, false, Location.PropertyOrField, false, true, false);
+                yield return CreateTest(true, false, Location.PropertyOrField, false, true, false);
+                yield return CreateTest(false, true, Location.PropertyOrField, false, true, false);
+                yield return CreateTest(true, true, Location.PropertyOrField, false, true, false);
+                yield return CreateTest(false, false, Location.Ctor, false, true, false);
+                yield return CreateTest(true, false, Location.Ctor, false, true, false);
+                yield return CreateTest(false, true, Location.Ctor, false, true, false);
+                yield return CreateTest(true, true, Location.Ctor, false, true, false);
+                yield return CreateTest(false, false, Location.Method, false, true, false);
+                yield return CreateTest(true, false, Location.Method, false, true, false);
+                yield return CreateTest(false, true, Location.Method, false, true, false);
+                yield return CreateTest(true, true, Location.Method, false, true, false);
+                yield return CreateTest(false, false, Location.PropertyOrField, true, true, false);
+                yield return CreateTest(true, false, Location.PropertyOrField, true, true, false);
+                yield return CreateTest(false, true, Location.PropertyOrField, true, true, false);
+                yield return CreateTest(true, true, Location.PropertyOrField, true, true, false);
+                yield return CreateTest(false, false, Location.Ctor, true, true, false);
+                yield return CreateTest(true, false, Location.Ctor, true, true, false);
+                yield return CreateTest(false, true, Location.Ctor, true, true, false);
+                yield return CreateTest(true, true, Location.Ctor, true, true, false);
+                yield return CreateTest(false, false, Location.Method, true, true, false);
+                yield return CreateTest(true, false, Location.Method, true, true, false);
+                yield return CreateTest(false, true, Location.Method, true, true, false);
+                yield return CreateTest(true, true, Location.Method, true, true, false);
+
+                yield return CreateTest(false, false, Location.PropertyOrField, false, false, true);
+                yield return CreateTest(true, false, Location.PropertyOrField, false, false, true);
+                yield return CreateTest(false, true, Location.PropertyOrField, false, false, true);
+                yield return CreateTest(true, true, Location.PropertyOrField, false, false, true);
+                yield return CreateTest(false, false, Location.Ctor, false, false, true);
+                yield return CreateTest(true, false, Location.Ctor, false, false, true);
+                yield return CreateTest(false, true, Location.Ctor, false, false, true);
+                yield return CreateTest(true, true, Location.Ctor, false, false, true);
+                yield return CreateTest(false, false, Location.Method, false, false, true);
+                yield return CreateTest(true, false, Location.Method, false, false, true);
+                yield return CreateTest(false, true, Location.Method, false, false, true);
+                yield return CreateTest(true, true, Location.Method, false, false, true);
+                yield return CreateTest(false, false, Location.PropertyOrField, true, false, true);
+                yield return CreateTest(true, false, Location.PropertyOrField, true, false, true);
+                yield return CreateTest(false, true, Location.PropertyOrField, true, false, true);
+                yield return CreateTest(true, true, Location.PropertyOrField, true, false, true);
+                yield return CreateTest(false, false, Location.Ctor, true, false, true);
+                yield return CreateTest(true, false, Location.Ctor, true, false, true);
+                yield return CreateTest(false, true, Location.Ctor, true, false, true);
+                yield return CreateTest(true, true, Location.Ctor, true, false, true);
+                yield return CreateTest(false, false, Location.Method, true, false, true);
+                yield return CreateTest(true, false, Location.Method, true, false, true);
+                yield return CreateTest(false, true, Location.Method, true, false, true);
+                yield return CreateTest(true, true, Location.Method, true, false, true);
+
+                yield return CreateTest(false, false, Location.PropertyOrField, false, true, true);
+                yield return CreateTest(true, false, Location.PropertyOrField, false, true, true);
+                yield return CreateTest(false, true, Location.PropertyOrField, false, true, true);
+                yield return CreateTest(true, true, Location.PropertyOrField, false, true, true);
+                yield return CreateTest(false, false, Location.Ctor, false, true, true);
+                yield return CreateTest(true, false, Location.Ctor, false, true, true);
+                yield return CreateTest(false, true, Location.Ctor, false, true, true);
+                yield return CreateTest(true, true, Location.Ctor, false, true, true);
+                yield return CreateTest(false, false, Location.Method, false, true, true);
+                yield return CreateTest(true, false, Location.Method, false, true, true);
+                yield return CreateTest(false, true, Location.Method, false, true, true);
+                yield return CreateTest(true, true, Location.Method, false, true, true);
+                yield return CreateTest(false, false, Location.PropertyOrField, true, true, true);
+                yield return CreateTest(true, false, Location.PropertyOrField, true, true, true);
+                yield return CreateTest(false, true, Location.PropertyOrField, true, true, true);
+                yield return CreateTest(true, true, Location.PropertyOrField, true, true, true);
+                yield return CreateTest(false, false, Location.Ctor, true, true, true);
+                yield return CreateTest(true, false, Location.Ctor, true, true, true);
+                yield return CreateTest(false, true, Location.Ctor, true, true, true);
+                yield return CreateTest(true, true, Location.Ctor, true, true, true);
+                yield return CreateTest(false, false, Location.Method, true, true, true);
+                yield return CreateTest(true, false, Location.Method, true, true, true);
+                yield return CreateTest(false, true, Location.Method, true, true, true);
+                yield return CreateTest(true, true, Location.Method, true, true, true);
             }
         }
 
-        private static TestCaseData CreateTest(bool useSystem, bool implementIDisposable, Location location, bool hasDisposeMethod, bool hasBaseClass)
+        private static TestCaseData CreateTest(bool useSystem, bool implementIDisposable, Location location, bool hasDisposeMethod, bool hasBaseClass, bool targetTypeIsObject)
         {
             var code = CodeWithUndisposedField
+                .Replace("##fieldType##", targetTypeIsObject ?  "object" : "MemoryStream")
                 .Replace("##usingSystem##", useSystem ? "using System;" : string.Empty)
                 .Replace("##FieldInitializer##", location == Location.PropertyOrField ? " = new MemoryStream()" : string.Empty)
                 .Replace("##CtorInitializer##", location == Location.Ctor ? "CodeWithUndisposedField = new MemoryStream();" : string.Empty)
                 .Replace("##MethodInitializer##", location == Location.Method ? "CodeWithUndisposedField = new MemoryStream();" : string.Empty)
-                .Replace("##DisposeMethod##", hasDisposeMethod ? "public void Dispose(){}" : String.Empty);
+                .Replace("##DisposeMethod##", hasDisposeMethod ? "public void Dispose(){}" : string.Empty);
+
+
 
             if (hasBaseClass || implementIDisposable)
             {
@@ -115,11 +168,26 @@ namespace DisposableFixer.Test.CodeFix.UndisposedFieldCodeFixProviderSpecs
             else
             {
                 code = code.Replace("##baseClass##", string.Empty);
-            } 
+            }
 
-
+            var prefix = string.Empty;
+            prefix += targetTypeIsObject ? "TargetIsNotDisposable." : "TargetIsDisposable.";
+            prefix += hasBaseClass ? "HasBaseClass." : "HasNoBaseClass.";
+            switch (location)
+            {
+                case Location.PropertyOrField:
+                    prefix += "CreatedInField.";
+                    break;
+                case Location.Ctor:
+                    prefix += "CreatedInCtor.";
+                    break;
+                case Location.Method:
+                    prefix += "CreatedInMethod.";
+                    break;
+            }
+            
             return new TestCaseData(code)
-                .SetName($"useSystem: {useSystem} implementIDisposable: {implementIDisposable} location: {location} hasDisposeMethod: {hasDisposeMethod} hasBaseClass: {hasBaseClass}");
+                .SetName($"{prefix}useSystem: {useSystem} implementIDisposable: {implementIDisposable} hasDisposeMethod: {hasDisposeMethod}");
         }
 
         private enum Location
@@ -136,7 +204,7 @@ namespace MyNamespace
 {
     public class SomeClass ##baseClass##
     {
-        public MemoryStream CodeWithUndisposedField##FieldInitializer##;
+        public ##fieldType## CodeWithUndisposedField##FieldInitializer##;
 
         public SomeClass()
         {
