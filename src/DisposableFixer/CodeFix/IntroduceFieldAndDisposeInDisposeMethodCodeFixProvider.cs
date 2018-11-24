@@ -75,9 +75,9 @@ namespace DisposableFixer.CodeFix
             var disposeMethods = oldClass.GetParameterlessMethodNamed(Constants.Dispose).ToArray();
 
             if (disposeMethods.Any())
-                editor.AddDisposeCallToMemberInDisposeMethod(disposeMethods.First(), fieldName);
+                editor.AddDisposeCallToMemberInDisposeMethod(disposeMethods.First(), fieldName, false);
             else
-                editor.AddDisposeMethodAndDisposeCallToMember(oldClass, fieldName);
+                editor.AddDisposeMethodAndDisposeCallToMember(oldClass, fieldName, false);
 
             editor.AddImportIfNeeded(Constants.System);
 
@@ -114,9 +114,9 @@ namespace DisposableFixer.CodeFix
                 .ToArray();
 
             if (disposeMethods.Any())
-                editor.AddDisposeCallToMemberInDisposeMethod(disposeMethods.First(), fieldName);
+                editor.AddDisposeCallToMemberInDisposeMethod(disposeMethods.First(), fieldName, false);
             else
-                editor.AddDisposeMethodAndDisposeCallToMember(oldClass, fieldName);
+                editor.AddDisposeMethodAndDisposeCallToMember(oldClass, fieldName, false);
 
             editor.AddImportIfNeeded(Constants.System);
 

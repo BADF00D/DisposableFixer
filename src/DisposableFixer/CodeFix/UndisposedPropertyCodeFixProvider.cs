@@ -1,11 +1,13 @@
 ﻿using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using DisposableFixer.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DisposableFixer.CodeFix
 {
@@ -30,6 +32,14 @@ namespace DisposableFixer.CodeFix
             }
 
             return Task.FromResult(1);
+        }
+
+        protected override TypeSyntax GetTypeOfMemberDeclarationOrDefault(ClassDeclarationSyntax @class, string memberName)
+        {
+            return @class
+                .DescendantNodes<PropertyDeclarationSyntax>()
+                .FirstOrDefault(pds => pds.Identifier.Text == memberName)
+                ?.Type;
         }
     }
 }

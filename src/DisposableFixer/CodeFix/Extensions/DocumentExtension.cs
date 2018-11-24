@@ -51,10 +51,10 @@ namespace DisposableFixer.CodeFix.Extensions
         }
 
         public static void AddDisposeCallToMemberInDisposeMethod(this DocumentEditor editor,
-            MethodDeclarationSyntax oldDisposeMethod, string memberName)
+            MethodDeclarationSyntax oldDisposeMethod, string memberName, bool castToIDisposable)
         {
             var oldStatements = oldDisposeMethod.Body.Statements;
-            var disposeStatement = SyntaxCreator.CreateConditionalAccessDisposeCallFor(memberName);
+            var disposeStatement = CreateDisposeCall(memberName, castToIDisposable);
             var newStatements = oldStatements.Add(disposeStatement);
             var newDisposeMethod = SyntaxFactory
                 .MethodDeclaration(
@@ -69,8 +69,43 @@ namespace DisposableFixer.CodeFix.Extensions
             editor.ReplaceNode(oldDisposeMethod, newDisposeMethod);
         }
 
+        private static ExpressionStatementSyntax CreateDisposeCall(string memberName, bool castToIDisposable)
+        {
+            if (castToIDisposable)
+                return SyntaxFactory.ExpressionStatement(
+                                    SyntaxFactory.ConditionalAccessExpression(
+                                            SyntaxFactory.ParenthesizedExpression(
+                                                    SyntaxFactory.BinaryExpression(
+                                                            SyntaxKind.AsExpression,
+                                                            SyntaxFactory.IdentifierName(memberName),
+                                                            SyntaxFactory.IdentifierName(Constants.IDisposable))
+                                                        .WithOperatorToken(
+                                                            SyntaxFactory.Token(SyntaxKind.AsKeyword)))
+                                                .WithOpenParenToken(
+                                                    SyntaxFactory.Token(SyntaxKind.OpenParenToken))
+                                                .WithCloseParenToken(
+                                                    SyntaxFactory.Token(SyntaxKind.CloseParenToken)),
+                                            SyntaxFactory.InvocationExpression(
+                                                    SyntaxFactory.MemberBindingExpression(
+                                                            SyntaxFactory.IdentifierName(Constants.Dispose))
+                                                        .WithOperatorToken(
+                                                            SyntaxFactory.Token(SyntaxKind.DotToken)))
+                                                .WithArgumentList(
+                                                    SyntaxFactory.ArgumentList()
+                                                        .WithOpenParenToken(
+                                                            SyntaxFactory.Token(SyntaxKind.OpenParenToken))
+                                                        .WithCloseParenToken(
+                                                            SyntaxFactory.Token(SyntaxKind.CloseParenToken))))
+                                        .WithOperatorToken(
+                                            SyntaxFactory.Token(SyntaxKind.QuestionToken)))
+                                .WithSemicolonToken(
+                                    SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+        
+            return SyntaxCreator.CreateConditionalAccessDisposeCallFor(memberName);
+        }
+
         public static void AddDisposeMethodAndDisposeCallToMember(this DocumentEditor editor,
-            ClassDeclarationSyntax oldClass, string memberName)
+            ClassDeclarationSyntax oldClass, string memberName, bool castToDisposable)
         {
             var disposeMethod = SyntaxFactory
                 .MethodDeclaration(
@@ -83,10 +118,7 @@ namespace DisposableFixer.CodeFix.Extensions
                 .WithBody(
                     SyntaxFactory.Block(
                         SyntaxFactory.SingletonList<StatementSyntax>(
-                            SyntaxFactory.ExpressionStatement(
-                                SyntaxFactory.ConditionalAccessExpression(
-                                    SyntaxFactory.IdentifierName(memberName),
-                                    SyntaxFactory.InvocationExpression(SyntaxFactory.MemberBindingExpression(SyntaxFactory.IdentifierName(Constants.Dispose))))))))
+                            CreateDisposeCall(memberName, castToDisposable))))
                 .WithoutAnnotations(Formatter.Annotation);
             editor.AddMember(oldClass, disposeMethod);
         }

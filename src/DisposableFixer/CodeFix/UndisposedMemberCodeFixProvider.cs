@@ -13,7 +13,7 @@ namespace DisposableFixer.CodeFix
 {
     public abstract class UndisposedMemberCodeFixProvider : CodeFixProvider
     {
-        protected static async Task<Document> CreateDisposeCallInParameterlessDisposeMethod(CodeFixContext context, CancellationToken cancel)
+        protected async Task<Document> CreateDisposeCallInParameterlessDisposeMethod(CodeFixContext context, CancellationToken cancel)
         {
             var oldRoot = await context.Document.GetSyntaxRootAsync(cancel);
             var node = oldRoot.FindNode(context.Span);
@@ -29,23 +29,30 @@ namespace DisposableFixer.CodeFix
                     containingSymbol as INamedTypeSymbol;
                 if (@classtype == null) return context.Document;
 
-
                 editor.AddInterfaceIfNeeded(oldClass, SyntaxFactory.IdentifierName(Constants.IDisposable));
 
                 var disposeMethods = oldClass.GetParameterlessMethodNamed(Constants.Dispose);
 
+                var memberType = GetTypeOfMemberDeclarationOrDefault(oldClass, variableName);
+                var typeInfo = model.GetTypeInfo(memberType, cancel);
+                if (typeInfo.Type == null) return context.Document;
+
+                var needsCastToIDisposable = typeInfo.Type.IsDisposeableOrImplementsDisposable();
+                
                 if (disposeMethods.Any())
                 {
-                    editor.AddDisposeCallToMemberInDisposeMethod(disposeMethods.First(), variableName);
+                    editor.AddDisposeCallToMemberInDisposeMethod(disposeMethods.First(), variableName, !needsCastToIDisposable);
                 }
                 else
                 {
-                    editor.AddDisposeMethodAndDisposeCallToMember(oldClass, variableName);
+                    editor.AddDisposeMethodAndDisposeCallToMember(oldClass, variableName, !needsCastToIDisposable);
                 }
 
                 editor.AddImportIfNeeded(Constants.System);
             }
             return editor.GetChangedDocument();
         }
+
+        protected abstract TypeSyntax GetTypeOfMemberDeclarationOrDefault(@ClassDeclarationSyntax @class, string memberName);
     }
 }
