@@ -400,12 +400,11 @@ namespace DisposableFixer
                 AnalyseNodeWithinVariableDeclarator(context, awaitExpression, DisposableSource.InvokationExpression);
             }else if (awaitExpression.IsDescendantOfAssignmentExpressionSyntax())
             {
-                if (node.TryFindParentScope(out var parentScope))
+                if (node.TryFindParentClass(out var @class))
                 {
                     var assignment = awaitExpression?.Parent as AssignmentExpressionSyntax;
-                    var localVariable = (assignment?.Left as IdentifierNameSyntax)?.Identifier.Text;
-                    var isDisposed = parentScope.DescendantNodes<MemberAccessExpressionSyntax>().Any(mae =>
-                        mae.IsDisposeCall() && (mae.Expression as IdentifierNameSyntax)?.Identifier.Text == localVariable);
+                    var member = (assignment?.Left as IdentifierNameSyntax)?.Identifier.Text;
+                    var isDisposed = @class.ContainsDisposeCallFor(member, context.SemanticModel, Configuration);
                     if (isDisposed) return;
                 }
                 context.ReportNotDisposedLocalVariable();

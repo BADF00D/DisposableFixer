@@ -353,6 +353,12 @@ namespace DisposableFixer.Extensions
 
             return ctor != null;
         }
+        public static bool TryFindParentClass(this SyntaxNode node, out ClassDeclarationSyntax ctor)
+        {
+            ctor = node.FindParent<ClassDeclarationSyntax, CompilationUnitSyntax>();
+
+            return ctor != null;
+        }
 
         public static bool HasDecendentVariableDeclaratorFor(this SyntaxNode node, string name)
         {
