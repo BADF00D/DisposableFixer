@@ -64,12 +64,11 @@ namespace TestHelper
             var codeFixProvider = GetCSharpCodeFixProvider();
             var document = CreateDocument(oldSource);
             var analyzerDiagnostics = GetSortedDiagnosticsFromDocuments(analyzer, new[] { document });
-            var attempts = analyzerDiagnostics.Length;
 
-            for (var i = 0; i < attempts; ++i)
+            for (var i = 0; i < analyzerDiagnostics.Length; ++i)
             {
                 var actions = new List<CodeAction>();
-                var context = new CodeFixContext(document, analyzerDiagnostics[0], (a, d) => actions.Add(a), CancellationToken.None);
+                var context = new CodeFixContext(document, analyzerDiagnostics[i], (a, d) => actions.Add(a), CancellationToken.None);
                 codeFixProvider.RegisterCodeFixesAsync(context).Wait();
 
                 if (!actions.Any())
