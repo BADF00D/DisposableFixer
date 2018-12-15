@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 
 namespace DisposableFixer.Test.IssueTests
 {
@@ -10,6 +11,12 @@ namespace DisposableFixer.Test.IssueTests
         protected IssueSpec()
         {
             Sut = new DisposableFixerAnalyzer();
+        }
+
+        protected static void PrintCodeToAnalyze(string code)
+        {
+            Console.WriteLine("Code to analyze:");
+            Console.WriteLine(code);
         }
     }
 }
