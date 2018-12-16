@@ -33,25 +33,7 @@ namespace SwaggerFileGenerator
                 throw new Exception(
                     ""Unable to retrieve Url to SwaggerUI. Expect root of server to contain redirect to swagger ui."");
 
-            var swaggerUiResponse = await server.CreateRequest(rootResponse.Headers.Location.ToString()).GetAsync();
-            var swaggerUi = await swaggerUiResponse.Content.ReadAsStringAsync();
-
-            var regex = new Regex(""discoveryPaths\\:\\sarrayFrom\\(\\\'(?<paths>([a-zA-Z\\/0-9]*))\\\'\\)."");
-            var match = regex.Match(swaggerUi);
-            if (!match.Success)
-                throw new Exception(""Unable to retrieve routes from SwaggerUI. Maybe content changed."" + swaggerUi);
-
-            var paths = match.Groups[""paths""].Value;
-
-            var result = new List<(string route, string response)>();
-            foreach (var path in paths.Split(','))
-                using (var routeResponse = await server.CreateRequest(path).GetAsync())
-                {
-                    var response = await routeResponse.Content.ReadAsStringAsync();
-                    result.Add((path, response));
-                }
-
-            return result.ToArray();
+            throw new NotImplementedException();
         }
     }
 
@@ -88,7 +70,6 @@ namespace SwaggerFileGenerator
 
     public sealed class HttpResponseHeaders : HttpHeaders
     {
-        public Uri Location { get; set; }
     }
 
     public abstract class HttpHeaders : IEnumerable<KeyValuePair<string, IEnumerable<string>>>, IEnumerable
@@ -114,44 +95,6 @@ namespace SwaggerFileGenerator
         public void Dispose()
         {
         }
-
-        public Task<string> ReadAsStringAsync()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class Regex
-    {
-        public Regex(string pattern)
-        {
-        }
-
-        public Match Match(string input)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class Match : Group
-    {
-        public bool Success { get; }
-        public virtual GroupCollection Groups { get; }
-    }
-
-    public class Group
-    {
-        public string Value { get; }
-    }
-
-    /// <summary>Returns the set of captured groups in a single match.</summary>
-    public class GroupCollection
-    {
-        public Group this[string groupname] => throw new NotImplementedException();
-    }
-
-    public class Uri
-    {
     }
 }";
         [Test]
@@ -168,11 +111,10 @@ namespace SwaggerFileGenerator
             var cSharpCompilerDiagnostics = GetCSharpCompilerErrors(fixedCode);
             PrintFixedCodeDiagnostics(cSharpCompilerDiagnostics);
             cSharpCompilerDiagnostics
-                .Should().HaveCount(0, "we dont want to introduce bugs");
+                .Should().HaveCount(0, "we don't want to introduce bugs");
 
             var diagnostics = MyHelper.RunAnalyser(fixedCode, GetCSharpDiagnosticAnalyzer());
             diagnostics.Should().HaveCount(0);
-            //this bug seems to be fixed, but another bug occures at the fixed code
         }
     }
 }
