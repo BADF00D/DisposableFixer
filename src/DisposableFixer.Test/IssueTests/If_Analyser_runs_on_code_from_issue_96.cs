@@ -100,7 +100,6 @@ namespace SwaggerFileGenerator
         [Test]
         public void Apply_CodeFix_should_not_throw_Exception()
         {
-            //this bug seems to be fixed, but another bug occures at the fixed code
             PrintCodeToFix(Code);
             MyHelper.RunAnalyser(Code, GetCSharpDiagnosticAnalyzer())
                 .Should().Contain(d => d.Id == SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable, "this should be fixed");
