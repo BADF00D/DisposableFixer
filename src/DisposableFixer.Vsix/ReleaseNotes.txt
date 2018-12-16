@@ -1,4 +1,9 @@
-﻿Release 1.1.3
+﻿Release 1.1.4
+Issue 96: Codefix introduce field/property does now work with disposables yielded by await.
+Issue 97: Wrap in using CodeFix does now work with disposables yielded by await.
+Issue 100: Disposed field/properties that get assigned in an await expression, are not longer marked as not disposed.
+
+Release 1.1.3
 Issue 94: If a property or field gets assigned with an IDisposable object, but the member does not implement IDisposable, then within the Dispose method this member is first cast to IDisposable before the Dispose method of this member is called. 
 Issue 95: When added interface IDisposable to the currrent class, its added as base interface, not as base class.
 
