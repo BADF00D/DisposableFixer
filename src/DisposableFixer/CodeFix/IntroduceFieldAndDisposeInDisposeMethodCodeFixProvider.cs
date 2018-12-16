@@ -27,23 +27,23 @@ namespace DisposableFixer.CodeFix
 
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var diagnotic = context.Diagnostics.FirstOrDefault();
-            if (diagnotic == null) return Task.CompletedTask;
+            var diagnostic = context.Diagnostics.FirstOrDefault();
+            if (diagnostic == null) return Task.CompletedTask;
 
-            if (diagnotic.Id == SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable)
+            if (diagnostic.Id == SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable)
             {
                 context.RegisterCodeFix(
                     CodeAction.Create("Create field and dispose in Dispose() method.",
                         cancel => ConvertToFieldDisposeInDisposeMethod(context, cancel)),
-                    diagnotic
+                    diagnostic
                 );
-            }else if (diagnotic.Id == SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation
-                      || diagnotic.Id == SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromMethodInvocation)
+            }else if (diagnostic.Id == SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation
+                      || diagnostic.Id == SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromMethodInvocation)
             {
                 context.RegisterCodeFix(
                     CodeAction.Create("Create field and dispose in Dispose() method.",
                         cancel => IntroduceFieldAndDisposeInDisposeMethod(context, cancel)),
-                    diagnotic
+                    diagnostic
                 );
             }
 
@@ -57,92 +57,24 @@ namespace DisposableFixer.CodeFix
             var fieldName = RetrieveFieldName(context, node);
             var model = editor.SemanticModel;
 
-            var type = model.GetTypeInfo(node).Type?.Name ?? Constants.IDisposable;
+            if (!node.TryFindParent<ClassDeclarationSyntax>(out var oldClass)) return editor.GetChangedDocument();
+            editor.AddInterfaceIfNeeded(oldClass, SyntaxFactory.IdentifierName(Constants.IDisposable));
+
             if (node.Parent is AwaitExpressionSyntax awaitExpression)
             {
-                var t3 = model.GetAwaitExpressionInfo(awaitExpression).GetResultMethod?.ReturnType as INamedTypeSymbol;
-                type = t3?.Name;
-            }
-
-            
-
-            if (!node.TryFindParent<ClassDeclarationSyntax>(out var oldClass)) return editor.GetChangedDocument();
-
-            editor.AddInterfaceIfNeeded(oldClass, SyntaxFactory.IdentifierName(Constants.IDisposable));
-            editor.AddUninitializedFieldNamed(oldClass, fieldName, type);
-
-            if (node.Parent is AwaitExpressionSyntax awaitExpression2)
-            {
+                var type = (model.GetAwaitExpressionInfo(awaitExpression).GetResultMethod?.ReturnType as INamedTypeSymbol)?.Name;
+                editor.AddUninitializedFieldNamed(oldClass, fieldName, type);
                 var assignment = SyntaxFactory.ExpressionStatement(
                     SyntaxFactory.AssignmentExpression(
                         SyntaxKind.SimpleAssignmentExpression,
                         SyntaxFactory.IdentifierName(fieldName),
-                        awaitExpression2));
-
-                //var assignment = SyntaxFactory.ExpressionStatement(
-                //        SyntaxFactory.AssignmentExpression(
-                //                SyntaxKind.SimpleAssignmentExpression,
-                //                SyntaxFactory.IdentifierName("rootResponse"),
-                //                SyntaxFactory.AwaitExpression(
-                //                        SyntaxFactory.InvocationExpression(
-                //                                SyntaxFactory.MemberAccessExpression(
-                //                                        SyntaxKind.SimpleMemberAccessExpression,
-                //                                        SyntaxFactory.InvocationExpression(
-                //                                                SyntaxFactory.MemberAccessExpression(
-                //                                                        SyntaxKind.SimpleMemberAccessExpression,
-                //                                                        SyntaxFactory.IdentifierName("server"),
-                //                                                        SyntaxFactory.IdentifierName("CreateRequest"))
-                //                                                    .WithOperatorToken(
-                //                                                        SyntaxFactory.Token(SyntaxKind.DotToken)))
-                //                                            .WithArgumentList(
-                //                                                SyntaxFactory.ArgumentList(
-                //                                                        SyntaxFactory
-                //                                                            .SingletonSeparatedList<ArgumentSyntax>(
-                //                                                                SyntaxFactory.Argument(
-                //                                                                    SyntaxFactory
-                //                                                                        .MemberAccessExpression(
-                //                                                                            SyntaxKind
-                //                                                                                .SimpleMemberAccessExpression,
-                //                                                                            SyntaxFactory
-                //                                                                                .PredefinedType(
-                //                                                                                    SyntaxFactory.Token(
-                //                                                                                        SyntaxKind
-                //                                                                                            .StringKeyword)),
-                //                                                                            SyntaxFactory
-                //                                                                                .IdentifierName(
-                //                                                                                    "Empty"))
-                //                                                                        .WithOperatorToken(
-                //                                                                            SyntaxFactory.Token(
-                //                                                                                SyntaxKind.DotToken)))))
-                //                                                    .WithOpenParenToken(
-                //                                                        SyntaxFactory.Token(SyntaxKind.OpenParenToken))
-                //                                                    .WithCloseParenToken(
-                //                                                        SyntaxFactory.Token(SyntaxKind
-                //                                                            .CloseParenToken))),
-                //                                        SyntaxFactory.IdentifierName("GetAsync"))
-                //                                    .WithOperatorToken(
-                //                                        SyntaxFactory.Token(SyntaxKind.DotToken)))
-                //                            .WithArgumentList(
-                //                                SyntaxFactory.ArgumentList()
-                //                                    .WithOpenParenToken(
-                //                                        SyntaxFactory.Token(SyntaxKind.OpenParenToken))
-                //                                    .WithCloseParenToken(
-                //                                        SyntaxFactory.Token(SyntaxKind.CloseParenToken))))
-                //                    .WithAwaitKeyword(
-                //                        SyntaxFactory.Token(SyntaxKind.AwaitKeyword)))
-                //            .WithOperatorToken(
-                //                SyntaxFactory.Token(SyntaxKind.EqualsToken)))
-                //    .WithSemicolonToken(
-                //        SyntaxFactory.Token(SyntaxKind.SemicolonToken));
-
-
-
-
-                
+                        awaitExpression));
                 editor.ReplaceNode(node.Parent.Parent.Parent.Parent.Parent, assignment);
             }
             else
             {
+                var type = model.GetTypeInfo(node).Type?.Name ?? Constants.IDisposable;
+                editor.AddUninitializedFieldNamed(oldClass, fieldName, type);
                 var assignment = SyntaxFactory.ExpressionStatement(
                     SyntaxFactory.AssignmentExpression(
                         SyntaxKind.SimpleAssignmentExpression,
@@ -153,7 +85,6 @@ namespace DisposableFixer.CodeFix
                 editor.ReplaceNode(node.Parent.Parent, assignment);
             }
             
-
             var disposeMethods = oldClass.GetParameterlessMethodNamed(Constants.Dispose).ToArray();
 
             if (disposeMethods.Any())
@@ -213,14 +144,14 @@ namespace DisposableFixer.CodeFix
             editor.AddUninitializedFieldNamed(oldClass, fieldName, type);
             if (!node.TryFindContainigBlock(out var block)) return;
 
-            var assignmentExpresion = SyntaxFactory.ExpressionStatement(
+            var assignmentExpression = SyntaxFactory.ExpressionStatement(
                 SyntaxFactory.AssignmentExpression(
                     SyntaxKind.SimpleAssignmentExpression,
                     SyntaxFactory.IdentifierName(fieldName),
                     argumentSyntax.Expression
                 )
             );
-            var preceedingStatements =
+            var precedingStatements =
                 block.Statements.TakeWhile(ss =>
                     ss.DescendantNodes<ArgumentSyntax>().All(@as => @as != argumentSyntax));
 
@@ -232,8 +163,8 @@ namespace DisposableFixer.CodeFix
             var trailingStatements = block.Statements
                 .SkipWhile(ss => ss.DescendantNodes<ArgumentSyntax>().All(@as => @as != argumentSyntax))
                 .Skip(1);
-            var newBlock = SyntaxFactory.Block(preceedingStatements
-                .Concat(assignmentExpresion)
+            var newBlock = SyntaxFactory.Block(precedingStatements
+                .Concat(assignmentExpression)
                 .Concat(currentStatement)
                 .Concat(trailingStatements));
 
