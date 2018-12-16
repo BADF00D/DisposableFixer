@@ -121,6 +121,11 @@ namespace DisposableFixer.Extensions
         {
             return node.Parent?.Parent is VariableDeclaratorSyntax;
         }
+        public static bool IsDescendantOfAwaitingVariableDeclarator(this SyntaxNode node)
+        {
+            return node.Parent is AwaitExpressionSyntax && 
+                node.Parent?.Parent?.Parent is VariableDeclaratorSyntax;
+        }
         public static bool IsDescendantOfAssignmentExpressionSyntax(this SyntaxNode node)
         {
             return node.Parent is AssignmentExpressionSyntax;

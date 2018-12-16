@@ -32,30 +32,56 @@ namespace DisposableFixer.CodeFix
         {
             var oldRoot = await context.Document.GetSyntaxRootAsync(cancel);
             var node = oldRoot.FindNode(context.Span) as ExpressionSyntax;
+            if (node == null) return context.Document;
 
-            if (node == null || !node.IsDescendantOfVariableDeclarator()) return context.Document;
-
-            var variableDeclaration = node.Parent.Parent.Parent as VariableDeclarationSyntax;
-            var localDeclarationStatement = variableDeclaration.Parent as LocalDeclarationStatementSyntax;
-
-            if (variableDeclaration.TryFindContainigBlock(out var block))
+            if (node.IsDescendantOfVariableDeclarator())
             {
-                var editor = await DocumentEditor.CreateAsync(context.Document, context.CancellationToken);
 
-                var statemmentsBeforeVariableDeclaration =
-                    block.Statements.TakeWhile(s => s != localDeclarationStatement);
-                var statementsAfterVariableDeclaration =
-                    block.Statements.SkipWhile(s => s != localDeclarationStatement).Skip(1);
+                var variableDeclaration = node.Parent.Parent.Parent as VariableDeclarationSyntax;
+                var localDeclarationStatement = variableDeclaration?.Parent as LocalDeclarationStatementSyntax;
+
+                if (variableDeclaration.TryFindContainigBlock(out var block))
+                {
+                    var editor = await DocumentEditor.CreateAsync(context.Document, context.CancellationToken);
+
+                    var statementsBeforeVariableDeclaration =
+                        block.Statements.TakeWhile(s => s != localDeclarationStatement);
+                    var statementsAfterVariableDeclaration =
+                        block.Statements.SkipWhile(s => s != localDeclarationStatement).Skip(1);
+
+                    var @using = SyntaxFactory.UsingStatement(SyntaxFactory.Block(statementsAfterVariableDeclaration))
+                        .WithDeclaration(variableDeclaration.WithoutTrivia());
+
+                    var newBlock = SyntaxFactory.Block(statementsBeforeVariableDeclaration.Concat(@using));
+                    editor.ReplaceNode(block, newBlock);
+                    var wrapLocalVariableInUsing = editor.GetChangedDocument();
+                    return wrapLocalVariableInUsing;
+                }
+
                 
-                var @using = SyntaxFactory.UsingStatement(SyntaxFactory.Block(statementsAfterVariableDeclaration))
-                    .WithDeclaration(variableDeclaration.WithoutTrivia());
-
-                var newBlock = SyntaxFactory.Block(statemmentsBeforeVariableDeclaration.Concat(@using));
-                editor.ReplaceNode(block, newBlock);
-                var wrapLocalVariableInUsing = editor.GetChangedDocument();
-                return wrapLocalVariableInUsing;
             }
+            else if(node.IsDescendantOfAwaitingVariableDeclarator())
+            {
+                var variableDeclaration = node.Parent.Parent.Parent.Parent as VariableDeclarationSyntax;
+                var localDeclarationStatement = variableDeclaration?.Parent as LocalDeclarationStatementSyntax;
+                if (variableDeclaration.TryFindContainigBlock(out var block))
+                {
+                    var editor = await DocumentEditor.CreateAsync(context.Document, context.CancellationToken);
 
+                    var statementsBeforeVariableDeclaration =
+                        block.Statements.TakeWhile(s => s != localDeclarationStatement);
+                    var statementsAfterVariableDeclaration =
+                        block.Statements.SkipWhile(s => s != localDeclarationStatement).Skip(1);
+
+                    var @using = SyntaxFactory.UsingStatement(SyntaxFactory.Block(statementsAfterVariableDeclaration))
+                        .WithDeclaration(variableDeclaration.WithoutTrivia());
+
+                    var newBlock = SyntaxFactory.Block(statementsBeforeVariableDeclaration.Concat(@using));
+                    editor.ReplaceNode(block, newBlock);
+                    var wrapLocalVariableInUsing = editor.GetChangedDocument();
+                    return wrapLocalVariableInUsing;
+                }
+            }
             return context.Document;
         }
 
