@@ -134,12 +134,15 @@ namespace DisposableFixer.Test.CodeFix.UndisposedPropertyCodeFixProviderSpecs
                 yield return CreateTest(true, false, Location.Method, true, true, true);
                 yield return CreateTest(false, true, Location.Method, true, true, true);
                 yield return CreateTest(true, true, Location.Method, true, true, true);
+
+                yield return new TestCaseData(UndisposedPropertyInAClassWithInnerClassThatContainsADisposeMethod)
+                    .SetName("Undisposed property in class with innner class that contains a dispose method");
             }
         }
 
         private static TestCaseData CreateTest(bool useSystem, bool implementIDisposable, Location location, bool hasDisposeMethod, bool hasBaseClass, bool targetTypeIsObject)
         {
-            var code = CodeWithUndisposedField
+            var code = CodeWithUndisposedFieldTemplate
                 .Replace("##targetType##", targetTypeIsObject ? "object" : "MemoryStream")
                 .Replace("##usingSystem##", useSystem ? "using System;" : string.Empty)
                 .Replace("##PropertyInitializer##", location == Location.PropertyOrField ? " = new MemoryStream();" : string.Empty)
@@ -194,7 +197,7 @@ namespace DisposableFixer.Test.CodeFix.UndisposedPropertyCodeFixProviderSpecs
             Method
         }
 
-        private const string CodeWithUndisposedField =
+        private const string CodeWithUndisposedFieldTemplate =
 @"##usingSystem##
 using System.IO;
 namespace MyNamespace 
@@ -214,5 +217,28 @@ namespace MyNamespace
         ##DisposeMethod##
     }
 }";
+
+        private const string UndisposedPropertyInAClassWithInnerClassThatContainsADisposeMethod = @"
+using System;
+using System.IO;
+
+namespace ExtensionMethodYieldsNotDisposed
+{
+    internal class Class1
+    {
+        public IDisposable MemoryStream {get;}
+
+        public Class1()
+        {
+            MemoryStream = new MemoryStream();
+        }
+
+        private class InnerClassWithDisposeMethod
+        {
+            public void Dispose(){}
+        }
+    }
+}
+";
     }
 }

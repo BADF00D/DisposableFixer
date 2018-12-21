@@ -135,6 +135,9 @@ namespace DisposableFixer.Test.CodeFix.UndisposedFieldCodeFixProviderSpecs
                 yield return CreateTest(true, false, Location.Method, true, true, true);
                 yield return CreateTest(false, true, Location.Method, true, true, true);
                 yield return CreateTest(true, true, Location.Method, true, true, true);
+
+                yield return new TestCaseData(UndisposedFieldInAClassWithInnerClassThatContainsADisposeMethod)
+                    .SetName("Undisposed field in class with innner class that contains a dispose method");
             }
         }
 
@@ -185,7 +188,7 @@ namespace DisposableFixer.Test.CodeFix.UndisposedFieldCodeFixProviderSpecs
                     prefix += "CreatedInMethod.";
                     break;
             }
-            
+
             return new TestCaseData(code)
                 .SetName($"{prefix}useSystem: {useSystem} implementIDisposable: {implementIDisposable} hasDisposeMethod: {hasDisposeMethod}");
         }
@@ -217,5 +220,28 @@ namespace MyNamespace
         ##DisposeMethod##
     }
 }";
+
+        private const string UndisposedFieldInAClassWithInnerClassThatContainsADisposeMethod = @"
+using System;
+using System.IO;
+
+namespace ExtensionMethodYieldsNotDisposed
+{
+    internal class Class1
+    {
+        public IDisposable MemoryStream;
+
+        public Class1()
+        {
+            MemoryStream = new MemoryStream();
+        }
+
+        private class InnerClassWithDisposeMethod
+        {
+            public void Dispose(){}
+        }
+    }
+}
+";
     }
 }
