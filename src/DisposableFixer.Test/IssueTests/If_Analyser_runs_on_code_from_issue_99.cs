@@ -42,11 +42,25 @@ namespace ExtensionMethodYieldsNotDisposed
             x11.Dispose();
             var x12 = new XmlTextReader(string.Empty, XmlNodeType.Attribute, xmlParserContext);
             x12.Dispose();
+
+            var y1 = new XmlTextWriter(new FileStream("""", FileMode.CreateNew), System.Text.Encoding.UTF32);
+            y1.Dispose();
+            var y2 = new XmlTextWriter(new StringWriter());
+            y2.Dispose();
+            var y3 = new XmlTextWriter(string.Empty, System.Text.Encoding.UTF32);
+            y3.Dispose();
         }
     }
 }
 
 namespace System.Xml {
+    public class XmlTextWriter : IDisposable
+    {
+        public XmlTextWriter(Stream stream, System.Text.Encoding encoding){}
+        public XmlTextWriter(TextWriter writer){}
+        public XmlTextWriter(string url, System.Text.Encoding encoding){}
+        public void Dispose(){}
+    }
     public class XmlTextReader : IDisposable {
         public XmlTextReader(Stream input){}
         public XmlTextReader(Stream input, XmlNameTable nt){}
