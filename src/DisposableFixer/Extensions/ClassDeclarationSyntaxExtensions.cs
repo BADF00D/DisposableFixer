@@ -41,6 +41,7 @@ namespace DisposableFixer.Extensions
         {
             return @class
                 .DescendantNodes<MethodDeclarationSyntax>()
+                .Where(mds => mds.Parent == @class)//filters inner classes with Dispose-Methode
                 .Where(mds => mds.Identifier.Text == name && mds.ParameterList.Parameters.Count == 0);
         }
     }
