@@ -21,6 +21,7 @@ namespace DisposableFixer.Configuration {
                 "System.Reactive.Disposables.CompositeDisposable",
                 "LumenWorks.Framework.IO.Csv.CsvReader",
                 "System.Xml.XmlTextReader",
+                "System.Xml.XmlTextWriter",
             };
 			IgnoredInterfaces = new HashSet<string> {
 				"System.Collections.Generic.IEnumerator",
