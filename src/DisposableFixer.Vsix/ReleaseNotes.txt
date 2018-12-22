@@ -1,4 +1,9 @@
-﻿Release 1.1.4
+﻿Release 1.2.0
+Issue 98: CodeFix that adds Dispose Calls for member now works correctly, when there is an inner class with a Dispose method.
+Issue 99: XmlTextReader and XmlTextWriter are now recognized as tracking types.
+Issue 100: Fields/Properties assigned by await Expression are not evaluated correctly.
+
+Release 1.1.4
 Issue 96: Codefix introduce field/property does now work with disposables yielded by await.
 Issue 97: Wrap in using CodeFix does now work with disposables yielded by await.
 Issue 100: Disposed field/properties that get assigned in an await expression, are not longer marked as not disposed.
