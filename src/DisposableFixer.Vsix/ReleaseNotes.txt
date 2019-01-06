@@ -1,4 +1,7 @@
-﻿Release 1.2.0
+﻿Release 1.4.0
+Issue 101: Support for Visual Studio 2019. Thanks to xperiandri
+
+Release 1.3.0
 Issue 98: CodeFix that adds Dispose Calls for member now works correctly, when there is an inner class with a Dispose method.
 Issue 99: XmlTextReader and XmlTextWriter are now recognized as tracking types.
 Issue 100: Fields/Properties assigned by await Expression are not evaluated correctly.
