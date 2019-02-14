@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
@@ -11,18 +11,21 @@
   
   <PropertyGroup>
     <PackageId>DisposableFixer</PackageId>
-    <PackageVersion>1.0.0.0</PackageVersion>
-    <Authors>User</Authors>
-    <PackageLicenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</PackageLicenseUrl>
+    <PackageVersion>1.4.0.0</PackageVersion>
+    <Authors>David Störmer</Authors>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/BADF00D/DisposableFixer</PackageProjectUrl>
-    <PackageIconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</PackageIconUrl>
+    <PackageIconUrl>https://github.com/BADF00D/DisposableFixer/blob/master/src/DisposableFixer.Vsix/Icon.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/BADF00D/DisposableFixer</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Description>DisposableFixer</Description>
-    <PackageReleaseNotes>Summary of changes made in this release of the package.</PackageReleaseNotes>
+    <PackageReleaseNotes>﻿Release 1.4.0
+Issue 101: Support for Visual Studio 2019. Thanks to xperiandri
+</PackageReleaseNotes>
     <Copyright>Copyright</Copyright>
     <PackageTags>DisposableFixer, analyzers</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
+    <RepositoryType>Github</RepositoryType>
   </PropertyGroup>
    
   <ItemGroup>

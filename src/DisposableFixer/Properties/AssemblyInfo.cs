@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("DisposableFixer.Properties")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("This is a small analyzer that should identify and fix problems as memleaks while using IDispoables.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("DisposableFixer.Properties")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2018")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("DisposableFixer")]
+[assembly: AssemblyCopyright("David Störmer")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
