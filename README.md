@@ -1,11 +1,14 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/8mk3us0d5stlkq47?svg=true)](https://ci.appveyor.com/project/badf00d/disposablefixer)
+![](https://img.shields.io/appveyor/tests/badf00d/DisposableFixer.svg?style=flat)
+![](https://img.shields.io/nuget/v/DisposableFixer.svg?style=flat)
+![](https://img.shields.io/visual-studio-marketplace/v/DisposableFixer.Microsoft.e69d15ad-e40a-412c-a444-cfb06057928c.svg?style=flat)
 
 # DisposableFixer
 This is a small Visual Studio Extension that should identify and fix problems as memleaks while using IDispoables. You can download it via [Visual Studio Gallery](https://marketplace.visualstudio.com/items?itemName=DavidStormer.DisposableFixer) or using Visual Studio Extension Manager.
 
 Here is a little Preview of the extension in action:
 
-![Preview](https://github.com/BADF00D/DisposableFixer/blob/master/src/DisposeableFixer/resources/Preview.png "Preview")
+![Preview](https://github.com/BADF00D/DisposableFixer/blob/master/src/DisposableFixer.Vsix/Preview.png?raw=true "Preview")
 
 This project is in early stage. Currently it has some known false positive and false negative results. 
 Furthermore there are no code fixes available at the moment.
@@ -91,3 +94,14 @@ var mem = new MemoryStream()
 var mem2 = mem;
 mem2.Dispose()
 ```  
+
+# Some statisitics
+
+|   |   |
+|---|---|
+|  Pull-Requests | ![](https://img.shields.io/github/issues-pr/badf00d/DisposableFixer.svg?style=flat) ![](https://img.shields.io/github/issues-pr-closed/badf00d/DisposableFixer.svg?style=flat) |
+| Issues  | ![](https://img.shields.io/github/issues/badf00d/DisposableFixer.svg?style=flat) ![](https://img.shields.io/github/issues-closed/badf00d/DisposableFixer.svg?style=flat) ![](https://img.shields.io/github/issues/badf00d/DisposableFixer/bug.svg?colorB=red&label=bugs&style=flat) ![](https://img.shields.io/github/issues/badf00d/DisposableFixer/feature%20request.svg?label=feature%20request&style=flat) |
+| Downloads  | ![Nuget](https://img.shields.io/nuget/dt/DisposableFixer.svg?label=nuget) ![](https://img.shields.io/visual-studio-marketplace/i/DisposableFixer.Microsoft.e69d15ad-e40a-412c-a444-cfb06057928c.svg?style=flat-square) |
+| Contribution | ![GitHub last commit](https://img.shields.io/github/last-commit/Badf00d/DisposableFixer.svg) ![GitHub contributors](https://img.shields.io/github/contributors-anon/Badf00d/DisposableFixer.svg) | 
+
+
