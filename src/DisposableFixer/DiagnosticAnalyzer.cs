@@ -62,9 +62,7 @@ namespace DisposableFixer
             else if (!type.IsDisposeableOrImplementsDisposable()) { }
             else if (node.IsPartOfMethodCall())
             {
-                var methodInvocation = node.Parent.Parent.Parent as InvocationExpressionSyntax;
-                if (Detector.IsTrackingMethodCall(methodInvocation, context.SemanticModel)) return;
-                context.ReportNotDisposedAnonymousObject(DisposableSource.ObjectCreation);
+                AnalyzePartOfMethodCall(context, node);
             }
             else if (node.IsMaybePartOfMethodChainUsingTrackingExtensionMethod())
             {
@@ -359,10 +357,9 @@ namespace DisposableFixer
                 }
             }
             else if (!type.IsDisposeableOrImplementsDisposable()) { } 
-            else if (node.IsPartOfMethodCall()) {
-                var methodInvocation = node.Parent.Parent.Parent as InvocationExpressionSyntax;
-                if (Detector.IsTrackingMethodCall(methodInvocation, context.SemanticModel)) return;
-                context.ReportNotDisposedAnonymousObject(DisposableSource.ObjectCreation);
+            else if (node.IsPartOfMethodCall())
+            {
+                AnalyzePartOfMethodCall(context, node);
             }
             else if (node.IsPartOfReturnStatementInBlock()) { } // return new MemoryStream() or return Task.FromResult(new MemoryStream())
             else if (node.IsArrowExpressionClauseOfMethod()) { } // void Create()=>new MemoryStream()
@@ -380,6 +377,13 @@ namespace DisposableFixer
             else if (node.IsPartOfAutoProperty()) AnalyseNodeInAutoPropertyOrPropertyExpressionBody(context, node, DisposableSource.InvokationExpression);
             else if (node.IsPartOfPropertyExpressionBody()) AnalyseNodeInAutoPropertyOrPropertyExpressionBody(context, node, DisposableSource.InvokationExpression);
             else context.ReportNotDisposedAnonymousObject(DisposableSource.InvokationExpression); //call to Create(): MemeoryStream
+        }
+
+        private static void AnalyzePartOfMethodCall(SyntaxNodeAnalysisContext context, ExpressionSyntax node)
+        {
+            var methodInvocation = node.Parent.Parent.Parent as InvocationExpressionSyntax;
+            if (Detector.IsTrackingMethodCall(methodInvocation, context.SemanticModel)) return;
+            context.ReportNotDisposedAnonymousObject(DisposableSource.ObjectCreation);
         }
 
         private static void AnalyseInvokationExpressionInsideAwaitExpression(SyntaxNodeAnalysisContext context,
