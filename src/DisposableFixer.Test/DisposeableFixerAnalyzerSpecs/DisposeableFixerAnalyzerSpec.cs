@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 
 namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs
 {
@@ -10,6 +11,12 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs
         protected DisposeableFixerAnalyzerSpec()
         {
             Sut = new DisposableFixerAnalyzer();
+        }
+
+        protected static void PrintCodeToFix(string code)
+        {
+            Console.WriteLine("Code to analyze:");
+            Console.WriteLine(code);
         }
     }
 }

@@ -383,6 +383,9 @@ namespace DisposableFixer
         {
             var methodInvocation = node.Parent.Parent.Parent as InvocationExpressionSyntax;
             if (Detector.IsTrackingMethodCall(methodInvocation, context.SemanticModel)) return;
+
+            if (methodInvocation.IsArgumentInInterlockedExchange()) return;
+
             context.ReportNotDisposedAnonymousObject(DisposableSource.ObjectCreation);
         }
 

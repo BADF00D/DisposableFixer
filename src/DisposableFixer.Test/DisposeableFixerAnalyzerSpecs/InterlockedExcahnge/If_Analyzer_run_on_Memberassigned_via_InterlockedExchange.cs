@@ -115,10 +115,10 @@ namespace SomeNamespace
         {
             get
             {
-                yield return new TestCaseData(AssignedByMethodInvocation)
-                    .SetName("Assigned by MethodInvocation");
                 yield return new TestCaseData(AssignedByObjectCreation)
                     .SetName("Assigned by ObjectCreation");
+                yield return new TestCaseData(AssignedByMethodInvocation)
+                    .SetName("Assigned by MethodInvocation");
                 yield return new TestCaseData(AssignedViaLocalVariableCreatedByMethodInvocation)
                     .SetName("Assigned by local variable assigned by MethodCreation");
                 yield return new TestCaseData(AssignedViaLocalVariableCreatedByObjectCreation)
@@ -126,11 +126,12 @@ namespace SomeNamespace
             }
         }
 
-        [Test]
+        //[Test]
         [TestCaseSource(nameof(TestCases))]
         public void Then_there_should_be_no_Diagnostics(string code)
         {
-            var diagnostics = MyHelper.RunAnalyser(AssignedViaLocalVariableCreatedByObjectCreation, Sut);
+            PrintCodeToFix(code);
+            var diagnostics = MyHelper.RunAnalyser(code, Sut);
             diagnostics.Should().BeEmpty();
         }
     }

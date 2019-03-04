@@ -269,7 +269,8 @@ namespace DisposableFixer.Extensions
                 if (parent == null
                     || parent is MethodDeclarationSyntax
                     || parent is PropertyDeclarationSyntax
-                    || parent is ConstructorDeclarationSyntax)
+                    || parent is ConstructorDeclarationSyntax
+                    || parent is ArgumentSyntax)
                     return false;
                 if (parent is ParenthesizedExpressionSyntax)
                 {

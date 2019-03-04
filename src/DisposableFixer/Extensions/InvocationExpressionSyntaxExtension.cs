@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using DisposableFixer.Configuration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -116,6 +117,13 @@ namespace DisposableFixer.Extensions
             
             return true;
 
+        }
+
+        internal static bool IsArgumentInInterlockedExchange(this InvocationExpressionSyntax methodInvocation)
+        {
+            var memberAccessExpressionSyntax = methodInvocation.Expression as MemberAccessExpressionSyntax;
+            var id = memberAccessExpressionSyntax?.Expression as IdentifierNameSyntax;
+            return id?.Identifier.Text == "Interlocked" && memberAccessExpressionSyntax.Name.Identifier.Text == "Exchange";
         }
     }
 }
