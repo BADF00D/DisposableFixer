@@ -33,6 +33,14 @@ internal static class MethodDeclarationSyntaxExtension
                     .Any(attribute => configuration.DisposingAttributes.Contains(attribute.GetFullNamespace()));
     }
 
+    internal static bool HasInterlockedExchangeWith(this MethodDeclarationSyntax method, string variable)
+    {
+        return method.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Where(ies => { return ies.IsInterlockedExchangeExpression(); })
+            .Any();
+    }
+
     public static bool IsStatic(this MethodDeclarationSyntax method)
     {
         return method.Modifiers.Any(SyntaxKind.StaticKeyword);

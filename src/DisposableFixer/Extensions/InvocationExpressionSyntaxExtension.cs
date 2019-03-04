@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Linq;
 using DisposableFixer.Configuration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -9,7 +7,8 @@ namespace DisposableFixer.Extensions
 {
     internal static class InvocationExpressionSyntaxExtension
     {
-        public static bool IsCallToDisposeFor(this InvocationExpressionSyntax node, string identifier, SemanticModel semanticModel, IConfiguration configuration)
+        public static bool IsCallToDisposeFor(this InvocationExpressionSyntax node, string identifier,
+            SemanticModel semanticModel, IConfiguration configuration)
         {
             if (node.Parent is ConditionalAccessExpressionSyntax syntax)
             {
@@ -24,7 +23,8 @@ namespace DisposableFixer.Extensions
                             && expression?.Name.Identifier.Text == "Dispose") return true;
 
                         var memberType = semanticModel.GetTypeInfo(identifierSyntax).Type.GetFullNamespace();
-                        if (!configuration.DisposingMethodsAtSpecialClasses.TryGetValue(memberType, out var specialDispose))
+                        if (!configuration.DisposingMethodsAtSpecialClasses.TryGetValue(memberType,
+                            out var specialDispose))
                             return false;
 
                         var partlyEqual = specialDispose.Any(mc =>
@@ -35,7 +35,8 @@ namespace DisposableFixer.Extensions
                        For now, we have enought information */
                         return partlyEqual;
                     case ParenthesizedExpressionSyntax parenthesizedExpressionSyntax:
-                        if (!(parenthesizedExpressionSyntax.Expression is BinaryExpressionSyntax binaryExpression)) return false;
+                        if (!(parenthesizedExpressionSyntax.Expression is BinaryExpressionSyntax binaryExpression))
+                            return false;
                         return (binaryExpression.Left as IdentifierNameSyntax)?.Identifier.Text == identifier;
                     case MemberAccessExpressionSyntax mae:
                         //e.g. this.Member.Dispose();
@@ -53,7 +54,8 @@ namespace DisposableFixer.Extensions
 
                 if (expression?.Expression is IdentifierNameSyntax identifierSyntax)
                 {
-                    if (identifierSyntax.Identifier.Text == identifier && expression.Name.Identifier.Text == Constants.Dispose)
+                    if (identifierSyntax.Identifier.Text == identifier &&
+                        expression.Name.Identifier.Text == Constants.Dispose)
                         return true;
 
                     var memberType = semanticModel.GetTypeInfo(identifierSyntax).Type.GetFullNamespace();
@@ -68,21 +70,24 @@ namespace DisposableFixer.Extensions
                            For now, we have enought information */
                     return partlyEqual;
                 }
+
                 if (expression?.Expression is MemberAccessExpressionSyntax mae)
-                {
-                    return mae.Name.Identifier.Text == identifier && expression.Name.Identifier.Text == Constants.Dispose;
-                }
+                    return mae.Name.Identifier.Text == identifier &&
+                           expression.Name.Identifier.Text == Constants.Dispose;
 
                 return false;
             }
         }
 
-        public static bool IsCallToDispose(this InvocationExpressionSyntax node) {
+        public static bool IsCallToDispose(this InvocationExpressionSyntax node)
+        {
             var syntax = node.Parent as ConditionalAccessExpressionSyntax;
-            if (syntax != null) {
+            if (syntax != null)
+            {
                 var mbe = node.Expression as MemberBindingExpressionSyntax;
                 return mbe?.Name.Identifier.Text == "Dispose";
             }
+
             var expression = node.Expression as MemberAccessExpressionSyntax;
 
             var identifierSyntax = expression?.Expression as IdentifierNameSyntax;
@@ -91,7 +96,8 @@ namespace DisposableFixer.Extensions
             return expression.Name.Identifier.Text == "Dispose";
         }
 
-        public static bool UsesVariableInArguments(this InvocationExpressionSyntax invocationExpression, string variable)
+        public static bool UsesVariableInArguments(this InvocationExpressionSyntax invocationExpression,
+            string variable)
         {
             return invocationExpression.ArgumentList.Arguments
                 .Select(arg => arg.Expression as IdentifierNameSyntax)
@@ -99,7 +105,8 @@ namespace DisposableFixer.Extensions
         }
 
         internal static bool IsMaybePartOfMethodChainUsingTrackingExtensionMethod(
-            this InvocationExpressionSyntax invocationExpression) {
+            this InvocationExpressionSyntax invocationExpression)
+        {
             return invocationExpression?.Parent is MemberAccessExpressionSyntax
                    && invocationExpression?.Parent?.Parent is InvocationExpressionSyntax;
         }
@@ -108,22 +115,35 @@ namespace DisposableFixer.Extensions
             MethodCall method)
         {
             var memberAccessExpression = invocationExpressionSyntax.Expression as MemberAccessExpressionSyntax;
-            var isPartlyCorrect =  
+            var isPartlyCorrect =
                 memberAccessExpression?.Name.Identifier.Text == method.Name
                 && invocationExpressionSyntax.ArgumentList.Arguments.Count == method.Parameter.Length;
             if (!isPartlyCorrect) return false;
 
             //todo check parameres of each ies
-            
-            return true;
 
+            return true;
         }
 
-        internal static bool IsArgumentInInterlockedExchange(this InvocationExpressionSyntax methodInvocation)
+        internal static bool IsInterlockedExchangeExpression(this InvocationExpressionSyntax methodInvocation)
         {
             var memberAccessExpressionSyntax = methodInvocation.Expression as MemberAccessExpressionSyntax;
             var id = memberAccessExpressionSyntax?.Expression as IdentifierNameSyntax;
-            return id?.Identifier.Text == "Interlocked" && memberAccessExpressionSyntax.Name.Identifier.Text == "Exchange";
+            return id?.Identifier.Text == "Interlocked" &&
+                   memberAccessExpressionSyntax.Name.Identifier.Text == "Exchange";
+        }
+
+        internal static bool IsInterlockedExchangeExpressionFor(this InvocationExpressionSyntax methodInvocation,
+            string variableName)
+        {
+            if (methodInvocation.ArgumentList.Arguments.Count != 2) return false;
+            var arg = methodInvocation.ArgumentList.Arguments[1].Expression as IdentifierNameSyntax;
+
+            var memberAccessExpressionSyntax = methodInvocation.Expression as MemberAccessExpressionSyntax;
+            var id = memberAccessExpressionSyntax?.Expression as IdentifierNameSyntax;
+            return id?.Identifier.Text == "Interlocked"
+                   && memberAccessExpressionSyntax.Name.Identifier.Text == "Exchange"
+                   && arg?.Identifier.Text == variableName;
         }
     }
 }
