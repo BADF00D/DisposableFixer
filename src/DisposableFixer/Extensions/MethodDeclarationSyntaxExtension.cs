@@ -33,7 +33,7 @@ internal static class MethodDeclarationSyntaxExtension
                     .Any(attribute => configuration.DisposingAttributes.Contains(attribute.GetFullNamespace()));
     }
 
-    internal static bool HasInterlockedExchangeWith(this MethodDeclarationSyntax method, string variable)
+    internal static bool HasInterlockedExchangeWith(this BaseMethodDeclarationSyntax method, string variable)
     {
         return method.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()

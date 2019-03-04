@@ -266,6 +266,8 @@ namespace DisposableFixer
                         AnalyseNodeInArgumentList(context, node, source);
                         return;
                     }
+
+                    if (containingMethod.HasInterlockedExchangeWith(variableName)) return;
                     //is part of tracking call
                     context.ReportNotDisposedLocalVariable();
                     return;
@@ -293,6 +295,7 @@ namespace DisposableFixer
                 if (ctor.HasDecendentVariableDeclaratorFor(variableName))
                 {
                     //local variable in ctor
+                    if (ctor.HasInterlockedExchangeWith(variableName)) return;
                     if (node.IsDescendantOfUsingHeader()) return;
                     if (node.IsArgumentInObjectCreation())
                     {
