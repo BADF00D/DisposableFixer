@@ -44,6 +44,9 @@ namespace DisposableFixer.Extensions
                         var wnn = condAccess.WhenNotNull as InvocationExpressionSyntax;
                         var mbe = wnn?.Expression as MemberBindingExpressionSyntax;
                         return isid && mbe?.Name.Identifier.Text == Constants.Dispose;
+                    case InvocationExpressionSyntax invocationExpressionSyntax when invocationExpressionSyntax.IsInterlockedExchangeExpression():
+                        var firstArgument = invocationExpressionSyntax.ArgumentList.Arguments[0].Expression as IdentifierNameSyntax;
+                        return firstArgument?.Identifier.Text == identifier;
                 }
 
                 return false;
