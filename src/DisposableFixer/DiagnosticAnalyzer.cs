@@ -149,7 +149,7 @@ namespace DisposableFixer
                 return;
             }
             var invocationExpressions = parentScope.DescendantNodes<InvocationExpressionSyntax>().ToArray();
-            if (invocationExpressions.Any(ie => ie.IsInterlockedExchangeExpressionFor(localVariableName))) return;
+            if (invocationExpressions.Any(ie => ie.IsInterlockedExchangeAssignExpressionFor(localVariableName))) return;
             if (ExistsDisposeCall(localVariableName, invocationExpressions, context.SemanticModel)) return;
             if (IsArgumentInTrackingMethod(context, localVariableName, invocationExpressions)) return;
             if (IsArgumentInConstructorOfTrackingType(context, localVariableName, parentScope)) return;

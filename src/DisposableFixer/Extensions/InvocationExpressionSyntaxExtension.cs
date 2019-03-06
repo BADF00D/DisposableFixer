@@ -54,31 +54,31 @@ namespace DisposableFixer.Extensions
 
             {
                 var expression = node.Expression as MemberAccessExpressionSyntax;
-
-                if (expression?.Expression is IdentifierNameSyntax identifierSyntax)
+                if (expression.IsDisposeCallFor(identifier)) return true;
+                switch (expression?.Expression)
                 {
-                    if (identifierSyntax.Identifier.Text == identifier &&
-                        expression.Name.Identifier.Text == Constants.Dispose)
-                        return true;
+                    case IdentifierNameSyntax identifierSyntax:
+                    {
+                        var memberType = semanticModel.GetTypeInfo(identifierSyntax).Type.GetFullNamespace();
+                        if (!configuration.DisposingMethodsAtSpecialClasses.TryGetValue(memberType, out var specialDispose))
+                            return false;
 
-                    var memberType = semanticModel.GetTypeInfo(identifierSyntax).Type.GetFullNamespace();
-                    if (!configuration.DisposingMethodsAtSpecialClasses.TryGetValue(memberType, out var specialDispose))
-                        return false;
-
-                    var partlyEqual = specialDispose.Any(mc => //node.IsCallToMethod(mc)
-                        !mc.IsStatic
-                        && mc.Name == expression.Name.Identifier.Text
-                        && mc.Parameter.Length == node.ArgumentList.Arguments.Count);
-                    /* We have to check the parameter types, but unfortunatelly such an example and unittest does not exists jet.
+                        var partlyEqual = specialDispose.Any(mc => //node.IsCallToMethod(mc)
+                            !mc.IsStatic
+                            && mc.Name == expression.Name.Identifier.Text
+                            && mc.Parameter.Length == node.ArgumentList.Arguments.Count);
+                        /* We have to check the parameter types, but unfortunatelly such an example and unittest does not exists jet.
                            For now, we have enought information */
-                    return partlyEqual;
+                        return partlyEqual;
+                    }
+                    case MemberAccessExpressionSyntax mae:
+                        return mae.Name.Identifier.Text == identifier &&
+                               expression.Name.Identifier.Text == Constants.Dispose;
+                    case InvocationExpressionSyntax ie when ie.IsInterlockedExchangeYieldExpressionFor(identifier):
+                        return true;
+                    default:
+                        return false;
                 }
-
-                if (expression?.Expression is MemberAccessExpressionSyntax mae)
-                    return mae.Name.Identifier.Text == identifier &&
-                           expression.Name.Identifier.Text == Constants.Dispose;
-
-                return false;
             }
         }
 
@@ -136,11 +136,24 @@ namespace DisposableFixer.Extensions
                    memberAccessExpressionSyntax.Name.Identifier.Text == "Exchange";
         }
 
-        internal static bool IsInterlockedExchangeExpressionFor(this InvocationExpressionSyntax methodInvocation,
+        internal static bool IsInterlockedExchangeAssignExpressionFor(this InvocationExpressionSyntax methodInvocation,
             string variableName)
         {
             if (methodInvocation.ArgumentList.Arguments.Count != 2) return false;
             var arg = methodInvocation.ArgumentList.Arguments[1].Expression as IdentifierNameSyntax;
+
+            var memberAccessExpressionSyntax = methodInvocation.Expression as MemberAccessExpressionSyntax;
+            var id = memberAccessExpressionSyntax?.Expression as IdentifierNameSyntax;
+            return id?.Identifier.Text == "Interlocked"
+                   && memberAccessExpressionSyntax.Name.Identifier.Text == "Exchange"
+                   && arg?.Identifier.Text == variableName;
+        }
+
+        internal static bool IsInterlockedExchangeYieldExpressionFor(this InvocationExpressionSyntax methodInvocation,
+            string variableName)
+        {
+            if (methodInvocation.ArgumentList.Arguments.Count != 2) return false;
+            var arg = methodInvocation.ArgumentList.Arguments[0].Expression as IdentifierNameSyntax;
 
             var memberAccessExpressionSyntax = methodInvocation.Expression as MemberAccessExpressionSyntax;
             var id = memberAccessExpressionSyntax?.Expression as IdentifierNameSyntax;
