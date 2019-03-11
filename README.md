@@ -85,6 +85,19 @@ that is named Dispose and has no parameters.
 
 # Plans for the future
 
+There should be some way to configure the extensions. There is lots of configuration hard-coded within the extensions:
+* Tracking Types
+* Tracking Methods
+* Tracking Factory Methods
+* Ignored Interfaces/Types
+* Disposing Methods
+
+Most of these pre-configured values are a good start for all projects. But sooner or later you will stuble upon a for instances tracking method of a private API you are using. These will unlikely became part of the extensions itself, but you should have a possiblity to configure these yourself.
+
+Currenly there are three ideas:
+* The addtion of annotations (like JetBrains.Annotations for ReSharper)
+* Configurations per project via Addtional Files
+* A mixture of both preceeding ideas
 
 # Is there something that is not supported and will not be supported in future?
 ## Renaming
