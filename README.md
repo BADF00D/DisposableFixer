@@ -1,7 +1,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/8mk3us0d5stlkq47?svg=true)](https://ci.appveyor.com/project/badf00d/disposablefixer)
 ![](https://img.shields.io/appveyor/tests/badf00d/DisposableFixer.svg?style=flat)
 ![](https://img.shields.io/nuget/v/DisposableFixer.svg?style=flat)
-![](https://img.shields.io/visual-studio-marketplace/v/DisposableFixer.Microsoft.e69d15ad-e40a-412c-a444-cfb06057928c.svg?style=flat)
+![](https://img.shields.io/visual-studio-marketplace/v/DavidStormer.DisposableFixer.svg?style=flat&label=Visual%20Studio%20Markedplace)
 
 # DisposableFixer
 This is a small Visual Studio Extension that should identify and fix problems as memleaks while using IDispoables. You can download it via [Visual Studio Gallery](https://marketplace.visualstudio.com/items?itemName=DavidStormer.DisposableFixer) or using Visual Studio Extension Manager.
@@ -114,7 +114,7 @@ mem2.Dispose()
 |---|---|
 |  Pull-Requests | ![](https://img.shields.io/github/issues-pr/badf00d/DisposableFixer.svg?style=flat) ![](https://img.shields.io/github/issues-pr-closed/badf00d/DisposableFixer.svg?style=flat) |
 | Issues  | ![](https://img.shields.io/github/issues/badf00d/DisposableFixer.svg?style=flat) ![](https://img.shields.io/github/issues-closed/badf00d/DisposableFixer.svg?style=flat) ![](https://img.shields.io/github/issues/badf00d/DisposableFixer/bug.svg?colorB=red&label=bugs&style=flat) ![](https://img.shields.io/github/issues/badf00d/DisposableFixer/feature%20request.svg?label=feature%20request&style=flat) |
-| Downloads  | ![Nuget](https://img.shields.io/nuget/dt/DisposableFixer.svg?label=nuget) ![](https://img.shields.io/visual-studio-marketplace/i/DisposableFixer.Microsoft.e69d15ad-e40a-412c-a444-cfb06057928c.svg?style=flat-square) |
+| Downloads  | ![Nuget](https://img.shields.io/nuget/dt/DisposableFixer.svg?label=nuget&color=lime) ![](https://img.shields.io/visual-studio-marketplace/d/DavidStormer.DisposableFixer.svg?label=Visual%20Studio%20Marketplace%20%28downloads%29) ![](https://img.shields.io/visual-studio-marketplace/i/DavidStormer.DisposableFixer.svg?label=Visual%20Studio%20Marketplace%20%28installs%29)|
 | Contribution | ![GitHub last commit](https://img.shields.io/github/last-commit/Badf00d/DisposableFixer.svg) ![GitHub contributors](https://img.shields.io/github/contributors-anon/Badf00d/DisposableFixer.svg) | 
 
 
