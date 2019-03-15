@@ -21,5 +21,10 @@ namespace DisposableFixer.Extensions
         {
             return typeSymbol.AllInterfaces.Any(i => i.Name == DisposableInterface);
         }
+        public static string GetVariableName(this ITypeSymbol typeSymbol)
+        {
+            var name = typeSymbol.MetadataName.ToCharArray();
+            return name[0].ToString().ToLower()[0] + typeSymbol.MetadataName.Substring(1);
+        }
     }
 }
