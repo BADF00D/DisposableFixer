@@ -161,5 +161,12 @@ namespace DisposableFixer.Extensions
                    && memberAccessExpressionSyntax.Name.Identifier.Text == "Exchange"
                    && arg?.Identifier.Text == variableName;
         }
+
+        public static INamedTypeSymbol GetReturnType(this InvocationExpressionSyntax ies, SemanticModel semanticModel)
+        {
+            var symbolInfo = semanticModel.GetSymbolInfo(ies);
+            var symbol = symbolInfo.Symbol as IMethodSymbol;
+            return symbol?.ReturnType as INamedTypeSymbol;
+        }
     }
 }
