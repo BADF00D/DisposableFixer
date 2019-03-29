@@ -65,33 +65,78 @@ namespace DisposableFixer.CodeFix
                             .SkipWhile(s => s != @parentUsing)
                             .Skip(1);
                         
-                        var nodeToReplace = node.DescendantNodes()
+                        var nodeToReplace = node.DescendantNodes<ExpressionSyntax>()
                             .FirstOrDefault(dn => dn is ObjectCreationExpressionSyntax || dn is InvocationExpressionSyntax);
+                        ITypeSymbol t = nodeToReplace.GetTypeSymbol(await context.Document.GetSemanticModelAsync());
+                        var typeName = t.MetadataName;
+                        var variableName = t.GetVariableName();
+                        var arguementList = nodeToReplace.DescendantNodes<ArgumentListSyntax>().FirstOrDefault();
 
                         var variableDeclaration  = SyntaxFactory.VariableDeclaration(
                                 SyntaxFactory.IdentifierName("var"))
                             .WithVariables(
                                 SyntaxFactory.SingletonSeparatedList(
                                     SyntaxFactory.VariableDeclarator(
-                                            SyntaxFactory.Identifier("variable"))
+                                            SyntaxFactory.Identifier(variableName))
                                         .WithInitializer(
                                             SyntaxFactory.EqualsValueClause(
                                                 SyntaxFactory.ObjectCreationExpression(
-                                                        SyntaxFactory.IdentifierName("MemoryStream"))
-                                                    .WithArgumentList(
-                                                        SyntaxFactory.ArgumentList())))));
+                                                        SyntaxFactory.IdentifierName(typeName))
+                                                    .WithArgumentList(arguementList)))));
                         var editor = await DocumentEditor.CreateAsync(context.Document, context.CancellationToken);
-                        var newParentUsing = parentUsing.ReplaceNode(nodeToReplace, SyntaxFactory.IdentifierName("variable"));
-                        var @using = SyntaxFactory.UsingStatement(SyntaxFactory.Block(newParentUsing))
+                        var newParentUsing = parentUsing.ReplaceNode(nodeToReplace, SyntaxFactory.IdentifierName(variableName));
+                        var @using = SyntaxFactory.UsingStatement(SyntaxFactory.Block(newParentUsing.Concat(trailingStatements)))
                             .WithDeclaration(variableDeclaration);
                         
                         var newParentBlock =
-                            SyntaxFactory.Block(preceedingStatements.Concat(@using).Concat(trailingStatements));
+                            SyntaxFactory.Block(preceedingStatements.Concat(@using));
                         editor.ReplaceNode(parentBlock, newParentBlock.WithoutAnnotations(Formatter.Annotation));
 
                         return editor.GetChangedDocument();
                     }
                     
+                }
+            }else if (node is InvocationExpressionSyntax ies)
+            {
+                if (node.TryFindContainigBlock(out var parentBlock))
+                {
+                    if (node.TryFindParent<StatementSyntax>(parentBlock, out var @parentUsing))
+                    {
+                        var preceedingStatements = parentBlock.Statements
+                            .TakeWhile(s => s != parentUsing);
+                        var trailingStatements = parentBlock.Statements
+                            .SkipWhile(s => s != @parentUsing)
+                            .Skip(1);
+
+                        var nodeToReplace = ies;
+                        var returnType = ies.GetReturnType(await context.Document.GetSemanticModelAsync());
+                        var typeName = returnType.MetadataName;
+                        var variableName = returnType.GetVariableName();
+                        var arguementList = nodeToReplace.DescendantNodes<ArgumentListSyntax>().FirstOrDefault();
+
+                        var variableDeclaration = SyntaxFactory.VariableDeclaration(
+                                SyntaxFactory.IdentifierName("var"))
+                            .WithVariables(
+                                SyntaxFactory.SingletonSeparatedList(
+                                    SyntaxFactory.VariableDeclarator(
+                                            SyntaxFactory.Identifier(variableName))
+                                        .WithInitializer(
+                                            SyntaxFactory.EqualsValueClause(
+                                                SyntaxFactory.ObjectCreationExpression(
+                                                        SyntaxFactory.IdentifierName(typeName))
+                                                    .WithArgumentList(arguementList)))));
+                        var editor = await DocumentEditor.CreateAsync(context.Document, context.CancellationToken);
+                        var newParentUsing = parentUsing.ReplaceNode(nodeToReplace, SyntaxFactory.IdentifierName(variableName));
+                        var @using = SyntaxFactory.UsingStatement(SyntaxFactory.Block(newParentUsing.Concat(trailingStatements)))
+                            .WithDeclaration(variableDeclaration);
+
+                        var newParentBlock =
+                            SyntaxFactory.Block(preceedingStatements.Concat(@using));
+                        editor.ReplaceNode(parentBlock, newParentBlock.WithoutAnnotations(Formatter.Annotation));
+
+                        return editor.GetChangedDocument();
+                    }
+
                 }
             }
 

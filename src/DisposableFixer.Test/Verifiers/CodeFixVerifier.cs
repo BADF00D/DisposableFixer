@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -56,6 +57,32 @@ namespace TestHelper
         protected void VerifyBasicFix(string oldSource, string newSource, int? codeFixIndex = null, bool allowNewCompilerDiagnostics = false)
         {
             VerifyFix(LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), GetBasicCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
+        }
+
+        protected string ApplyCSharpCodeFixTo(string oldSource, Func<Diagnostic, bool> predicate)
+        {
+            var analyzer = GetCSharpDiagnosticAnalyzer();
+            var codeFixProvider = GetCSharpCodeFixProvider();
+            var document = CreateDocument(oldSource);
+            var analyzerDiagnostics = GetSortedDiagnosticsFromDocuments(analyzer, new[] { document });
+
+            foreach(var diagnostic in analyzerDiagnostics.Where(predicate))
+            {
+                var actions = new List<CodeAction>();
+                var context = new CodeFixContext(document, diagnostic, (a, d) => actions.Add(a), CancellationToken.None);
+                codeFixProvider.RegisterCodeFixesAsync(context).Wait();
+
+                if (!actions.Any())
+                {
+                    return oldSource;
+                }
+
+                document = ApplyFix(document, actions.ElementAt(0));
+                analyzerDiagnostics = GetSortedDiagnosticsFromDocuments(analyzer, new[] { document });
+            }
+
+            //after applying all of the code fixes, compare the resulting string to the inputted one
+            return GetStringFromDocument(document);
         }
 
         protected string ApplyCSharpCodeFix(string oldSource, int? codeFixIndex = null)
