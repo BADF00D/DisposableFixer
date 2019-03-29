@@ -54,7 +54,7 @@ namespace MyNs {
         {
             _diagnostics.Length.Should().Be(1, "this is the prerequisite");
             _diagnostics[0].Id.Should().Be(SyntaxNodeAnalysisContextExtension
-                .IdForAssignmendFromObjectCreationToFieldNotDisposed);
+                .IdForAssignmentFromObjectCreationToFieldNotDisposed);
 
             Console.WriteLine("Soure code");
             Console.WriteLine(Code);

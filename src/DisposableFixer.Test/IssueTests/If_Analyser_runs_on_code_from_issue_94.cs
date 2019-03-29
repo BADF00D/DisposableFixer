@@ -51,7 +51,7 @@ namespace SelectManyTest
         {
             PrintCodeToFix(Code);
             MyHelper.RunAnalyser(Code, GetCSharpDiagnosticAnalyzer())
-                .Should().Contain(d => d.Id == SyntaxNodeAnalysisContextExtension.IdForAssignmendFromObjectCreationToFieldNotDisposed, "this should be fixed");
+                .Should().Contain(d => d.Id == SyntaxNodeAnalysisContextExtension.IdForAssignmentFromObjectCreationToFieldNotDisposed, "this should be fixed");
 
             var fixedCode = ApplyCSharpCodeFix(Code);
             PrintFixedCode(fixedCode);

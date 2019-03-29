@@ -30,7 +30,7 @@ namespace SomeNamespace
 
             var diagnostic = _diagnostics.First();
             diagnostic.Descriptor.Should()
-                 .Be(SyntaxNodeAnalysisContextExtension.AssignmendFromObjectCreationToPropertyNotDisposedDescriptor);
+                 .Be(SyntaxNodeAnalysisContextExtension.AssignmentFromObjectCreationToPropertyNotDisposedDescriptor);
         }
     }
 }

@@ -2,7 +2,7 @@
 {
     public enum DisposableSource
     {
-        InvokationExpression,
+        InvocationExpression,
         ObjectCreation
     }
 }

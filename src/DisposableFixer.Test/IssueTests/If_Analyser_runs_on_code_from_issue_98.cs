@@ -43,7 +43,7 @@ namespace ExtensionMethodYieldsNotDisposed
             PrintCodeToFix(Code);
             var beforeCodefixDiagnostics = MyHelper.RunAnalyser(Code, GetCSharpDiagnosticAnalyzer());
             beforeCodefixDiagnostics
-                .Should().Contain(d => d.Id == SyntaxNodeAnalysisContextExtension.IdForAssignmendFromObjectCreationToPropertyNotDisposed, "this should be fixed");
+                .Should().Contain(d => d.Id == SyntaxNodeAnalysisContextExtension.IdForAssignmentFromObjectCreationToPropertyNotDisposed, "this should be fixed");
 
             var fixedCode = ApplyCSharpCodeFix(Code);
             PrintFixedCode(fixedCode);
