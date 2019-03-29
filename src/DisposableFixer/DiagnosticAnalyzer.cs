@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using DisposableFixer.Configuration;
 using DisposableFixer.Extensions;
+using DisposableFixer.Utils;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -46,7 +47,7 @@ namespace DisposableFixer
 
             var symbolInfo = context.SemanticModel.GetSymbolInfo(node);
             if (!((symbolInfo.Symbol as IMethodSymbol)?.ReceiverType is INamedTypeSymbol type)) { }
-            else if (!type.IsDisposeableOrImplementsDisposable()) return;
+            else if (!type.IsDisposableOrImplementsDisposable()) return;
             else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new MemoryStream()).Dispose()
             else if (Detector.IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } 
             else if (node.IsReturnedInProperty()) AnalyzeNodeInReturnStatementOfProperty(context, node, DisposableSource.ObjectCreation);
@@ -55,7 +56,7 @@ namespace DisposableFixer
             else if (node.IsReturnValueInLambdaExpression()) { }
             else if (node.IsReturnedLaterWithinMethod()) { }
             else if (node.IsReturnedLaterWithinParenthesizedLambdaExpression()) { }
-            else if (!type.IsDisposeableOrImplementsDisposable()) { }
+            else if (!type.IsDisposableOrImplementsDisposable()) { }
             else if (node.IsPartOfMethodCall())
             {
                 AnalyzePartOfMethodCall(context, node);
@@ -326,12 +327,14 @@ namespace DisposableFixer
             var symbolInfo = context.SemanticModel.GetSymbolInfo(node);
             var symbol = symbolInfo.Symbol as IMethodSymbol;
 
-            if (!(symbol?.ReturnType is INamedTypeSymbol type)) { }
+            var type = symbol?.ReturnType as INamedTypeSymbol;
+            var ctx = context.CreateParameter(DisposableSource.InvocationExpression, type);
+            if (!ctx.CouldDetectType()) { }
             else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new object()).AsDisposable().Dispose()
             else if (node.IsPartOfAwaitExpression()) AnalyzeInvocationExpressionInsideAwaitExpression(context, node);
-            else if (!type.IsDisposeableOrImplementsDisposable()) return;
+            else if (!ctx.IsDisposableOrImplementsDisposable()) return;
             else if (node.IsReturnedInProperty()) AnalyzeNodeInReturnStatementOfProperty(context, node, DisposableSource.InvocationExpression);
-            else if (Detector.IsIgnoredTypeOrImplementsIgnoredInterface(type)) { } //GetEnumerator()
+            else if (Detector.IsIgnoredTypeOrImplementsIgnoredInterface(ctx.Type)) { } //GetEnumerator()
             else if (Detector.IsTrackingMethodCall(node, context.SemanticModel)) { }//ignored extension methods
             else if (Detector.IsIgnoredFactoryMethod(node, context.SemanticModel)) return; //A.Fake<IDisposable>
             else if (node.IsMaybePartOfMethodChainUsingTrackingExtensionMethod())
@@ -344,7 +347,6 @@ namespace DisposableFixer
                     if (Detector.IsTrackingMethodCall(baseNode, context.SemanticModel)) return;
                 }
             }
-            else if (!type.IsDisposeableOrImplementsDisposable()) { } 
             else if (node.IsPartOfMethodCall())
             {
                 AnalyzePartOfMethodCall(context, node);
@@ -383,7 +385,7 @@ namespace DisposableFixer
             var awaitExpression = node.Parent as AwaitExpressionSyntax;
             var awaitExpressionInfo = context.SemanticModel.GetAwaitExpressionInfo(awaitExpression);
             if (!(awaitExpressionInfo.GetResultMethod?.ReturnType is INamedTypeSymbol returnType)) return;
-            if (!returnType.IsDisposeableOrImplementsDisposable()) return;
+            if (!returnType.IsDisposableOrImplementsDisposable()) return;
             if (Detector.IsIgnoredTypeOrImplementsIgnoredInterface(returnType)) return;
             if (awaitExpression.IsDescendantOfUsingHeader()) return;
             if (awaitExpression.IsPartOfVariableDeclaratorInsideAUsingDeclaration()) return;

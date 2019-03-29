@@ -7,7 +7,7 @@ namespace DisposableFixer.Extensions
     {
         private const string DisposableInterface = "IDisposable";
 
-        public static bool IsDisposeableOrImplementsDisposable(this ITypeSymbol typeSymbol)
+        public static bool IsDisposableOrImplementsDisposable(this ITypeSymbol typeSymbol)
         {
             return typeSymbol.IsIDisposable() || typeSymbol.ImplementsIDisposable();
         }

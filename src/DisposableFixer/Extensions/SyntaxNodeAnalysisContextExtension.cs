@@ -1,10 +1,11 @@
 ﻿using System.Collections.Immutable;
+using DisposableFixer.Utils;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace DisposableFixer.Extensions
 {
-    public static class SyntaxNodeAnalysisContextExtension
+    internal static class SyntaxNodeAnalysisContextExtension
     {
         public const string IdForAnonymousObjectFromObjectCreation = "DF0000";
         public const string IdForAnonymousObjectFromMethodInvocation = "DF0001";
@@ -61,6 +62,12 @@ namespace DisposableFixer.Extensions
             context.ReportDiagnostic(source == DisposableSource.InvocationExpression
                 ? Diagnostic.Create(AnonymousObjectFromMethodInvocationDescriptor, location)
                 : Diagnostic.Create(AnonymousObjectFromObjectCreationDescriptor, location));
+        }
+
+        public static CustomAnalysisContext CreateParameter(this SyntaxNodeAnalysisContext context, DisposableSource source,
+            INamedTypeSymbol type)
+        {
+            return new CustomAnalysisContext(context, source, type);
         }
 
         #region AnonymousObjectFromMethod

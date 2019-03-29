@@ -37,7 +37,7 @@ namespace DisposableFixer.CodeFix
                 var typeInfo = model.GetTypeInfo(memberType, cancel);
                 if (typeInfo.Type == null) return context.Document;
 
-                var needsCastToIDisposable = typeInfo.Type.IsDisposeableOrImplementsDisposable();
+                var needsCastToIDisposable = typeInfo.Type.IsDisposableOrImplementsDisposable();
                 
                 if (disposeMethods.Any())
                 {
