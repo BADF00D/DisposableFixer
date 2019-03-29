@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DisposableFixer.Misc;
+using Microsoft.CodeAnalysis;
 
 namespace DisposableFixer.Configuration {
 	internal class DefaultConfiguration : IConfiguration {
@@ -155,7 +156,11 @@ namespace DisposableFixer.Configuration {
         public HashSet<string> IgnoredTypes { get; }
 		public HashSet<string> IgnoredInterfaces { get; }
 		public HashSet<string> TrackingTypes { get; }
-	    public Dictionary<string, IReadOnlyCollection<MethodCall>> DisposingMethods { get; }
+        public Dictionary<string, DiagnosticSeverity> TypeWithCustomSeverity { get; } = new Dictionary<string, DiagnosticSeverity>
+        {
+            ["System.Threading.CancellationTokenRegistration"] = DiagnosticSeverity.Info
+        };
+        public Dictionary<string, IReadOnlyCollection<MethodCall>> DisposingMethods { get; }
 	    public Dictionary<string, IReadOnlyCollection<MethodCall>> DisposingMethodsAtSpecialClasses { get; }
 	    public HashSet<string> DisposingAttributes { get; }
 	    public Dictionary<string,IReadOnlyCollection<CtorCall>> IgnoredTrackingTypeCtorCalls { get; }

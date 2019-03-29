@@ -1,3 +1,4 @@
+using DisposableFixer.Extensions;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using NUnit.Framework;
@@ -29,10 +30,9 @@ namespace SomeNamespace
         {
             PrintCodeToAnalyze(Code);
             var diagnostics = MyHelper.RunAnalyser(Code, new DisposableFixerAnalyzer());
-
             diagnostics.Should().HaveCount(1);
             diagnostics[0].Should()
-                .Match<Diagnostic>(s => s.Severity == DiagnosticSeverity.Info && s.Id == "1");
+                .Match<Diagnostic>(s => s.Severity == DiagnosticSeverity.Info && s.Id == SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable);
         }
     }
 }

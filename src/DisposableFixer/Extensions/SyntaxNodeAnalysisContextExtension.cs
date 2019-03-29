@@ -46,11 +46,25 @@ namespace DisposableFixer.Extensions
             context.ReportDiagnostic(Diagnostic.Create(Descriptor.NotDisposedLocalVariableDescriptor, location));
         }
 
+        public static void ReportNotDisposedLocalVariable(this SyntaxNodeAnalysisContext context,
+            DiagnosticSeverity severity)
+        {
+            var desc = new DiagnosticDescriptor(
+                id: IdForNotDisposedLocalVariable,
+                title: NotDisposedLocalVariableTitle,
+                messageFormat: NotDisposedLocalVariableMessageFormat,
+                category: Category,
+                defaultSeverity: severity,
+                isEnabledByDefault: true,
+                description: NotDisposedLocalVariableDescription);
+
+            context.ReportDiagnostic(Diagnostic.Create(desc, context.Node.GetLocation()));
+        }
+
         public static void ReportNotDisposedAnonymousObject(this SyntaxNodeAnalysisContext context,
             DisposableSource source)
         {
             var location = context.Node.GetLocation();
-
             context.ReportDiagnostic(source == DisposableSource.InvocationExpression
                 ? Diagnostic.Create(Descriptor.AnonymousObjectFromMethodInvocationDescriptor, location)
                 : Diagnostic.Create(Descriptor.AnonymousObjectFromObjectCreationDescriptor, location));

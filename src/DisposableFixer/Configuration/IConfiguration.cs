@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Microsoft.CodeAnalysis;
 
 namespace DisposableFixer.Configuration {
 	/// <summary>
@@ -9,7 +10,12 @@ namespace DisposableFixer.Configuration {
 		HashSet<string> IgnoredTypes { get; }
 		HashSet<string> IgnoredInterfaces { get; }
 		HashSet<string> TrackingTypes { get; }
-        /// <summary>
+        
+		/// <summary>
+        /// Types that should be disposed, but should not be marked as Error.
+        /// </summary>
+        Dictionary<string, DiagnosticSeverity> TypeWithCustomSeverity { get; }
+		/// <summary>
         /// List of method names that are evaluated when trying to detect whether fields/properties get disposed.
         /// A call to Dispose() of fields is treated just as if there where made in Dispose method.
         /// </summary>
