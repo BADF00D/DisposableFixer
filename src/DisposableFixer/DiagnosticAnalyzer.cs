@@ -82,7 +82,7 @@ namespace DisposableFixer
             else context.ReportNotDisposedAnonymousObject(DisposableSource.ObjectCreation); //new MemoryStream();
         }
 
-        private static void CheckIfObjectCreationTracksNode(CustomAnalysisContext context,ObjectCreationExpressionSyntax objectCreation)
+        private static void CheckIfObjectCreationTracksNode(CustomAnalysisContext context, ObjectCreationExpressionSyntax objectCreation)
         {
             var t = context.SemanticModel.GetReturnTypeOf(objectCreation);
             if (t == null) return;//return type could not be determined
@@ -140,7 +140,7 @@ namespace DisposableFixer
                 {
                     return;
                 }
-                if (IsArgumentInConstructorOfTrackingTypeWithinUsing(context.Context, localVariableInsideUsing)) return;
+                if (IsArgumentInConstructorOfTrackingTypeWithinUsing(context, localVariableInsideUsing)) return;
 
                 context.ReportNotDisposedLocalVariable();
                 return;
@@ -148,7 +148,7 @@ namespace DisposableFixer
             var invocationExpressions = parentScope.DescendantNodes<InvocationExpressionSyntax>().ToArray();
             if (invocationExpressions.Any(ie => ie.IsInterlockedExchangeAssignExpressionFor(localVariableName))) return;
             if (ExistsDisposeCall(localVariableName, invocationExpressions, context.SemanticModel)) return;
-            if (IsArgumentInTrackingMethod(context.Context, localVariableName, invocationExpressions)) return;
+            if (IsArgumentInTrackingMethod(context, localVariableName, invocationExpressions)) return;
             if (IsArgumentInConstructorOfTrackingType(context, localVariableName, parentScope)) return;
             if (IsCallToMethodThatIsConsideredAsDisposeCall(invocationExpressions, context)) return;
             
@@ -178,7 +178,7 @@ namespace DisposableFixer
             }
         }
 
-        private static bool IsArgumentInConstructorOfTrackingTypeWithinUsing(SyntaxNodeAnalysisContext context, IEnumerable<IdentifierNameSyntax> localVariableInsideUsing)
+        private static bool IsArgumentInConstructorOfTrackingTypeWithinUsing(CustomAnalysisContext context, IEnumerable<IdentifierNameSyntax> localVariableInsideUsing)
         {
             return localVariableInsideUsing
                 .Select(id => id.Parent?.Parent?.Parent)
@@ -198,7 +198,7 @@ namespace DisposableFixer
             return invocationExpressions.Any(ies => localVariableName != null && ies.IsCallToDisposeFor(localVariableName, semanticModel, Configuration));
         }
 
-        private static bool IsArgumentInTrackingMethod(SyntaxNodeAnalysisContext context, string localVariableName, IEnumerable<InvocationExpressionSyntax> invocationExpressions)
+        private static bool IsArgumentInTrackingMethod(CustomAnalysisContext context, string localVariableName, IEnumerable<InvocationExpressionSyntax> invocationExpressions)
         {
             return invocationExpressions.Any(ie => ie.UsesVariableInArguments(localVariableName) && Detector.IsTrackingMethodCall(ie, context.SemanticModel));
         }
