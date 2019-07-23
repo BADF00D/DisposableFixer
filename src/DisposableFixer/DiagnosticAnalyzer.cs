@@ -61,7 +61,7 @@ namespace DisposableFixer
             else if (node.IsReturnedLaterWithinParenthesizedLambdaExpression()) { }
             else if (node.IsPartOfMethodCall())
             {
-                AnalyzePartOfMethodCall(context, node);
+                AnalyzePartOfMethodCall(ctx);
             }
             else if (node.IsMaybePartOfMethodChainUsingTrackingExtensionMethod())
             {
@@ -75,7 +75,7 @@ namespace DisposableFixer
                 CheckIfObjectCreationTracksNode(context, objectCreation, DisposableSource.ObjectCreation);
             }
             else if (node.IsDescendantOfUsingHeader()) { }//this have to be checked after IsArgumentInObjectCreation
-            else if (node.IsDescendantOfVariableDeclarator()) AnalyzeNodeWithinVariableDeclarator(context, node, DisposableSource.ObjectCreation);
+            else if (node.IsDescendantOfVariableDeclarator()) AnalyzeNodeWithinVariableDeclarator(ctx);
             else if (node.IsPartOfAssignmentExpression()) AnalyzeNodeInAssignmentExpression(ctx);
             else if (node.IsPartOfPropertyExpressionBody())  AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(context, node, DisposableSource.ObjectCreation);
             else if (node.IsPartOfAutoProperty()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(context, node, DisposableSource.ObjectCreation);
@@ -107,18 +107,18 @@ namespace DisposableFixer
             context.ReportNotDisposedProperty(propertyDeclaration.Identifier.Text, source);
         }
 
-        private static void AnalyzeNodeWithinVariableDeclarator(SyntaxNodeAnalysisContext context,
-            SyntaxNode node, DisposableSource source)
+        private static void AnalyzeNodeWithinVariableDeclarator(CustomAnalysisContext context)
         {
+            var node = context.Node;
             var identifier = node.GetIdentifierIfIsPartOfVariableDeclarator();//getIdentifier
             if (identifier == null) return;
             if (node.IsLocalDeclaration()) //var m = new MemoryStream();
             {
-                AnalyzeNodeWithinLocalDeclaration(context, node, identifier);
+                AnalyzeNodeWithinLocalDeclaration(context.Context, node, identifier);
             }
             else if (node.IsFieldDeclaration()) //_field = new MemoryStream();
             {
-                AnalyzeNodeInFieldDeclaration(context, node, identifier, source);
+                AnalyzeNodeInFieldDeclaration(context, identifier);
             }
         }
 
@@ -226,12 +226,12 @@ namespace DisposableFixer
                 });
         }
 
-        private static void AnalyzeNodeInFieldDeclaration(SyntaxNodeAnalysisContext context,
-            SyntaxNode node, string variableName, DisposableSource source)
+        private static void AnalyzeNodeInFieldDeclaration(CustomAnalysisContext context,
+            string variableName)
         {
-            if (node.IsDisposedInDisposingMethod(variableName, Configuration, context.SemanticModel)) return;
+            if (context.Node.IsDisposedInDisposingMethod(variableName, Configuration, context.SemanticModel)) return;
             
-            context.ReportNotDisposedField(variableName, source);
+            context.ReportNotDisposedField(variableName);
         }
 
         private static void AnalyzeNodeInAssignmentExpression(CustomAnalysisContext context)
@@ -332,7 +332,7 @@ namespace DisposableFixer
             var ctx = context.CreateCustomContext(DisposableSource.InvocationExpression, type, Detector);
             if (!ctx.CouldDetectType()) { }
             else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new object()).AsDisposable().Dispose()
-            else if (node.IsPartOfAwaitExpression()) AnalyzeInvocationExpressionInsideAwaitExpression(context, node);
+            else if (node.IsPartOfAwaitExpression()) AnalyzeInvocationExpressionInsideAwaitExpression(ctx);
             else if (!ctx.IsDisposableOrImplementsDisposable()) return;
             else if (node.IsReturnedInProperty()) AnalyzeNodeInReturnStatementOfProperty(context, node, DisposableSource.InvocationExpression);
             else if (ctx.IsTypeIgnoredOrImplementsIgnoredInterface()) { } //GetEnumerator()
@@ -350,7 +350,7 @@ namespace DisposableFixer
             }
             else if (node.IsPartOfMethodCall())
             {
-                AnalyzePartOfMethodCall(context, node);
+                AnalyzePartOfMethodCall(ctx);
             }
             else if (node.IsPartOfReturnStatementInBlock()) { } // return new MemoryStream() or return Task.FromResult(new MemoryStream())
             else if (node.IsArrowExpressionClauseOfMethod()) { } // void Create()=>new MemoryStream()
@@ -363,7 +363,7 @@ namespace DisposableFixer
                 CheckIfObjectCreationTracksNode(context, objectCreation, DisposableSource.ObjectCreation);
             } 
             else if (node.IsDescendantOfUsingHeader()) { } //using(memstream) or using(new MemoryStream())
-            else if (node.IsDescendantOfVariableDeclarator()) AnalyzeNodeWithinVariableDeclarator(context, node, DisposableSource.InvocationExpression);
+            else if (node.IsDescendantOfVariableDeclarator()) AnalyzeNodeWithinVariableDeclarator(ctx);
             else if (node.IsPartOfAssignmentExpression()) AnalyzeNodeInAssignmentExpression(ctx);
             else if (node.IsPartOfAutoProperty()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(context, node, DisposableSource.InvocationExpression);
             else if (node.IsPartOfPropertyExpressionBody()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(context, node, DisposableSource.InvocationExpression);
@@ -380,9 +380,9 @@ namespace DisposableFixer
             ctx.ReportNotDisposedAnonymousObject();
         }
 
-        private static void AnalyzeInvocationExpressionInsideAwaitExpression(SyntaxNodeAnalysisContext context,
-            InvocationExpressionSyntax node)
+        private static void AnalyzeInvocationExpressionInsideAwaitExpression(CustomAnalysisContext context)
         {
+            var node = context.Node;
             var awaitExpression = node.Parent as AwaitExpressionSyntax;
             var awaitExpressionInfo = context.SemanticModel.GetAwaitExpressionInfo(awaitExpression);
             if (!(awaitExpressionInfo.GetResultMethod?.ReturnType is INamedTypeSymbol returnType)) return;
@@ -394,7 +394,7 @@ namespace DisposableFixer
             if (awaitExpression.IsReturnedLaterWithinMethod()) return;
             if (awaitExpression.IsDescendantOfVariableDeclarator())
             {
-                AnalyzeNodeWithinVariableDeclarator(context, awaitExpression, DisposableSource.InvocationExpression);
+                AnalyzeNodeWithinVariableDeclarator(context.NewWith(awaitExpression));
             }else if (awaitExpression.IsDescendantOfAssignmentExpressionSyntax())
             {
                 if (node.TryFindParentClass(out var @class))
@@ -408,7 +408,7 @@ namespace DisposableFixer
             }
             else
             {
-                context.ReportNotDisposedAnonymousObject(DisposableSource.InvocationExpression);
+                context.ReportNotDisposedAnonymousObject();
             }
         }
     }

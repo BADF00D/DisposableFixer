@@ -7,19 +7,20 @@ namespace DisposableFixer.Utils
 {
     internal class CustomAnalysisContext
     {
-        public CustomAnalysisContext(SyntaxNodeAnalysisContext context, DisposableSource source, INamedTypeSymbol type, IDetector detector)
+        public CustomAnalysisContext(SyntaxNodeAnalysisContext context, SyntaxNode node, DisposableSource source, INamedTypeSymbol type, IDetector detector)
         {
             Context = context;
             Source = source;
             Type = type;
             Detector = detector;
+            Node = node;
         }
 
         public SyntaxNodeAnalysisContext Context { get; }
         public DisposableSource Source { get; }
         public INamedTypeSymbol Type { get; }
         public IDetector Detector { get; }
-        public SyntaxNode Node => Context.Node;
+        public SyntaxNode Node { get; }
         public SemanticModel SemanticModel => Context.SemanticModel;
     }
 
@@ -64,5 +65,9 @@ namespace DisposableFixer.Utils
             ctx.Context.ReportNotDisposedProperty(proepertyName, ctx.Source);
         }
 
+        public static CustomAnalysisContext NewWith(this CustomAnalysisContext ctx, SyntaxNode newNode)
+        {
+            return new CustomAnalysisContext(ctx.Context, newNode, ctx.Source, ctx.Type, ctx.Detector);
+        }
     }
 }
