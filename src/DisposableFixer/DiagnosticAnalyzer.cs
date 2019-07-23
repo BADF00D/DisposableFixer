@@ -72,7 +72,7 @@ namespace DisposableFixer
             else if (node.IsPartIfArrayInitializerThatIsPartOfObjectCreation())
             {
                 var objectCreation = node.Parent.Parent.Parent.Parent.Parent as ObjectCreationExpressionSyntax;
-                CheckIfObjectCreationTracksNode(context, objectCreation, DisposableSource.ObjectCreation);
+                CheckIfObjectCreationTracksNode(ctx, objectCreation);
             }
             else if (node.IsDescendantOfUsingHeader()) { }//this have to be checked after IsArgumentInObjectCreation
             else if (node.IsDescendantOfVariableDeclarator()) AnalyzeNodeWithinVariableDeclarator(ctx);
@@ -82,13 +82,13 @@ namespace DisposableFixer
             else context.ReportNotDisposedAnonymousObject(DisposableSource.ObjectCreation); //new MemoryStream();
         }
 
-        private static void CheckIfObjectCreationTracksNode(SyntaxNodeAnalysisContext context,ObjectCreationExpressionSyntax objectCreation, DisposableSource source)
+        private static void CheckIfObjectCreationTracksNode(CustomAnalysisContext context,ObjectCreationExpressionSyntax objectCreation)
         {
             var t = context.SemanticModel.GetReturnTypeOf(objectCreation);
             if (t == null) return;//return type could not be determined
             if (Detector.IsTrackedType(t, objectCreation, context.SemanticModel)) return;
 
-            context.ReportNotDisposedAnonymousObject(source);
+            context.ReportNotDisposedAnonymousObject();
         }
 
         private static void AnalyzeNodeInReturnStatementOfProperty(SyntaxNodeAnalysisContext context, SyntaxNode node, DisposableSource source) 
@@ -358,7 +358,7 @@ namespace DisposableFixer
             else if (node.IsArgumentInObjectCreation()) AnalyzeNodeInArgumentList(ctx);
             else if (node.IsPartIfArrayInitializerThatIsPartOfObjectCreation()) {
                 var objectCreation = node.Parent.Parent.Parent.Parent.Parent as ObjectCreationExpressionSyntax;
-                CheckIfObjectCreationTracksNode(context, objectCreation, DisposableSource.ObjectCreation);
+                CheckIfObjectCreationTracksNode(ctx, objectCreation);
             } 
             else if (node.IsDescendantOfUsingHeader()) { } //using(memstream) or using(new MemoryStream())
             else if (node.IsDescendantOfVariableDeclarator()) AnalyzeNodeWithinVariableDeclarator(ctx);
