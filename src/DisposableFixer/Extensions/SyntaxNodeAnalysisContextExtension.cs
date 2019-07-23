@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using DisposableFixer.Configuration;
 using DisposableFixer.Utils;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -64,10 +65,10 @@ namespace DisposableFixer.Extensions
                 : Diagnostic.Create(AnonymousObjectFromObjectCreationDescriptor, location));
         }
 
-        public static CustomAnalysisContext CreateParameter(this SyntaxNodeAnalysisContext context, DisposableSource source,
-            INamedTypeSymbol type)
+        public static CustomAnalysisContext CreateCustomContext(this SyntaxNodeAnalysisContext context, DisposableSource source,
+            INamedTypeSymbol type, IDetector detector)
         {
-            return new CustomAnalysisContext(context, source, type);
+            return new CustomAnalysisContext(context, source, type, detector);
         }
 
         #region AnonymousObjectFromMethod
