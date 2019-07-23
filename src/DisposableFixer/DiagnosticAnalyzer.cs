@@ -370,14 +370,14 @@ namespace DisposableFixer
             else context.ReportNotDisposedAnonymousObject(DisposableSource.InvocationExpression); //call to Create(): MemeoryStream
         }
 
-        private static void AnalyzePartOfMethodCall(SyntaxNodeAnalysisContext context, ExpressionSyntax node)
+        private static void AnalyzePartOfMethodCall(CustomAnalysisContext ctx)
         {
-            var methodInvocation = node.Parent.Parent.Parent as InvocationExpressionSyntax;
-            if (Detector.IsTrackingMethodCall(methodInvocation, context.SemanticModel)) return;
+            var methodInvocation = ctx.Node.Parent.Parent.Parent as InvocationExpressionSyntax;
+            if (Detector.IsTrackingMethodCall(methodInvocation, ctx.Context.SemanticModel)) return;
 
             if (methodInvocation.IsInterlockedExchangeExpression()) return;
 
-            context.ReportNotDisposedAnonymousObject(DisposableSource.ObjectCreation);
+            ctx.ReportNotDisposedAnonymousObject();
         }
 
         private static void AnalyzeInvocationExpressionInsideAwaitExpression(SyntaxNodeAnalysisContext context,
