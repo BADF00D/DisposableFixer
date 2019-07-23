@@ -45,8 +45,8 @@ namespace DisFixerTest.Issue
         public void Then_there_should_be_one_Diagnostic_with_correct_ID()
         {
             _diagnostics.Length.Should().Be(1);
-            _diagnostics[0].Id.Should().Be(SyntaxNodeAnalysisContextExtension
-                .IdForNotDisposedLocalVariable);
+            _diagnostics[0].Id.Should().Be(Id
+                .ForNotDisposedLocalVariable);
         }
     }
 }

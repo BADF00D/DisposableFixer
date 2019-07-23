@@ -27,21 +27,21 @@ namespace DisposableFixer.Test.CodeFix.IntroduceFieldAndDisposeInDisposeMethodCo
         public void Should_the_CodeFixProvider_be_responsible_for_undispose_local_fields()
         {
             _sut.FixableDiagnosticIds.Should()
-                .Contain(SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable);
+                .Contain(Id.ForNotDisposedLocalVariable);
         }
 
         [Test]
         public void Should_the_CodeFixProvider_be_responsible_for_anonymous_objects_from_ObjectCreations()
         {
             _sut.FixableDiagnosticIds.Should()
-                .Contain(SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation);
+                .Contain(Id.ForAnonymousObjectFromObjectCreation);
         }
 
         [Test]
         public void Should_the_CodeFixProvider_be_responsible_for_anonymous_objects_from_MethodInvocations()
         {
             _sut.FixableDiagnosticIds.Should()
-                .Contain(SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromMethodInvocation);
+                .Contain(Id.ForAnonymousObjectFromMethodInvocation);
         }
 
         [Test, TestCaseSource(nameof(TestCases))]
@@ -62,13 +62,13 @@ namespace DisposableFixer.Test.CodeFix.IntroduceFieldAndDisposeInDisposeMethodCo
         {
             get
             {
-                yield return new TestCaseData(AnonymousObjectCreation, SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation)
+                yield return new TestCaseData(AnonymousObjectCreation, Id.ForAnonymousObjectFromObjectCreation)
                     .SetName("Undisposed anonymous ObjectCreation");
-                yield return new TestCaseData(AnonymousMethodInvoation, SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromMethodInvocation)
+                yield return new TestCaseData(AnonymousMethodInvoation, Id.ForAnonymousObjectFromMethodInvocation)
                     .SetName("Undisposed anonymous MethodInvocation");
-                yield return new TestCaseData(LocalVariable, SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable)
+                yield return new TestCaseData(LocalVariable, Id.ForNotDisposedLocalVariable)
                     .SetName("Undisposed local variable");
-                yield return new TestCaseData(AnonymousObjectCreationThatIsAArgument, SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation)
+                yield return new TestCaseData(AnonymousObjectCreationThatIsAArgument, Id.ForAnonymousObjectFromObjectCreation)
                     .SetName("Undisposed Anonymous variable that is an argument");
             }
         }

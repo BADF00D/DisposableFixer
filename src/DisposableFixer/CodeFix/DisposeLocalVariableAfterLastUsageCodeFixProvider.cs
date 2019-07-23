@@ -22,7 +22,7 @@ namespace DisposableFixer.CodeFix
     public class DisposeLocalVariableAfterLastUsageCodeFixProvider : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds =>
-            ImmutableArray.Create(SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable);
+            ImmutableArray.Create(Id.ForNotDisposedLocalVariable);
 
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {

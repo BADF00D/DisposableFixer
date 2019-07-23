@@ -21,18 +21,18 @@ namespace DisposableFixer.CodeFix
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(
-                SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation,
-                SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromMethodInvocation
+                Id.ForAnonymousObjectFromObjectCreation,
+                Id.ForAnonymousObjectFromMethodInvocation
             );
 
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var id = context.Diagnostics.First().Id;
-            if (id == SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation)
+            if (id == Id.ForAnonymousObjectFromObjectCreation)
                 context.RegisterCodeFix(
                     CodeAction.Create("Wrap in using", c => WrapExpressionSyntaxInUsing(context, c)),
                     context.Diagnostics);
-            if (id == SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromMethodInvocation)
+            if (id == Id.ForAnonymousObjectFromMethodInvocation)
                 context.RegisterCodeFix(
                     CodeAction.Create("Wrap in using", c => WrapExpressionSyntaxInUsing(context, c)),
                     context.Diagnostics

@@ -20,7 +20,7 @@ namespace DisposableFixer.CodeFix
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var id = context.Diagnostics.First().Id;
-            if (id == SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable)
+            if (id == Id.ForNotDisposedLocalVariable)
                 context.RegisterCodeFix(
                     CodeAction.Create("Wrap in using", c => WrapLocalVariableInUsing(context, c)),
                     context.Diagnostics);
@@ -86,6 +86,6 @@ namespace DisposableFixer.CodeFix
         }
 
         public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create<string>(
-            SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable);
+            Id.ForNotDisposedLocalVariable);
     }
 }

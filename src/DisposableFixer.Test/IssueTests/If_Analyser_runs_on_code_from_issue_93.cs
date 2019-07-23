@@ -34,7 +34,7 @@ namespace SelectManyTest
         {
             PrintCodeToFix(Code);
             MyHelper.RunAnalyser(Code, GetCSharpDiagnosticAnalyzer())
-                .Should().Contain(d => d.Id == SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable, "this should be fixed");
+                .Should().Contain(d => d.Id == Id.ForNotDisposedLocalVariable, "this should be fixed");
             ApplyCSharpCodeFix(Code);
         }
     }

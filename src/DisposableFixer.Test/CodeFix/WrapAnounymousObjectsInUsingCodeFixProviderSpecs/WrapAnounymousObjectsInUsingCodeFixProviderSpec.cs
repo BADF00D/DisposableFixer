@@ -134,23 +134,23 @@ namespace SomeNamespace
             get
             {
                 yield return new TestCaseData(CodeWithAnonymousObjectCreation,
-                        SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation)
+                        Id.ForAnonymousObjectFromObjectCreation)
                     .SetName("Anonymous ObjectCreation");
                 yield return new TestCaseData(CodeWithAnonymousObjectCreationAndOtherCode,
-                        SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation)
+                        Id.ForAnonymousObjectFromObjectCreation)
                     .SetName("Anonymous ObjectCreation and other code");
                 yield return new TestCaseData(CodeWithObjectCreationThatIsAParameter,
-                        SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation)
+                        Id.ForAnonymousObjectFromObjectCreation)
                     .SetName("Anonymous ObjectCreation that is a parameter");
 
                 yield return new TestCaseData(CodeWithMethodInvocationAndOtherCode,
-                        SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromMethodInvocation)
+                        Id.ForAnonymousObjectFromMethodInvocation)
                     .SetName("Anonymous MethodInvocation and other code");
                 yield return new TestCaseData(CodeWithObjectCreationThatIsAParameter,
-                        SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation)
+                        Id.ForAnonymousObjectFromObjectCreation)
                     .SetName("Anonymous ObjectCreation that is a parameter");
                 yield return new TestCaseData(CodeWithMethodInvaocationThatIsAParameter,
-                        SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromMethodInvocation)
+                        Id.ForAnonymousObjectFromMethodInvocation)
                     .SetName("Anonymous MethodInvocation that is a parameter");
             }
         }

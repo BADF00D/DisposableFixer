@@ -34,7 +34,7 @@ namespace SomeNamespace
         {
             var diagnostic = _diagnostics.First();
             diagnostic.Id.Should()
-                .Be(SyntaxNodeAnalysisContextExtension.IdForAssignmentFromMethodInvocationToPropertyNotDisposed);
+                .Be(Id.ForAssignmentFromMethodInvocationToPropertyNotDisposed);
         }
     }
 }

@@ -20,9 +20,9 @@ namespace DisposableFixer.CodeFix
     public class IntroduceFieldAndDisposeInDisposeMethodCodeFixProvider : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(
-            SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromMethodInvocation,
-            SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation,
-            SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable
+            Id.ForAnonymousObjectFromMethodInvocation,
+            Id.ForAnonymousObjectFromObjectCreation,
+            Id.ForNotDisposedLocalVariable
         );
 
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
@@ -30,15 +30,15 @@ namespace DisposableFixer.CodeFix
             var diagnostic = context.Diagnostics.FirstOrDefault();
             if (diagnostic == null) return Task.CompletedTask;
 
-            if (diagnostic.Id == SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable)
+            if (diagnostic.Id == Id.ForNotDisposedLocalVariable)
             {
                 context.RegisterCodeFix(
                     CodeAction.Create("Create field and dispose in Dispose() method.",
                         cancel => ConvertToFieldDisposeInDisposeMethod(context, cancel)),
                     diagnostic
                 );
-            }else if (diagnostic.Id == SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromObjectCreation
-                      || diagnostic.Id == SyntaxNodeAnalysisContextExtension.IdForAnonymousObjectFromMethodInvocation)
+            }else if (diagnostic.Id == Id.ForAnonymousObjectFromObjectCreation
+                      || diagnostic.Id == Id.ForAnonymousObjectFromMethodInvocation)
             {
                 context.RegisterCodeFix(
                     CodeAction.Create("Create field and dispose in Dispose() method.",
@@ -208,7 +208,7 @@ namespace DisposableFixer.CodeFix
         private static bool IsUndisposedLocalVariable(CodeFixContext context)
         {
             return context.Diagnostics.First().Id ==
-                   SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable;
+                   Id.ForNotDisposedLocalVariable;
         }
     }
 }

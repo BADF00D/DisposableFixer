@@ -16,15 +16,15 @@ namespace DisposableFixer.CodeFix
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(
-                SyntaxNodeAnalysisContextExtension.IdForAssignmentFromMethodInvocationToPropertyNotDisposed,
-                SyntaxNodeAnalysisContextExtension.IdForAssignmentFromObjectCreationToPropertyNotDisposed
+                Id.ForAssignmentFromMethodInvocationToPropertyNotDisposed,
+                Id.ForAssignmentFromObjectCreationToPropertyNotDisposed
             );
 
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var id = context.Diagnostics.First().Id;
-            if (id == SyntaxNodeAnalysisContextExtension.IdForAssignmentFromObjectCreationToPropertyNotDisposed
-                || id == SyntaxNodeAnalysisContextExtension.IdForAssignmentFromMethodInvocationToPropertyNotDisposed)
+            if (id == Id.ForAssignmentFromObjectCreationToPropertyNotDisposed
+                || id == Id.ForAssignmentFromMethodInvocationToPropertyNotDisposed)
             {
                 context.RegisterCodeFix(
                     CodeAction.Create("Dispose property in Dispose() method", c => CreateDisposeCallInParameterlessDisposeMethod(context, c)),

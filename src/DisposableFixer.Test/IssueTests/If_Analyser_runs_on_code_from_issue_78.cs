@@ -53,8 +53,8 @@ namespace MyNs {
         public void Then_there_should_be_one_Diagnostic_with_correct_ID()
         {
             _diagnostics.Length.Should().Be(1, "this is the prerequisite");
-            _diagnostics[0].Id.Should().Be(SyntaxNodeAnalysisContextExtension
-                .IdForAssignmentFromObjectCreationToFieldNotDisposed);
+            _diagnostics[0].Id.Should().Be(Id
+                .ForAssignmentFromObjectCreationToFieldNotDisposed);
 
             Console.WriteLine("Soure code");
             Console.WriteLine(Code);
