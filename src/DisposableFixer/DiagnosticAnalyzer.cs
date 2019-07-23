@@ -150,23 +150,23 @@ namespace DisposableFixer
             if (ExistsDisposeCall(localVariableName, invocationExpressions, context.SemanticModel)) return;
             if (IsArgumentInTrackingMethod(context.Context, localVariableName, invocationExpressions)) return;
             if (IsArgumentInConstructorOfTrackingType(context, localVariableName, parentScope)) return;
-            if (IsCallToMethodThatIsConsideredAsDisposeCall(invocationExpressions, context.Context)) return;
+            if (IsCallToMethodThatIsConsideredAsDisposeCall(invocationExpressions, context)) return;
             
             context.ReportNotDisposedLocalVariable();
         }
 
         private static bool IsCallToMethodThatIsConsideredAsDisposeCall(IEnumerable<InvocationExpressionSyntax> invocations,
-            SyntaxNodeAnalysisContext context)
+            CustomAnalysisContext context)
         {
             var fullName = GetReturnOrReceivedType(context);
             return Configuration.DisposingMethodsAtSpecialClasses.TryGetValue(fullName, out var methodCalls) 
                    && methodCalls.Any(mc => invocations.Any(ies => ies.IsCallToMethod(mc)));
         }
 
-        private static string GetReturnOrReceivedType(SyntaxNodeAnalysisContext context)
+        private static string GetReturnOrReceivedType(CustomAnalysisContext context)
         {
-            var node = context.Node;
-            var typeInfo = context.SemanticModel.GetSymbolInfo(context.Node);
+            var node = context.OriginalNode;
+            var typeInfo = context.SemanticModel.GetSymbolInfo(node);
             switch (node)
             {
                 case ObjectCreationExpressionSyntax _:

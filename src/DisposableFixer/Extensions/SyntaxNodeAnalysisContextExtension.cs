@@ -68,7 +68,7 @@ namespace DisposableFixer.Extensions
         public static CustomAnalysisContext CreateCustomContext(this SyntaxNodeAnalysisContext context, DisposableSource source,
             INamedTypeSymbol type, IDetector detector)
         {
-            return new CustomAnalysisContext(context, context.Node, source, type, detector);
+            return CustomAnalysisContext.WithOriginalNode(context, source, type, detector);
         }
 
         #region AnonymousObjectFromMethod
