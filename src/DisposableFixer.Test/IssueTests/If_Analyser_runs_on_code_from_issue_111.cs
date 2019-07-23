@@ -13,7 +13,7 @@ namespace DisposableFixer.Test.IssueTests
 
         protected override CodeFixProvider GetCSharpCodeFixProvider()
         {
-            return new DisposableFixer.CodeFix.WrapAnounymousObjectsInUsingCodeFixProvider();
+            return new DisposableFixer.CodeFix.WrapAnonymousObjectsInUsingCodeFixProvider();
         }
 
         private const string Code = @"

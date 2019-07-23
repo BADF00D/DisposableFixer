@@ -22,7 +22,7 @@ namespace DisposableFixer.CodeFix
             var id = context.Diagnostics.First().Id;
             if (id == Id.ForNotDisposedLocalVariable)
                 context.RegisterCodeFix(
-                    CodeAction.Create("Wrap in using", c => WrapLocalVariableInUsing(context, c)),
+                    CodeAction.Create(ActionTitle.WrapInUsing, c => WrapLocalVariableInUsing(context, c)),
                     context.Diagnostics);
             
             return Task.CompletedTask;
@@ -31,8 +31,7 @@ namespace DisposableFixer.CodeFix
         private static async Task<Document> WrapLocalVariableInUsing(CodeFixContext context, CancellationToken cancel)
         {
             var oldRoot = await context.Document.GetSyntaxRootAsync(cancel);
-            var node = oldRoot.FindNode(context.Span) as ExpressionSyntax;
-            if (node == null) return context.Document;
+            if (!(oldRoot.FindNode(context.Span) is ExpressionSyntax node)) return context.Document;
 
             if (node.IsDescendantOfVariableDeclarator())
             {

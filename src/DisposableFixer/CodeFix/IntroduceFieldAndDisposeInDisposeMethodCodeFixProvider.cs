@@ -33,7 +33,7 @@ namespace DisposableFixer.CodeFix
             if (diagnostic.Id == Id.ForNotDisposedLocalVariable)
             {
                 context.RegisterCodeFix(
-                    CodeAction.Create("Create field and dispose in Dispose() method.",
+                    CodeAction.Create(ActionTitle.CreateFieldAndDisposeInDisposeMethod,
                         cancel => ConvertToFieldDisposeInDisposeMethod(context, cancel)),
                     diagnostic
                 );
@@ -41,7 +41,7 @@ namespace DisposableFixer.CodeFix
                       || diagnostic.Id == Id.ForAnonymousObjectFromMethodInvocation)
             {
                 context.RegisterCodeFix(
-                    CodeAction.Create("Create field and dispose in Dispose() method.",
+                    CodeAction.Create(ActionTitle.CreateFieldAndDisposeInDisposeMethod,
                         cancel => IntroduceFieldAndDisposeInDisposeMethod(context, cancel)),
                     diagnostic
                 );

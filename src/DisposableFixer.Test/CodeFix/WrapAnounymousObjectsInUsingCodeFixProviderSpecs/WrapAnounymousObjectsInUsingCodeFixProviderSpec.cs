@@ -157,7 +157,7 @@ namespace SomeNamespace
 
         protected override CodeFixProvider GetCSharpCodeFixProvider()
         {
-            return new WrapAnounymousObjectsInUsingCodeFixProvider();
+            return new WrapAnonymousObjectsInUsingCodeFixProvider();
         }
 
         [Test]

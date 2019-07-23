@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
@@ -13,7 +12,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Operations;
 
 namespace DisposableFixer.CodeFix
 {
@@ -26,7 +24,7 @@ namespace DisposableFixer.CodeFix
 
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            context.RegisterCodeFix(CodeAction.Create("Dispose after last usage", cancel => Apply(context, cancel)),
+            context.RegisterCodeFix(CodeAction.Create(ActionTitle.DisposeAfterLastUsage, cancel => Apply(context, cancel)),
                 context.Diagnostics);
 
             return Task.CompletedTask;

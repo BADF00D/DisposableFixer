@@ -11,10 +11,20 @@ namespace DisposableFixer
         public const string IDisposable = "IDisposable";
         public const string Interlocked = "Interlocked";
         public const string Exchange = "Exchange";
+        public const string Var = "var";
     }
 
     internal static class Category {
         public const string WrongUsage = "Wrong Usage";
+    }
+
+    internal static class ActionTitle
+    {
+        public const string WrapInUsing = "Wrap in using";
+        public const string DisposePropertyInDisposeMethod = "Dispose property in Dispose() method";
+        public const string DisposeFieldInDisposeMethod = "Dispose field in Dispose() method";
+        public const string CreateFieldAndDisposeInDisposeMethod = "Create field and dispose in Dispose() method.";
+        public const string DisposeAfterLastUsage = "Dispose after last usage";
     }
 
     internal static class Id

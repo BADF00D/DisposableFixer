@@ -28,7 +28,7 @@ namespace DisposableFixer.CodeFix
                 || id == Id.ForAssignmentFromMethodInvocationToFieldNotDisposed)
             {
                 context.RegisterCodeFix(
-                    CodeAction.Create("Dispose field in Dispose() method", c => CreateDisposeCallInParameterlessDisposeMethod(context, c)),
+                    CodeAction.Create(ActionTitle.DisposeFieldInDisposeMethod, c => CreateDisposeCallInParameterlessDisposeMethod(context, c)),
                     context.Diagnostics);
             }
             return Task.FromResult(1);

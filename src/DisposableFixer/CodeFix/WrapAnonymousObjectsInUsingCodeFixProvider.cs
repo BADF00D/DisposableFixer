@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
@@ -17,7 +16,7 @@ namespace DisposableFixer.CodeFix
 {
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UndisposedMemberCodeFixProvider))]
     [Shared]
-    public class WrapAnounymousObjectsInUsingCodeFixProvider : CodeFixProvider
+    public class WrapAnonymousObjectsInUsingCodeFixProvider : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(
@@ -30,11 +29,11 @@ namespace DisposableFixer.CodeFix
             var id = context.Diagnostics.First().Id;
             if (id == Id.ForAnonymousObjectFromObjectCreation)
                 context.RegisterCodeFix(
-                    CodeAction.Create("Wrap in using", c => WrapExpressionSyntaxInUsing(context, c)),
+                    CodeAction.Create(ActionTitle.WrapInUsing, c => WrapExpressionSyntaxInUsing(context, c)),
                     context.Diagnostics);
             if (id == Id.ForAnonymousObjectFromMethodInvocation)
                 context.RegisterCodeFix(
-                    CodeAction.Create("Wrap in using", c => WrapExpressionSyntaxInUsing(context, c)),
+                    CodeAction.Create(ActionTitle.WrapInUsing, c => WrapExpressionSyntaxInUsing(context, c)),
                     context.Diagnostics
                 );
             return Task.FromResult(1);
@@ -67,13 +66,13 @@ namespace DisposableFixer.CodeFix
                         
                         var nodeToReplace = node.DescendantNodes<ExpressionSyntax>()
                             .FirstOrDefault(dn => dn is ObjectCreationExpressionSyntax || dn is InvocationExpressionSyntax);
-                        ITypeSymbol t = nodeToReplace.GetTypeSymbol(await context.Document.GetSemanticModelAsync());
+                        ITypeSymbol t = nodeToReplace.GetTypeSymbol(await context.Document.GetSemanticModelAsync(context.CancellationToken));
                         var typeName = t.MetadataName;
                         var variableName = t.GetVariableName();
-                        var arguementList = nodeToReplace.DescendantNodes<ArgumentListSyntax>().FirstOrDefault();
+                        var argumentList = nodeToReplace.DescendantNodes<ArgumentListSyntax>().FirstOrDefault();
 
                         var variableDeclaration  = SyntaxFactory.VariableDeclaration(
-                                SyntaxFactory.IdentifierName("var"))
+                                SyntaxFactory.IdentifierName(Constants.Var))
                             .WithVariables(
                                 SyntaxFactory.SingletonSeparatedList(
                                     SyntaxFactory.VariableDeclarator(
@@ -82,7 +81,7 @@ namespace DisposableFixer.CodeFix
                                             SyntaxFactory.EqualsValueClause(
                                                 SyntaxFactory.ObjectCreationExpression(
                                                         SyntaxFactory.IdentifierName(typeName))
-                                                    .WithArgumentList(arguementList)))));
+                                                    .WithArgumentList(argumentList)))));
                         var editor = await DocumentEditor.CreateAsync(context.Document, context.CancellationToken);
                         var newParentUsing = parentUsing.ReplaceNode(nodeToReplace, SyntaxFactory.IdentifierName(variableName));
                         var @using = SyntaxFactory.UsingStatement(SyntaxFactory.Block(newParentUsing.Concat(trailingStatements)))
@@ -100,7 +99,7 @@ namespace DisposableFixer.CodeFix
             {
                 if (node.TryFindContainingBlock(out var parentBlock))
                 {
-                    if (node.TryFindParent<StatementSyntax>(parentBlock, out var @parentUsing))
+                    if (node.TryFindParent<StatementSyntax>(parentBlock, out var parentUsing))
                     {
                         var preceedingStatements = parentBlock.Statements
                             .TakeWhile(s => s != parentUsing);
@@ -109,13 +108,13 @@ namespace DisposableFixer.CodeFix
                             .Skip(1);
 
                         var nodeToReplace = ies;
-                        var returnType = ies.GetReturnType(await context.Document.GetSemanticModelAsync());
+                        var returnType = ies.GetReturnType(await context.Document.GetSemanticModelAsync(context.CancellationToken));
                         var typeName = returnType.MetadataName;
                         var variableName = returnType.GetVariableName();
-                        var arguementList = nodeToReplace.DescendantNodes<ArgumentListSyntax>().FirstOrDefault();
+                        var argumentList = nodeToReplace.DescendantNodes<ArgumentListSyntax>().FirstOrDefault();
 
                         var variableDeclaration = SyntaxFactory.VariableDeclaration(
-                                SyntaxFactory.IdentifierName("var"))
+                                SyntaxFactory.IdentifierName(Constants.Var))
                             .WithVariables(
                                 SyntaxFactory.SingletonSeparatedList(
                                     SyntaxFactory.VariableDeclarator(
@@ -124,7 +123,7 @@ namespace DisposableFixer.CodeFix
                                             SyntaxFactory.EqualsValueClause(
                                                 SyntaxFactory.ObjectCreationExpression(
                                                         SyntaxFactory.IdentifierName(typeName))
-                                                    .WithArgumentList(arguementList)))));
+                                                    .WithArgumentList(argumentList)))));
                         var editor = await DocumentEditor.CreateAsync(context.Document, context.CancellationToken);
                         var newParentUsing = parentUsing.ReplaceNode(nodeToReplace, SyntaxFactory.IdentifierName(variableName));
                         var @using = SyntaxFactory.UsingStatement(SyntaxFactory.Block(newParentUsing.Concat(trailingStatements)))
