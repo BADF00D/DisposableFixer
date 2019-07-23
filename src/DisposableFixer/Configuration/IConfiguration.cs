@@ -10,8 +10,8 @@ namespace DisposableFixer.Configuration {
 		HashSet<string> IgnoredTypes { get; }
 		HashSet<string> IgnoredInterfaces { get; }
 		HashSet<string> TrackingTypes { get; }
-        
-		/// <summary>
+
+        /// <summary>
         /// Types that should be disposed, but should not be marked as Error.
         /// </summary>
         Dictionary<string, DiagnosticSeverity> TypeWithCustomSeverity { get; }

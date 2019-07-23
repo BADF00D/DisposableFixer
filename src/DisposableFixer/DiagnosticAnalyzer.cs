@@ -48,7 +48,7 @@ namespace DisposableFixer
 
             var symbolInfo = context.SemanticModel.GetSymbolInfo(node);
             var t = (symbolInfo.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
-            var ctx = context.CreateCustomContext(DisposableSource.ObjectCreation, t, Detector);
+            var ctx = CustomAnalysisContext.WithOriginalNode(context, DisposableSource.ObjectCreation, t, Detector, Configuration);
             if (!ctx.CouldDetectType()) { }
             else if (!ctx.IsDisposableOrImplementsDisposable()) return;
             else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new MemoryStream()).Dispose()
@@ -79,7 +79,7 @@ namespace DisposableFixer
             else if (node.IsPartOfAssignmentExpression()) AnalyzeNodeInAssignmentExpression(ctx);
             else if (node.IsPartOfPropertyExpressionBody())  AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(ctx);
             else if (node.IsPartOfAutoProperty()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(ctx);
-            else context.ReportNotDisposedAnonymousObject(DisposableSource.ObjectCreation); //new MemoryStream();
+            else ctx.ReportNotDisposedAnonymousObject(); //new MemoryStream();
         }
 
         private static void CheckIfObjectCreationTracksNode(CustomAnalysisContext context, ObjectCreationExpressionSyntax objectCreation)
@@ -329,7 +329,7 @@ namespace DisposableFixer
             var symbol = symbolInfo.Symbol as IMethodSymbol;
 
             var type = symbol?.ReturnType as INamedTypeSymbol;
-            var ctx = context.CreateCustomContext(DisposableSource.InvocationExpression, type, Detector);
+            var ctx = CustomAnalysisContext.WithOriginalNode(context, DisposableSource.InvocationExpression, type, Detector, Configuration);
             if (!ctx.CouldDetectType()) { }
             else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new object()).AsDisposable().Dispose()
             else if (node.IsPartOfAwaitExpression()) AnalyzeInvocationExpressionInsideAwaitExpression(ctx);
@@ -367,7 +367,7 @@ namespace DisposableFixer
             else if (node.IsPartOfAssignmentExpression()) AnalyzeNodeInAssignmentExpression(ctx);
             else if (node.IsPartOfAutoProperty()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(ctx);
             else if (node.IsPartOfPropertyExpressionBody()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(ctx);
-            else context.ReportNotDisposedAnonymousObject(DisposableSource.InvocationExpression); //call to Create(): MemeoryStream
+            else ctx.ReportNotDisposedAnonymousObject(); //call to Create(): MemeoryStream
         }
 
         private static void AnalyzePartOfMethodCall(CustomAnalysisContext ctx)

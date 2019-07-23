@@ -78,16 +78,16 @@ namespace DisposableFixer
             new DiagnosticDescriptor(Id.ForAnonymousObjectFromObjectCreation, AnonymousObjectFromObjectCreationTitle, AnonymousObjectFromObjectCreationMessageFormat, Category.WrongUsage,
                 DiagnosticSeverity.Warning, true, AnonymousObjectFromObjectCreationDescription);
 
-        private static readonly LocalizableString NotDisposedLocalVariableMessageFormat =
+        internal static readonly LocalizableString NotDisposedLocalVariableMessageFormat =
             new LocalizableResourceString(nameof(Resources.NotDisposedLocalVariableMessageFormat),
                 Resources.ResourceManager,
                 typeof(Resources));
 
-        private static readonly LocalizableString NotDisposedLocalVariableTitle =
+        internal static readonly LocalizableString NotDisposedLocalVariableTitle =
             new LocalizableResourceString(nameof(Resources.NotDisposedLocalVariableTitle), Resources.ResourceManager,
                 typeof(Resources));
 
-        private static readonly LocalizableString NotDisposedLocalVariableDescription =
+        internal static readonly LocalizableString NotDisposedLocalVariableDescription =
             new LocalizableResourceString(nameof(Resources.NotDisposedLocalVariableDescription),
                 Resources.ResourceManager,
                 typeof(Resources));

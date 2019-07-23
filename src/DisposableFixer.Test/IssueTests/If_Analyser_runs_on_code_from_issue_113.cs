@@ -32,7 +32,7 @@ namespace SomeNamespace
             var diagnostics = MyHelper.RunAnalyser(Code, new DisposableFixerAnalyzer());
             diagnostics.Should().HaveCount(1);
             diagnostics[0].Should()
-                .Match<Diagnostic>(s => s.Severity == DiagnosticSeverity.Info && s.Id == SyntaxNodeAnalysisContextExtension.IdForNotDisposedLocalVariable);
+                .Match<Diagnostic>(s => s.Severity == DiagnosticSeverity.Info && s.Id == Id.ForNotDisposedLocalVariable);
         }
     }
 }
