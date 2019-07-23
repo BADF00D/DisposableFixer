@@ -53,7 +53,7 @@ namespace DisposableFixer
             else if (!ctx.IsDisposableOrImplementsDisposable()) return;
             else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new MemoryStream()).Dispose()
             else if (Detector.IsIgnoredTypeOrImplementsIgnoredInterface(ctx.Type)) { } 
-            else if (node.IsReturnedInProperty()) AnalyzeNodeInReturnStatementOfProperty(context, node, DisposableSource.ObjectCreation);
+            else if (node.IsReturnedInProperty()) AnalyzeNodeInReturnStatementOfProperty(ctx);
             else if (node.IsPartOfReturnStatementInBlock()) { } // return new MemoryStream() or return Task.FromResult(new MemoryStream())
             else if (node.IsArrowExpressionClauseOfMethod()) { } // void Create()=>CreateMemoryStream()
             else if (node.IsReturnValueInLambdaExpression()) { }
@@ -91,12 +91,13 @@ namespace DisposableFixer
             context.ReportNotDisposedAnonymousObject();
         }
 
-        private static void AnalyzeNodeInReturnStatementOfProperty(SyntaxNodeAnalysisContext context, SyntaxNode node, DisposableSource source) 
+        private static void AnalyzeNodeInReturnStatementOfProperty(CustomAnalysisContext context)
         {
+            var node = context.Node;
             if (!(node.Parent.Parent.Parent.Parent.Parent is PropertyDeclarationSyntax propertyDeclaration)) return; // should not happen => we cke this before
             
             if (node.IsDisposedInDisposingMethod(propertyDeclaration.Identifier.Text, Configuration, context.SemanticModel)) return;
-            context.ReportNotDisposedProperty(propertyDeclaration.Identifier.Text ,source);
+            context.ReportNotDisposedProperty(propertyDeclaration.Identifier.Text);
         }
 
         private static void AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(SyntaxNodeAnalysisContext context, SyntaxNode node, DisposableSource source) 
@@ -332,7 +333,7 @@ namespace DisposableFixer
             else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new object()).AsDisposable().Dispose()
             else if (node.IsPartOfAwaitExpression()) AnalyzeInvocationExpressionInsideAwaitExpression(ctx);
             else if (!ctx.IsDisposableOrImplementsDisposable()) return;
-            else if (node.IsReturnedInProperty()) AnalyzeNodeInReturnStatementOfProperty(context, node, DisposableSource.InvocationExpression);
+            else if (node.IsReturnedInProperty()) AnalyzeNodeInReturnStatementOfProperty(ctx);
             else if (ctx.IsTypeIgnoredOrImplementsIgnoredInterface()) { } //GetEnumerator()
             else if (Detector.IsTrackingMethodCall(node, context.SemanticModel)) { }//ignored extension methods
             else if (Detector.IsIgnoredFactoryMethod(node, context.SemanticModel)) return; //A.Fake<IDisposable>
