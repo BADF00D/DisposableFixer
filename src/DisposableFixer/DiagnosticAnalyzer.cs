@@ -77,8 +77,8 @@ namespace DisposableFixer
             else if (node.IsDescendantOfUsingHeader()) { }//this have to be checked after IsArgumentInObjectCreation
             else if (node.IsDescendantOfVariableDeclarator()) AnalyzeNodeWithinVariableDeclarator(ctx);
             else if (node.IsPartOfAssignmentExpression()) AnalyzeNodeInAssignmentExpression(ctx);
-            else if (node.IsPartOfPropertyExpressionBody())  AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(context, node, DisposableSource.ObjectCreation);
-            else if (node.IsPartOfAutoProperty()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(context, node, DisposableSource.ObjectCreation);
+            else if (node.IsPartOfPropertyExpressionBody())  AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(ctx);
+            else if (node.IsPartOfAutoProperty()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(ctx);
             else context.ReportNotDisposedAnonymousObject(DisposableSource.ObjectCreation); //new MemoryStream();
         }
 
@@ -100,12 +100,13 @@ namespace DisposableFixer
             context.ReportNotDisposedProperty(propertyDeclaration.Identifier.Text);
         }
 
-        private static void AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(SyntaxNodeAnalysisContext context, SyntaxNode node, DisposableSource source) 
+        private static void AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(CustomAnalysisContext context)
         {
+            var node = context.Node;
             if (!(node.Parent.Parent is PropertyDeclarationSyntax propertyDeclaration)) return; // should not happen => we cke this before
 
             if (node.IsDisposedInDisposingMethod(propertyDeclaration.Identifier.Text, Configuration, context.SemanticModel)) return;
-            context.ReportNotDisposedProperty(propertyDeclaration.Identifier.Text, source);
+            context.ReportNotDisposedProperty(propertyDeclaration.Identifier.Text);
         }
 
         private static void AnalyzeNodeWithinVariableDeclarator(CustomAnalysisContext context)
@@ -364,8 +365,8 @@ namespace DisposableFixer
             else if (node.IsDescendantOfUsingHeader()) { } //using(memstream) or using(new MemoryStream())
             else if (node.IsDescendantOfVariableDeclarator()) AnalyzeNodeWithinVariableDeclarator(ctx);
             else if (node.IsPartOfAssignmentExpression()) AnalyzeNodeInAssignmentExpression(ctx);
-            else if (node.IsPartOfAutoProperty()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(context, node, DisposableSource.InvocationExpression);
-            else if (node.IsPartOfPropertyExpressionBody()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(context, node, DisposableSource.InvocationExpression);
+            else if (node.IsPartOfAutoProperty()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(ctx);
+            else if (node.IsPartOfPropertyExpressionBody()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(ctx);
             else context.ReportNotDisposedAnonymousObject(DisposableSource.InvocationExpression); //call to Create(): MemeoryStream
         }
 
