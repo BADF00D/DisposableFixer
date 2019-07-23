@@ -37,7 +37,7 @@ namespace DisposableFixer.CodeFix
             var editor = await DocumentEditor.CreateAsync(context.Document, cancel);
             var node = editor.OriginalRoot.FindNode(context.Span);
             var variableName = FindVariableName(node);
-            if (node.TryFindContainigBlock(out var parentBlock))
+            if (node.TryFindContainingBlock(out var parentBlock))
             {
                 var lastUsage = parentBlock
                     .DescendantNodes<VariableDeclaratorSyntax>()

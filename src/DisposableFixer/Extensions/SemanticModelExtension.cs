@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DisposableFixer.Extensions
 {
-    public static class SymanticModelExtension
+    public static class SemanticModelExtension
     {
         /// <summary>
         /// Retrieves the return type as INamedTypeSymbol of given object creation.

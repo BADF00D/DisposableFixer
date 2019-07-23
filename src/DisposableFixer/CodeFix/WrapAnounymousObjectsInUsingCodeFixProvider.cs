@@ -55,7 +55,7 @@ namespace DisposableFixer.CodeFix
                 return editor.GetChangedDocument();
             } if (node is ArgumentSyntax)
             {
-                if (node.TryFindContainigBlock(out var parentBlock))
+                if (node.TryFindContainingBlock(out var parentBlock))
                 {
                     if(node.TryFindParent<StatementSyntax>(parentBlock, out var @parentUsing))
                     {
@@ -98,7 +98,7 @@ namespace DisposableFixer.CodeFix
                 }
             }else if (node is InvocationExpressionSyntax ies)
             {
-                if (node.TryFindContainigBlock(out var parentBlock))
+                if (node.TryFindContainingBlock(out var parentBlock))
                 {
                     if (node.TryFindParent<StatementSyntax>(parentBlock, out var @parentUsing))
                     {

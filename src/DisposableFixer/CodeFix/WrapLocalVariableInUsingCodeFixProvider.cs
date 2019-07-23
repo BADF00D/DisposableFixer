@@ -40,7 +40,7 @@ namespace DisposableFixer.CodeFix
                 var variableDeclaration = node.Parent.Parent.Parent as VariableDeclarationSyntax;
                 var localDeclarationStatement = variableDeclaration?.Parent as LocalDeclarationStatementSyntax;
 
-                if (variableDeclaration.TryFindContainigBlock(out var block))
+                if (variableDeclaration.TryFindContainingBlock(out var block))
                 {
                     var editor = await DocumentEditor.CreateAsync(context.Document, context.CancellationToken);
 
@@ -64,7 +64,7 @@ namespace DisposableFixer.CodeFix
             {
                 var variableDeclaration = node.Parent.Parent.Parent.Parent as VariableDeclarationSyntax;
                 var localDeclarationStatement = variableDeclaration?.Parent as LocalDeclarationStatementSyntax;
-                if (variableDeclaration.TryFindContainigBlock(out var block))
+                if (variableDeclaration.TryFindContainingBlock(out var block))
                 {
                     var editor = await DocumentEditor.CreateAsync(context.Document, context.CancellationToken);
 

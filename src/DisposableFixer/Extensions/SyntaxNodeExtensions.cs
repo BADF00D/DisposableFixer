@@ -13,8 +13,7 @@ namespace DisposableFixer.Extensions
             while (true)
             {
                 if (node.Parent == null) return null;
-                var @class = node.Parent as ClassDeclarationSyntax;
-                if (@class != null)
+                if (node.Parent is ClassDeclarationSyntax @class)
                     return @class;
 
                 node = node.Parent;
@@ -51,7 +50,7 @@ namespace DisposableFixer.Extensions
 
         /// <summary>
         /// Returns true, it node is Argument within an ObjectCreationExpression.
-        /// <example>new List<IDisposable>(new MemoryStream())</example>
+        /// <example>new List&lt;IDisposable&gt;(new MemoryStream())</example>
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
@@ -64,7 +63,7 @@ namespace DisposableFixer.Extensions
 
         /// <summary>
         /// Returns true, it node part of an array initializer that is within an ObjectCreationExpression.
-        /// <example>new List<IDisposable>(new []{new MemoryStream()})</example>
+        /// <example>new List&lt;IDisposable&gt;(new []{new MemoryStream()})</example>
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
@@ -95,16 +94,16 @@ namespace DisposableFixer.Extensions
         {
             return node?.Parent is UsingStatementSyntax //using(memStream) or using(new MemoryStream())
                    ||
-                   (node?.Parent?.Parent?.Parent is VariableDeclarationSyntax &&
-                    node?.Parent?.Parent?.Parent?.Parent is UsingStatementSyntax);
+                   node?.Parent?.Parent?.Parent is VariableDeclarationSyntax &&
+                   node.Parent?.Parent?.Parent?.Parent is UsingStatementSyntax;
         }
 
         public static bool IsPartOfVariableDeclaratorInsideAUsingDeclaration<T>(this T node) where T : SyntaxNode
         {
             return node?.Parent is EqualsValueClauseSyntax
-                   && node?.Parent?.Parent is VariableDeclaratorSyntax
-                   && node?.Parent?.Parent?.Parent is VariableDeclarationSyntax
-                   && node?.Parent?.Parent?.Parent?.Parent is UsingStatementSyntax;
+                   && node.Parent?.Parent is VariableDeclaratorSyntax
+                   && node.Parent?.Parent?.Parent is VariableDeclarationSyntax
+                   && node.Parent?.Parent?.Parent?.Parent is UsingStatementSyntax;
         }
 
         public static bool IsAssignmentToProperty(this SyntaxNode node, string variableName)
@@ -158,7 +157,7 @@ namespace DisposableFixer.Extensions
         public static bool IsArrowExpressionClauseOfMethod(this SyntaxNode node)
         {
             return node?.Parent is ArrowExpressionClauseSyntax
-                   && node?.Parent?.Parent is MethodDeclarationSyntax;
+                   && node.Parent?.Parent is MethodDeclarationSyntax;
         }
 
         public static bool IsReturnDirectlyOrLater(this SyntaxNode node)
@@ -250,15 +249,15 @@ namespace DisposableFixer.Extensions
             this ObjectCreationExpressionSyntax objectCreation)
         {
             return objectCreation?.Parent is MemberAccessExpressionSyntax
-                   && objectCreation?.Parent?.Parent is InvocationExpressionSyntax;
+                   && objectCreation.Parent?.Parent is InvocationExpressionSyntax;
         }
         
 
         internal static bool IsPartOfMethodCall(this SyntaxNode node)
         {
             return node?.Parent is ArgumentSyntax
-                   && node?.Parent.Parent is ArgumentListSyntax
-                   && node?.Parent?.Parent?.Parent is InvocationExpressionSyntax;
+                   && node.Parent.Parent is ArgumentListSyntax
+                   && node.Parent?.Parent?.Parent is InvocationExpressionSyntax;
         }
 
         public static bool IsParentADisposeCallIgnoringParenthesis(this SyntaxNode node)
@@ -277,11 +276,10 @@ namespace DisposableFixer.Extensions
                     parent = parent.Parent;
                     continue;
                 }
-                var memberAccessExpressionSyntax = parent as MemberAccessExpressionSyntax;
-                if (memberAccessExpressionSyntax != null)
+
+                if (parent is MemberAccessExpressionSyntax memberAccessExpressionSyntax)
                     return memberAccessExpressionSyntax.IsDisposeCall();
-                var conditionalAccessExpression = parent as ConditionalAccessExpressionSyntax;
-                if (conditionalAccessExpression != null)
+                if (parent is ConditionalAccessExpressionSyntax conditionalAccessExpression)
                 {
                     return conditionalAccessExpression
                         .DescendantNodes<InvocationExpressionSyntax>()
@@ -301,14 +299,7 @@ namespace DisposableFixer.Extensions
         public static bool IsPartOfPropertyExpressionBody(this SyntaxNode node)
         {
             return node?.Parent is ArrowExpressionClauseSyntax
-                   && node?.Parent?.Parent is PropertyDeclarationSyntax;
-        }
-
-        public static bool IsDecendentOfAProperty(this SyntaxNode node)
-        {
-            PropertyDeclarationSyntax parent;
-
-            return TryFindContainingPropery(node, out parent);
+                   && node.Parent?.Parent is PropertyDeclarationSyntax;
         }
 
         public static bool IsPartOfAutoProperty(this SyntaxNode node) {
@@ -320,13 +311,7 @@ namespace DisposableFixer.Extensions
             return node?.Parent is ReturnStatementSyntax
                    && node.Parent?.Parent?.Parent?.Parent?.Parent is PropertyDeclarationSyntax;
         }
-
-        public static bool IsPropertyDeclaration(this SyntaxNode node)
-        {
-            var parent = node.FindParent<PropertyDeclarationSyntax, ClassDeclarationSyntax>();
-            return parent != null;
-        }
-
+        
         public static bool IsLocalDeclaration(this SyntaxNode node)
         {
             var parent = node.FindParent<LocalDeclarationStatementSyntax, ClassDeclarationSyntax>();
@@ -340,7 +325,7 @@ namespace DisposableFixer.Extensions
             return method != null;
         }
 
-        public static bool TryFindContainingPropery(this SyntaxNode node, out PropertyDeclarationSyntax method)
+        public static bool TryFindContainingProperty(this SyntaxNode node, out PropertyDeclarationSyntax method)
         {
             method = node.FindParent<PropertyDeclarationSyntax, ClassDeclarationSyntax>();
 
@@ -382,7 +367,7 @@ namespace DisposableFixer.Extensions
 
         public static bool TryFindParent<T>(this SyntaxNode start, out T scope) where T : SyntaxNode
         {
-            return TryFindParent<T>(start, default(SyntaxNode), out scope);
+            return TryFindParent(start, default(SyntaxNode), out scope);
         }
 
         public static bool TryFindParent<T>(this SyntaxNode start, SyntaxNode @break, out T scope)
@@ -413,8 +398,7 @@ namespace DisposableFixer.Extensions
         public static bool TryFindParentScope(this SyntaxNode node, out SyntaxNode parentScope)
         {
             //todo refactor this. most of this branches are not in use
-            ConstructorDeclarationSyntax ctor;
-            if (node.TryFindContainingCtor(out ctor))
+            if (node.TryFindContainingCtor(out var ctor))
             {
                 if (node.TryFindParent<SimpleLambdaExpressionSyntax>(ctor, out var sles))
                 {
@@ -429,8 +413,8 @@ namespace DisposableFixer.Extensions
                 parentScope = ctor;
                 return true;
             }
-            MethodDeclarationSyntax method;
-            if (node.TryFindContainingMethod(out method))
+
+            if (node.TryFindContainingMethod(out var method))
             {
                 if (node.TryFindParent<SimpleLambdaExpressionSyntax>(method, out var sles))
                 {
@@ -445,8 +429,8 @@ namespace DisposableFixer.Extensions
                 parentScope = method;
                 return true;
             }
-            PropertyDeclarationSyntax property;
-            if (node.TryFindContainingPropery(out property))
+
+            if (node.TryFindContainingProperty(out var property))
             {
                 if (node.TryFindParent<SimpleLambdaExpressionSyntax>(property, out var sles))
                 {
@@ -461,8 +445,8 @@ namespace DisposableFixer.Extensions
                 parentScope = property;
                 return true;
             }
-            ParenthesizedLambdaExpressionSyntax lambda;
-            if (node.TryFindContainingParenthesizedLambda(out lambda))
+
+            if (node.TryFindContainingParenthesizedLambda(out var lambda))
             {
                 parentScope = lambda;
                 return true;
@@ -482,7 +466,7 @@ namespace DisposableFixer.Extensions
             return ctorOrMethod != null;
         }
 
-        public static bool TryFindContainigBlock(this SyntaxNode node, out BlockSyntax block)
+        public static bool TryFindContainingBlock(this SyntaxNode node, out BlockSyntax block)
         {
             block = default(BlockSyntax);
             var result = node;

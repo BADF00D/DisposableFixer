@@ -1,54 +1,53 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using DisposableFixer.Configuration;
-using DisposableFixer.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using MethodCall = DisposableFixer.Configuration.MethodCall;
 
-internal static class MethodDeclarationSyntaxExtension
+namespace DisposableFixer.Extensions
 {
-    public static bool IsDisposeMethod(this MethodDeclarationSyntax method,
-        IConfiguration configuration, SemanticModel semanticModel)
+    internal static class MethodDeclarationSyntaxExtension
     {
-        var parameterTypes = new Lazy<string[]>(() =>
+        public static bool IsDisposeMethod(this MethodDeclarationSyntax method,
+            IConfiguration configuration, SemanticModel semanticModel)
         {
-            return method.ParameterList.Parameters
-                .Select(p => (semanticModel.GetSymbolInfo(p.Type).Symbol as INamedTypeSymbol).GetFullNamespace())
-                .ToArray();
-        });
+            var parameterTypes = new Lazy<string[]>(() =>
+            {
+                return method.ParameterList.Parameters
+                    .Select(p => (semanticModel.GetSymbolInfo(p.Type).Symbol as INamedTypeSymbol).GetFullNamespace())
+                    .ToArray();
+            });
 
-        IReadOnlyCollection<MethodCall> methods;
-        if (configuration.DisposingMethods.TryGetValue(method.Identifier.Text, out methods))
-        {
-            return methods.Any(mc => mc.IsStatic == method.IsStatic()
-                                     && mc.Parameter.Length == method.ParameterList.Parameters.Count 
-                                     && parameterTypes.Value.SequenceEqual(mc.Parameter));
+            if (configuration.DisposingMethods.TryGetValue(method.Identifier.Text, out var methods))
+            {
+                return methods.Any(mc => mc.IsStatic == method.IsStatic()
+                                         && mc.Parameter.Length == method.ParameterList.Parameters.Count 
+                                         && parameterTypes.Value.SequenceEqual(mc.Parameter));
+            }
+            return method.AttributeLists
+                .SelectMany(als => als.Attributes)
+                .Select(a => semanticModel.GetTypeInfo(a).Type)
+                .Any(attribute => configuration.DisposingAttributes.Contains(attribute.GetFullNamespace()));
         }
-        return method.AttributeLists
-                    .SelectMany(als => als.Attributes)
-                    .Select(a => semanticModel.GetTypeInfo(a).Type)
-                    .Any(attribute => configuration.DisposingAttributes.Contains(attribute.GetFullNamespace()));
-    }
 
-    internal static bool HasInterlockedExchangeWith(this BaseMethodDeclarationSyntax method, string variable)
-    {
-        return method.DescendantNodes()
-            .OfType<InvocationExpressionSyntax>()
-            .Where(ies => { return ies.IsInterlockedExchangeExpression(); })
-            .Any();
-    }
+        internal static bool HasInterlockedExchangeWith(this BaseMethodDeclarationSyntax method, string variable)
+        {
+            return method
+                .DescendantNodes()
+                .OfType<InvocationExpressionSyntax>()
+                .Any(ies => ies.IsInterlockedExchangeExpression());
+        }
 
-    public static bool IsStatic(this MethodDeclarationSyntax method)
-    {
-        return method.Modifiers.Any(SyntaxKind.StaticKeyword);
-    }
-    public static bool Returns(this MethodDeclarationSyntax method, string name) {
-        if (name == null) return false;
-        return method.DescendantNodes<ReturnStatementSyntax>()
-            .Select(rss => rss.DescendantNodes<IdentifierNameSyntax>())
-            .Any(inss => inss.Any(ins => ins.Identifier.Text == name));
+        public static bool IsStatic(this MethodDeclarationSyntax method)
+        {
+            return method.Modifiers.Any(SyntaxKind.StaticKeyword);
+        }
+        public static bool Returns(this MethodDeclarationSyntax method, string name) {
+            if (name == null) return false;
+            return method.DescendantNodes<ReturnStatementSyntax>()
+                .Select(rss => rss.DescendantNodes<IdentifierNameSyntax>())
+                .Any(inss => inss.Any(ins => ins.Identifier.Text == name));
+        }
     }
 }

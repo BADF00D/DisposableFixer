@@ -5,8 +5,6 @@ namespace DisposableFixer.Extensions
 {
     public static class TypeSymbolExtension
     {
-        private const string DisposableInterface = "IDisposable";
-
         public static bool IsDisposableOrImplementsDisposable(this ITypeSymbol typeSymbol)
         {
             return typeSymbol.IsIDisposable() || typeSymbol.ImplementsIDisposable();
@@ -14,12 +12,12 @@ namespace DisposableFixer.Extensions
 
         private static bool IsIDisposable(this ITypeSymbol typeSymbol)
         {
-            return typeSymbol.Name == DisposableInterface;
+            return typeSymbol.Name == Constants.IDisposable;
         }
 
         private static bool ImplementsIDisposable(this ITypeSymbol typeSymbol)
         {
-            return typeSymbol.AllInterfaces.Any(i => i.Name == DisposableInterface);
+            return typeSymbol.AllInterfaces.Any(i => i.Name == Constants.IDisposable);
         }
         public static string GetVariableName(this ITypeSymbol typeSymbol)
         {

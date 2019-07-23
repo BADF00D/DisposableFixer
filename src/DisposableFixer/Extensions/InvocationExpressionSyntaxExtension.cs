@@ -111,7 +111,7 @@ namespace DisposableFixer.Extensions
             this InvocationExpressionSyntax invocationExpression)
         {
             return invocationExpression?.Parent is MemberAccessExpressionSyntax
-                   && invocationExpression?.Parent?.Parent is InvocationExpressionSyntax;
+                   && invocationExpression.Parent?.Parent is InvocationExpressionSyntax;
         }
 
         internal static bool IsCallToMethod(this InvocationExpressionSyntax invocationExpressionSyntax,
@@ -123,7 +123,7 @@ namespace DisposableFixer.Extensions
                 && invocationExpressionSyntax.ArgumentList.Arguments.Count == method.Parameter.Length;
             if (!isPartlyCorrect) return false;
 
-            //todo check parameres of each ies
+            //todo check parameters of each ies
 
             return true;
         }
@@ -132,8 +132,8 @@ namespace DisposableFixer.Extensions
         {
             var memberAccessExpressionSyntax = methodInvocation.Expression as MemberAccessExpressionSyntax;
             var id = memberAccessExpressionSyntax?.Expression as IdentifierNameSyntax;
-            return id?.Identifier.Text == "Interlocked" &&
-                   memberAccessExpressionSyntax.Name.Identifier.Text == "Exchange";
+            return id?.Identifier.Text == Constants.Interlocked &&
+                   memberAccessExpressionSyntax.Name.Identifier.Text == Constants.Exchange;
         }
 
         internal static bool IsInterlockedExchangeAssignExpressionFor(this InvocationExpressionSyntax methodInvocation,
@@ -144,12 +144,12 @@ namespace DisposableFixer.Extensions
 
             var memberAccessExpressionSyntax = methodInvocation.Expression as MemberAccessExpressionSyntax;
             var id = memberAccessExpressionSyntax?.Expression as IdentifierNameSyntax;
-            return id?.Identifier.Text == "Interlocked"
-                   && memberAccessExpressionSyntax.Name.Identifier.Text == "Exchange"
+            return id?.Identifier.Text == Constants.Interlocked
+                   && memberAccessExpressionSyntax.Name.Identifier.Text == Constants.Exchange
                    && arg?.Identifier.Text == variableName;
         }
 
-        internal static bool IsInterlockedExchangeYieldExpressionFor(this InvocationExpressionSyntax methodInvocation,
+        private static bool IsInterlockedExchangeYieldExpressionFor(this InvocationExpressionSyntax methodInvocation,
             string variableName)
         {
             if (methodInvocation.ArgumentList.Arguments.Count != 2) return false;
@@ -157,8 +157,8 @@ namespace DisposableFixer.Extensions
 
             var memberAccessExpressionSyntax = methodInvocation.Expression as MemberAccessExpressionSyntax;
             var id = memberAccessExpressionSyntax?.Expression as IdentifierNameSyntax;
-            return id?.Identifier.Text == "Interlocked"
-                   && memberAccessExpressionSyntax.Name.Identifier.Text == "Exchange"
+            return id?.Identifier.Text == Constants.Interlocked
+                   && memberAccessExpressionSyntax.Name.Identifier.Text == Constants.Exchange
                    && arg?.Identifier.Text == variableName;
         }
 

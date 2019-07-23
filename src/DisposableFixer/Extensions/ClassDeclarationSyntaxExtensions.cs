@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using DisposableFixer.Configuration;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace DisposableFixer.Extensions
 {
@@ -22,19 +20,7 @@ namespace DisposableFixer.Extensions
                         .Count(id => id.Variables.Any(v => v.Identifier.Text == name)) == 1;
                 })
                 .FirstOrDefault();
-        }
-
-        public static IEnumerable<MethodDeclarationSyntax> GetDisposingMethods(
-            this ClassDeclarationSyntax @class, SyntaxNodeAnalysisContext context,
-            IConfiguration configuration)
-        {
-            var disposeMethods = configuration.DisposingMethods;
-
-
-            return @class
-                .DescendantNodes<MethodDeclarationSyntax>()
-                .Where(mds => mds.IsDisposeMethod(configuration, context.SemanticModel));
-        }
+        } 
 
         public static IEnumerable<MethodDeclarationSyntax> GetParameterlessMethodNamed(
             this ClassDeclarationSyntax @class, string name)

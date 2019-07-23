@@ -142,7 +142,7 @@ namespace DisposableFixer.CodeFix
             var typeInfo = model.GetTypeInfo(argumentSyntax.Expression);
             var type = typeInfo.Type?.Name ?? Constants.IDisposable;
             editor.AddUninitializedFieldNamed(oldClass, fieldName, type);
-            if (!node.TryFindContainigBlock(out var block)) return;
+            if (!node.TryFindContainingBlock(out var block)) return;
 
             var assignmentExpression = SyntaxFactory.ExpressionStatement(
                 SyntaxFactory.AssignmentExpression(
