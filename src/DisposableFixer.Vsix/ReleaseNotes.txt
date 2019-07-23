@@ -1,4 +1,7 @@
-﻿Release 1.5.0
+﻿Release 1.6.0
+Issue 113: Via Internal configuration certain types can report a different severity then warning. CancellationTokenRegistration is only reported as info this way.
+
+Release 1.5.0
 Issue 106: Support for Interlocked.Exchange
 
 Release 1.4.0
