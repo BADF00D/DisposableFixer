@@ -86,6 +86,7 @@ namespace DisposableFixer.Extensions
         ///     using(memStream)
         ///     or using(new MemoryStream())
         ///     or using(var memstream = new MemoryStream()){}
+        ///     of using(var x 
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="node"></param>

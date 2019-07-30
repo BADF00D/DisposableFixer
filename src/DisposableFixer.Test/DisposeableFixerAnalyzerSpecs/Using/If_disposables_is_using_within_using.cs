@@ -26,6 +26,10 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.Using
                     .SetName("OC in ConditionaStatement in using");
                 yield return new TestCaseData(MethodInvocationInConditionalExpressionInUsing, 0)
                     .SetName("MI in ConditionaStatement in using");
+                yield return new TestCaseData(ObjectCreationInConditionalExpressionInUsingWithLocalVariable, 0)
+                    .SetName("OC in ConditionaStatement in using with using");
+                yield return new TestCaseData(MethodInvocationInConditionalExpressionInUsingWithLocalVariable, 0)
+                    .SetName("MI in ConditionaStatement in using with using");
             }
         }
 
@@ -143,6 +147,32 @@ internal class SomeTestNamspace
     public void DisposableTest(bool flag)
     {
         using (flag ? new MemoryStream() : new MemoryStream())
+        { }
+    }
+}
+";
+        private const string MethodInvocationInConditionalExpressionInUsingWithLocalVariable = @"
+using System;
+
+internal class SomeTestNamspace
+{
+    Func<IDisposable> f = () => null;
+    public void disposableTest(bool flag)
+    {
+        using (var x = flag ? f() : f()) // whichever one we used will be disposed, but we get a warning on both
+        { }
+    }
+}
+";
+
+        private const string ObjectCreationInConditionalExpressionInUsingWithLocalVariable = @"
+using System.IO;
+
+internal class SomeTestNamspace
+{
+    public void DisposableTest(bool flag)
+    {
+        using (var x = flag ? new MemoryStream() : new MemoryStream())
         { }
     }
 }
