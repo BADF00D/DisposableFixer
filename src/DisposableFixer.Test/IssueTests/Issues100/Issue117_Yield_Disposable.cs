@@ -1,5 +1,4 @@
 using FluentAssertions;
-using Microsoft.CodeAnalysis;
 using NUnit.Framework;
 
 namespace DisposableFixer.Test.IssueTests.Issues100
