@@ -86,7 +86,8 @@ namespace DisposableFixer.Extensions
         ///     using(memStream)
         ///     or using(new MemoryStream())
         ///     or using(var memstream = new MemoryStream()){}
-        ///     of using(var x 
+        ///     of using(flag ? new MemoryStream() : new MemoryStream())
+        ///     of using(var x = flag ? new MemoryStream() : new MemoryStream())
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="node"></param>
@@ -95,8 +96,16 @@ namespace DisposableFixer.Extensions
         {
             return node?.Parent is UsingStatementSyntax //using(memStream) or using(new MemoryStream())
                    ||
-                   node?.Parent?.Parent?.Parent is VariableDeclarationSyntax &&
-                   node.Parent?.Parent?.Parent?.Parent is UsingStatementSyntax;
+                   (node?.Parent?.Parent?.Parent is VariableDeclarationSyntax &&
+                    node.Parent?.Parent?.Parent?.Parent is UsingStatementSyntax)
+                   || (node?.Parent is ConditionalExpressionSyntax &&
+                       node?.Parent?.Parent is UsingStatementSyntax
+                   ) //using(flag ? new MemotyStream() : new MemoryStream())
+                   || (node?.Parent is ConditionalExpressionSyntax &&
+                       node.Parent?.Parent?.Parent?.Parent is VariableDeclarationSyntax &&
+                       node.Parent?.Parent?.Parent?.Parent?.Parent is UsingStatementSyntax
+                   ) //using(var x = flag ? new MemotyStream() : new MemoryStream())
+                ;
         }
 
         public static bool IsPartOfVariableDeclaratorInsideAUsingDeclaration<T>(this T node) where T : SyntaxNode
