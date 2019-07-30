@@ -20,18 +20,18 @@ namespace DisposableFixer.CodeFix
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(
-                NotDisposed.AnonymousObject.ForAnonymousObjectFromObjectCreation,
-                NotDisposed.AnonymousObject.ForAnonymousObjectFromMethodInvocation
+                Id.ForAnonymousObjectFromObjectCreation,
+                Id.ForAnonymousObjectFromMethodInvocation
             );
 
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var id = context.Diagnostics.First().Id;
-            if (id == NotDisposed.AnonymousObject.ForAnonymousObjectFromObjectCreation)
+            if (id == Id.ForAnonymousObjectFromObjectCreation)
                 context.RegisterCodeFix(
                     CodeAction.Create(ActionTitle.WrapInUsing, c => WrapExpressionSyntaxInUsing(context, c)),
                     context.Diagnostics);
-            if (id == NotDisposed.AnonymousObject.ForAnonymousObjectFromMethodInvocation)
+            if (id == Id.ForAnonymousObjectFromMethodInvocation)
                 context.RegisterCodeFix(
                     CodeAction.Create(ActionTitle.WrapInUsing, c => WrapExpressionSyntaxInUsing(context, c)),
                     context.Diagnostics

@@ -32,7 +32,7 @@ namespace SomeNamespace
         {
             var diagnostic = _diagnostics.First();
             diagnostic.Id.Should()
-                .Be(NotDisposed.Assignment.FromMethodInvocation.ForAssignmentFromMethodInvocationToPropertyNotDisposed);
+                .Be(Id.ForAssignmentFromMethodInvocationToPropertyNotDisposed);
         }
     }
 }

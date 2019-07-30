@@ -17,15 +17,15 @@ namespace DisposableFixer.CodeFix
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(
-                NotDisposed.Assignment.FromMethodInvocation.ForAssignmentFromMethodInvocationToFieldNotDisposed,
-                NotDisposed.Assignment.FromObjectCreation.ForAssignmentFromObjectCreationToFieldNotDisposed
+                Id.ForAssignmentFromMethodInvocationToFieldNotDisposed,
+                Id.ForAssignmentFromObjectCreationToFieldNotDisposed
             );
 
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var id = context.Diagnostics.First().Id;
-            if (id == NotDisposed.Assignment.FromObjectCreation.ForAssignmentFromObjectCreationToFieldNotDisposed
-                || id == NotDisposed.Assignment.FromMethodInvocation.ForAssignmentFromMethodInvocationToFieldNotDisposed)
+            if (id == Id.ForAssignmentFromObjectCreationToFieldNotDisposed
+                || id == Id.ForAssignmentFromMethodInvocationToFieldNotDisposed)
             {
                 context.RegisterCodeFix(
                     CodeAction.Create(ActionTitle.DisposeFieldInDisposeMethod, c => CreateDisposeCallInParameterlessDisposeMethod(context, c)),

@@ -72,12 +72,14 @@ internal class XmlNamespaceManager
         {
             PrintCodeToFix(Code);
             var beforeCodefixDiagnostics = MyHelper.RunAnalyser(Code, GetCSharpDiagnosticAnalyzer());
+            var forAnonymousObjectFromObjectCreation = Id.ForAnonymousObjectFromObjectCreation;
             beforeCodefixDiagnostics
-                .Should().Contain(d => d.Id == NotDisposed.AnonymousObject.ForAnonymousObjectFromObjectCreation, "this should not be fixed");
+                .Should().Contain(d => d.Id == forAnonymousObjectFromObjectCreation, "this should not be fixed");
+            var forAnonymousObjectFromMethodInvocation = Id.ForAnonymousObjectFromMethodInvocation;
             beforeCodefixDiagnostics
-                .Should().Contain(d => d.Id == NotDisposed.AnonymousObject.ForAnonymousObjectFromMethodInvocation, "this should be fixed");
+                .Should().Contain(d => d.Id == forAnonymousObjectFromMethodInvocation, "this should be fixed");
 
-            var fixedCode = ApplyCSharpCodeFixTo(Code, d => d.Id == NotDisposed.AnonymousObject.ForAnonymousObjectFromMethodInvocation);
+            var fixedCode = ApplyCSharpCodeFixTo(Code, d => d.Id == forAnonymousObjectFromMethodInvocation);
             PrintFixedCode(fixedCode);
 
             var cSharpCompilerDiagnostics = GetCSharpCompilerErrors(fixedCode);
@@ -88,7 +90,7 @@ internal class XmlNamespaceManager
             var diagnostics = MyHelper.RunAnalyser(fixedCode, GetCSharpDiagnosticAnalyzer());
             diagnostics.Should().HaveCount(1);
             diagnostics.Should()
-                .Contain(d => d.Id == NotDisposed.AnonymousObject.ForAnonymousObjectFromObjectCreation, "this should not have been fixed");
+                .Contain(d => d.Id == forAnonymousObjectFromObjectCreation, "this should not have been fixed");
         }
     }
 }

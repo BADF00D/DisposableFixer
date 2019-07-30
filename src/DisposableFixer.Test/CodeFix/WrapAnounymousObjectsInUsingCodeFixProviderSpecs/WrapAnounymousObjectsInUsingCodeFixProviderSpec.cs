@@ -133,24 +133,26 @@ namespace SomeNamespace
         {
             get
             {
+                var forAnonymousObjectFromObjectCreation = Id.ForAnonymousObjectFromObjectCreation;
                 yield return new TestCaseData(CodeWithAnonymousObjectCreation,
-                        NotDisposed.AnonymousObject.ForAnonymousObjectFromObjectCreation)
+                        forAnonymousObjectFromObjectCreation)
                     .SetName("Anonymous ObjectCreation");
                 yield return new TestCaseData(CodeWithAnonymousObjectCreationAndOtherCode,
-                        NotDisposed.AnonymousObject.ForAnonymousObjectFromObjectCreation)
+                        forAnonymousObjectFromObjectCreation)
                     .SetName("Anonymous ObjectCreation and other code");
                 yield return new TestCaseData(CodeWithObjectCreationThatIsAParameter,
-                        NotDisposed.AnonymousObject.ForAnonymousObjectFromObjectCreation)
+                        forAnonymousObjectFromObjectCreation)
                     .SetName("Anonymous ObjectCreation that is a parameter");
 
+                var forAnonymousObjectFromMethodInvocation = Id.ForAnonymousObjectFromMethodInvocation;
                 yield return new TestCaseData(CodeWithMethodInvocationAndOtherCode,
-                        NotDisposed.AnonymousObject.ForAnonymousObjectFromMethodInvocation)
+                        forAnonymousObjectFromMethodInvocation)
                     .SetName("Anonymous MethodInvocation and other code");
                 yield return new TestCaseData(CodeWithObjectCreationThatIsAParameter,
-                        NotDisposed.AnonymousObject.ForAnonymousObjectFromObjectCreation)
+                        forAnonymousObjectFromObjectCreation)
                     .SetName("Anonymous ObjectCreation that is a parameter");
                 yield return new TestCaseData(CodeWithMethodInvaocationThatIsAParameter,
-                        NotDisposed.AnonymousObject.ForAnonymousObjectFromMethodInvocation)
+                        forAnonymousObjectFromMethodInvocation)
                     .SetName("Anonymous MethodInvocation that is a parameter");
             }
         }

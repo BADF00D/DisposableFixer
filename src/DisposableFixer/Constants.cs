@@ -48,223 +48,219 @@ namespace DisposableFixer
         {
             public static class FromObjectCreation
             {
-                private static readonly LocalizableString AssignmendFromObjectCreationToPropertyNotDisposedTitle =
-                    new LocalizableResourceString(
-                        nameOfLocalizableResource: nameof(Resources.AssignmendFromObjectCreationToPropertyNotDisposedTitle),
-                        resourceManager: Resources.ResourceManager,
-                        resourceSource: typeof(Resources));
-
-                private static readonly LocalizableString AssignmendFromObjectCreationToPropertyNotDisposedMessageFormat =
-                    new LocalizableResourceString(
-                        nameOfLocalizableResource: nameof(Resources.AssignmendFromObjectCreationToPropertyNotDisposedMessageFormat),
-                        resourceManager: Resources.ResourceManager,
-                        resourceSource: typeof(Resources));
-
-                private static readonly LocalizableString AssignmentFromObjectCreationToPropertyNotDisposedDescription =
-                    new LocalizableResourceString(
-                        nameOfLocalizableResource: nameof(Resources.AssignmendFromObjectCreationToPropertyNotDisposedDescription),
-                        resourceManager: Resources.ResourceManager,
-                        resourceSource: typeof(Resources));
-
                 public static readonly DiagnosticDescriptor ToPropertyNotDisposedDescriptor =
                     new DiagnosticDescriptor(
-                        id: ForAssignmentFromObjectCreationToPropertyNotDisposed,
-                        title: AssignmendFromObjectCreationToPropertyNotDisposedTitle,
-                        messageFormat: AssignmendFromObjectCreationToPropertyNotDisposedMessageFormat,
+                        id: Id.ForAssignmentFromObjectCreationToPropertyNotDisposed,
+                        title: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromObjectCreationToPropertyNotDisposedTitle),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)),
+                        messageFormat: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromObjectCreationToPropertyNotDisposedMessageFormat),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)),
                         category: Category.WrongUsage,
                         defaultSeverity: DiagnosticSeverity.Warning, 
                         isEnabledByDefault: true, 
-                        description: AssignmentFromObjectCreationToPropertyNotDisposedDescription);
+                        description: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromObjectCreationToPropertyNotDisposedDescription),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)));
 
-                private static readonly LocalizableString AssignmentFromObjectCreationToFieldNotDisposedTitle =
-                    new LocalizableResourceString(
-                        nameOfLocalizableResource: nameof(Resources.AssignmendFromObjectCreationToFieldNotDisposedTitle),
-                        resourceManager: Resources.ResourceManager,
-                        resourceSource: typeof(Resources));
-
-                private static readonly LocalizableString AssignmentFromObjectCreationToFieldNotDisposedMessageFormat =
-                    new LocalizableResourceString(
-                        nameOfLocalizableResource: nameof(Resources.AssignmendFromObjectCreationToFieldNotDisposedMessageFormat),
-                        resourceManager: Resources.ResourceManager,
-                        resourceSource: typeof(Resources));
-
-                private static readonly LocalizableString AssignmentFromObjectCreationToFieldNotDisposedDescription =
-                    new LocalizableResourceString(
-                        nameOfLocalizableResource: nameof(Resources.AssignmendFromObjectCreationToFieldNotDisposedDescription),
-                        resourceManager: Resources.ResourceManager,
-                        resourceSource: typeof(Resources));
+                public static readonly DiagnosticDescriptor ToStaticPropertyNotDisposedDescriptor =
+                    new DiagnosticDescriptor(
+                        id: Id.ForAssignmentFromObjectCreationToStaticPropertyNotDisposed,
+                        title: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromObjectCreationToStaticPropertyNotDisposedTitle),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)),
+                        messageFormat: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromObjectCreationToStaticPropertyNotDisposedMessageFormat),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)),
+                        category: Category.WrongUsage,
+                        defaultSeverity: DiagnosticSeverity.Warning,
+                        isEnabledByDefault: true,
+                        description: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromObjectCreationToStaticPropertyNotDisposedDescription),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)));
 
                 public static readonly DiagnosticDescriptor ToFieldNotDisposedDescriptor =
-                    new DiagnosticDescriptor(id: ForAssignmentFromObjectCreationToFieldNotDisposed,
-                        title: AssignmentFromObjectCreationToFieldNotDisposedTitle,
-                        messageFormat: AssignmentFromObjectCreationToFieldNotDisposedMessageFormat,
+                    new DiagnosticDescriptor(id: Id.ForAssignmentFromObjectCreationToFieldNotDisposed,
+                        title: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromObjectCreationToFieldNotDisposedTitle),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)),
+                        messageFormat: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromObjectCreationToFieldNotDisposedMessageFormat),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)),
                         category: Category.WrongUsage,
                         defaultSeverity: DiagnosticSeverity.Warning, 
                         isEnabledByDefault: true, 
-                        description: AssignmentFromObjectCreationToFieldNotDisposedDescription);
-
-                public const string ForAssignmentFromObjectCreationToFieldNotDisposed = Id.ForAssignmentFromObjectCreationToFieldNotDisposed;
-                public const string ForAssignmentFromObjectCreationToPropertyNotDisposed = Id.ForAssignmentFromObjectCreationToPropertyNotDisposed;
-                public const string ForAssignmentFromObjectCreationToStaticFieldNotDisposed = Id.ForAssignmentFromObjectCreationToStaticFieldNotDisposed;
-                public const string ForAssignmentFromObjectCreationToStaticPropertyNotDisposed = Id.ForAssignmentFromObjectCreationToStaticPropertyNotDisposed;
+                        description: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromObjectCreationToFieldNotDisposedDescription),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)));
+                public static readonly DiagnosticDescriptor ToStaticFieldNotDisposedDescriptor =
+                    new DiagnosticDescriptor(id: Id.ForAssignmentFromObjectCreationToStaticFieldNotDisposed,
+                        title: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromObjectCreationToStaticFieldNotDisposedTitle),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)),
+                        messageFormat: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromObjectCreationToStaticFieldNotDisposedMessageFormat),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)),
+                        category: Category.WrongUsage,
+                        defaultSeverity: DiagnosticSeverity.Warning,
+                        isEnabledByDefault: true,
+                        description: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromObjectCreationToStaticFieldNotDisposedDescription),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)));
             }
 
             public static class FromMethodInvocation
             {
-                private static readonly LocalizableString AssignmentFromMethodInvocationToFieldNotDisposedTitle =
-                    new LocalizableResourceString(
-                        nameOfLocalizableResource: nameof(Resources.AssignmendFromMethodInvocationToFieldNotDisposedTitle),
-                        resourceManager: Resources.ResourceManager,
-                        resourceSource: typeof(Resources));
-
-                private static readonly LocalizableString AssignmentFromMethodInvocationToFieldNotDisposedMessageFormat =
-                    new LocalizableResourceString(
-                        nameOfLocalizableResource: nameof(Resources.AssignmendFromMethodInvocationToFieldNotDisposedMessageFormat),
-                        resourceManager: Resources.ResourceManager,
-                        resourceSource: typeof(Resources));
-
-                private static readonly LocalizableString AssignmentFromMethodInvocationToFieldNotDisposedDescription =
-                    new LocalizableResourceString(
-                        nameOfLocalizableResource: nameof(Resources.AssignmendFromMethodInvocationToFieldNotDisposedDescription),
-                        resourceManager: Resources.ResourceManager,
-                        resourceSource: typeof(Resources));
-
                 public static readonly DiagnosticDescriptor ToFieldNotDisposedDescriptor =
                     new DiagnosticDescriptor(
-                        id: ForAssignmentFromMethodInvocationToFieldNotDisposed,
-                        title: AssignmentFromMethodInvocationToFieldNotDisposedTitle,
-                        messageFormat: AssignmentFromMethodInvocationToFieldNotDisposedMessageFormat,
+                        id: Id.ForAssignmentFromMethodInvocationToFieldNotDisposed,
+                        title: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromMethodInvocationToFieldNotDisposedTitle),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)),
+                        messageFormat: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromMethodInvocationToFieldNotDisposedMessageFormat),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)),
                         category: Category.WrongUsage,
                         defaultSeverity: DiagnosticSeverity.Warning,
                         isEnabledByDefault: true,
-                        description: AssignmentFromMethodInvocationToFieldNotDisposedDescription);
+                        description: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromMethodInvocationToFieldNotDisposedDescription),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)));
 
-                private static readonly LocalizableString AssignmentFromMethodInvocationToPropertyNotDisposedTitle =
-                    new LocalizableResourceString(
-                        nameOfLocalizableResource: nameof(Resources.AssignmendFromMethodInvocationToPropertyNotDisposedTitle),
-                        resourceManager: Resources.ResourceManager,
-                        resourceSource: typeof(Resources));
-
-                private static readonly LocalizableString AssignmentFromMethodInvocationToPropertyNotDisposedMessageFormat =
-                    new LocalizableResourceString(
-                        nameOfLocalizableResource: nameof(Resources.AssignmendFromMethodInvocationToPropertyNotDisposedMessageFormat),
-                        resourceManager: Resources.ResourceManager,
-                        resourceSource: typeof(Resources));
-
-                private static readonly LocalizableString AssignmentFromMethodInvocationToPropertyNotDisposedDescription =
-                    new LocalizableResourceString(
-                        nameOfLocalizableResource: nameof(Resources.AssignmendFromMethodInvocationToPropertyNotDisposedDescription),
-                        resourceManager: Resources.ResourceManager,
-                        resourceSource: typeof(Resources));
+                public static readonly DiagnosticDescriptor ToStaticFieldNotDisposedDescriptor =
+                    new DiagnosticDescriptor(
+                        id: Id.ForAssignmentFromMethodInvocationToStaticFieldNotDisposed,
+                        title: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromMethodInvocationToStaticFieldNotDisposedTitle),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)),
+                        messageFormat: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromMethodInvocationToStaticFieldNotDisposedMessageFormat),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)),
+                        category: Category.WrongUsage,
+                        defaultSeverity: DiagnosticSeverity.Warning,
+                        isEnabledByDefault: true,
+                        description: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromMethodInvocationToStaticFieldNotDisposedDescription),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)));
 
                 public static readonly DiagnosticDescriptor ToPropertyNotDisposedDescriptor =
                     new DiagnosticDescriptor(
-                        id: ForAssignmentFromMethodInvocationToPropertyNotDisposed,
-                        title: AssignmentFromMethodInvocationToPropertyNotDisposedTitle,
-                        messageFormat: AssignmentFromMethodInvocationToPropertyNotDisposedMessageFormat,
+                        id: Id.ForAssignmentFromMethodInvocationToPropertyNotDisposed,
+                        title: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromMethodInvocationToPropertyNotDisposedTitle),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)),
+                        messageFormat: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromMethodInvocationToPropertyNotDisposedMessageFormat),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)),
                         category: Category.WrongUsage,
                         defaultSeverity: DiagnosticSeverity.Warning,
                         isEnabledByDefault: true,
-                        description: AssignmentFromMethodInvocationToPropertyNotDisposedDescription);
+                        description: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromMethodInvocationToPropertyNotDisposedDescription),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)));
 
-                public const string ForAssignmentFromMethodInvocationToFieldNotDisposed = Id.ForAssignmentFromMethodInvocationToFieldNotDisposed;
-                public const string ForAssignmentFromMethodInvocationToPropertyNotDisposed = Id.ForAssignmentFromMethodInvocationToPropertyNotDisposed;
-                public const string ForAssignmentFromMethodInvocationToStaticFieldNotDisposed = Id.ForAssignmentFromMethodInvocationToStaticFieldNotDisposed;
-                public const string ForAssignmentFromMethodInvocationToStaticPropertyNotDisposed = Id.ForAssignmentFromMethodInvocationToStaticPropertyNotDisposed;
+                public static readonly DiagnosticDescriptor ToStaticPropertyNotDisposedDescriptor =
+                    new DiagnosticDescriptor(
+                        id: Id.ForAssignmentFromMethodInvocationToStaticPropertyNotDisposed,
+                        title: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromMethodInvocationToStaticPropertyNotDisposedTitle),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)),
+                        messageFormat: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromMethodInvocationToStaticPropertyNotDisposedMessageFormat),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)),
+                        category: Category.WrongUsage,
+                        defaultSeverity: DiagnosticSeverity.Warning,
+                        isEnabledByDefault: true,
+                        description: new LocalizableResourceString(
+                            nameOfLocalizableResource: nameof(Resources.AssignmendFromMethodInvocationToStaticPropertyNotDisposedDescription),
+                            resourceManager: Resources.ResourceManager,
+                            resourceSource: typeof(Resources)));
             }
         }
 
         internal static class AnonymousObject
         {
-            private static readonly LocalizableString AnonymousObjectFromMethodInvocationTitle =
-                new LocalizableResourceString(
-                    nameOfLocalizableResource: nameof(Resources.AnonymousObjectFromMethodInvocationTitle),
-                    resourceManager: Resources.ResourceManager,
-                    resourceSource: typeof(Resources));
-
-            private static readonly LocalizableString AnonymousObjectFromMethodInvocationMessageFormat =
-                new LocalizableResourceString(
-                    nameOfLocalizableResource: nameof(Resources.AnonymousObjectFromMethodInvocationMessageFormat),
-                    resourceManager: Resources.ResourceManager,
-                    resourceSource: typeof(Resources));
-
-            private static readonly LocalizableString AnonymousObjectFromMethodInvocationDescription =
-                new LocalizableResourceString(
-                    nameOfLocalizableResource: nameof(Resources.AnonymousObjectFromMethodInvocationDescription),
-                    resourceManager: Resources.ResourceManager,
-                    resourceSource: typeof(Resources));
-
             public static readonly DiagnosticDescriptor FromMethodInvocationDescriptor =
                 new DiagnosticDescriptor(
-                    id: ForAnonymousObjectFromMethodInvocation,
-                    title: AnonymousObjectFromMethodInvocationTitle,
-                    messageFormat: AnonymousObjectFromMethodInvocationMessageFormat,
+                    id: Id.ForAnonymousObjectFromMethodInvocation,
+                    title: new LocalizableResourceString(
+                        nameOfLocalizableResource: nameof(Resources.AnonymousObjectFromMethodInvocationTitle),
+                        resourceManager: Resources.ResourceManager,
+                        resourceSource: typeof(Resources)),
+                    messageFormat: new LocalizableResourceString(
+                        nameOfLocalizableResource: nameof(Resources.AnonymousObjectFromMethodInvocationMessageFormat),
+                        resourceManager: Resources.ResourceManager,
+                        resourceSource: typeof(Resources)),
                     category: Category.WrongUsage,
                     defaultSeverity: DiagnosticSeverity.Warning,
                     isEnabledByDefault: true,
-                    description: AnonymousObjectFromMethodInvocationDescription);
-
-            private static readonly LocalizableString AnonymousObjectFromObjectCreationMessageFormat =
-                new LocalizableResourceString(
-                    nameOfLocalizableResource: nameof(Resources.AnonymousObjectFromObjectCreationMessageFormat),
-                    resourceManager: Resources.ResourceManager,
-                    resourceSource: typeof(Resources));
-
-            private static readonly LocalizableString AnonymousObjectFromObjectCreationTitle =
-                new LocalizableResourceString(
-                    nameOfLocalizableResource: nameof(Resources.AnonymousObjectFromObjectCreationTitle),
-                    resourceManager: Resources.ResourceManager,
-                    resourceSource: typeof(Resources));
-
-            private static readonly LocalizableString AnonymousObjectFromObjectCreationDescription =
-                new LocalizableResourceString(
-                    nameOfLocalizableResource: nameof(Resources.AnonymousObjectFromObjectCreationDescription),
-                    resourceManager: Resources.ResourceManager,
-                    resourceSource: typeof(Resources));
+                    description: new LocalizableResourceString(
+                        nameOfLocalizableResource: nameof(Resources.AnonymousObjectFromMethodInvocationDescription),
+                        resourceManager: Resources.ResourceManager,
+                        resourceSource: typeof(Resources)));
 
             public static readonly DiagnosticDescriptor FromObjectCreationDescriptor =
-                new DiagnosticDescriptor(id: ForAnonymousObjectFromObjectCreation,
-                    title: AnonymousObjectFromObjectCreationTitle,
-                    messageFormat: AnonymousObjectFromObjectCreationMessageFormat,
+                new DiagnosticDescriptor(id: Id.ForAnonymousObjectFromObjectCreation,
+                    title: new LocalizableResourceString(
+                        nameOfLocalizableResource: nameof(Resources.AnonymousObjectFromObjectCreationTitle),
+                        resourceManager: Resources.ResourceManager,
+                        resourceSource: typeof(Resources)),
+                    messageFormat: new LocalizableResourceString(
+                        nameOfLocalizableResource: nameof(Resources.AnonymousObjectFromObjectCreationMessageFormat),
+                        resourceManager: Resources.ResourceManager,
+                        resourceSource: typeof(Resources)),
                     category: Category.WrongUsage,
                     defaultSeverity: DiagnosticSeverity.Warning,
                     isEnabledByDefault: true,
-                    description: AnonymousObjectFromObjectCreationDescription);
-
-            public const string ForAnonymousObjectFromObjectCreation = Id.ForAnonymousObjectFromObjectCreation;
-            public const string ForAnonymousObjectFromMethodInvocation = Id.ForAnonymousObjectFromMethodInvocation;
+                    description: new LocalizableResourceString(
+                        nameOfLocalizableResource: nameof(Resources.AnonymousObjectFromObjectCreationDescription),
+                        resourceManager: Resources.ResourceManager,
+                        resourceSource: typeof(Resources)));
         }
 
         internal static class LocalVariable
         {
-            internal static readonly LocalizableString NotDisposedLocalVariableMessageFormat =
-                new LocalizableResourceString(
-                    nameOfLocalizableResource: nameof(Resources.NotDisposedLocalVariableMessageFormat),
-                    resourceManager: Resources.ResourceManager,
-                    resourceSource: typeof(Resources));
-
-            internal static readonly LocalizableString NotDisposedLocalVariableTitle =
-                new LocalizableResourceString(
+            public static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
+                id: Id.ForNotDisposedLocalVariable,
+                title: new LocalizableResourceString(
                     nameOfLocalizableResource: nameof(Resources.NotDisposedLocalVariableTitle),
                     resourceManager: Resources.ResourceManager,
-                    resourceSource: typeof(Resources));
-
-            internal static readonly LocalizableString NotDisposedLocalVariableDescription =
-                new LocalizableResourceString(
-                    nameOfLocalizableResource: nameof(Resources.NotDisposedLocalVariableDescription),
+                    resourceSource: typeof(Resources)),
+                messageFormat: new LocalizableResourceString(
+                    nameOfLocalizableResource: nameof(Resources.NotDisposedLocalVariableMessageFormat),
                     resourceManager: Resources.ResourceManager,
-                    resourceSource: typeof(Resources));
-
-            public static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
-                id: ForNotDisposedLocalVariable,
-                title: NotDisposedLocalVariableTitle,
-                messageFormat: NotDisposedLocalVariableMessageFormat,
+                    resourceSource: typeof(Resources)),
                 category: Category.WrongUsage,
                 defaultSeverity: DiagnosticSeverity.Warning,
                 isEnabledByDefault: true,
-                description: NotDisposedLocalVariableDescription);
-
-            public const string ForNotDisposedLocalVariable = Id.ForNotDisposedLocalVariable;
+                description: new LocalizableResourceString(
+                    nameOfLocalizableResource: nameof(Resources.NotDisposedLocalVariableDescription),
+                    resourceManager: Resources.ResourceManager,
+                    resourceSource: typeof(Resources)));
         }
     }
 

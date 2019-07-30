@@ -25,7 +25,7 @@ namespace DisposableFixer.Test.CodeFix.DisposeLocalVariableAfterLastUsageCodeFix
         public void Should_the_CodeFixProvider_be_responsible_for_undispose_local_fields()
         {
             _sut.FixableDiagnosticIds.Should()
-                .Contain(NotDisposed.LocalVariable.ForNotDisposedLocalVariable);
+                .Contain(Id.ForNotDisposedLocalVariable);
         }
 
         [Test, TestCaseSource(nameof(TestCases))]
@@ -46,13 +46,14 @@ namespace DisposableFixer.Test.CodeFix.DisposeLocalVariableAfterLastUsageCodeFix
         {
             get
             {
-                yield return new TestCaseData(LocalVariableThatIsPartOfVariableDeclarator, NotDisposed.LocalVariable.ForNotDisposedLocalVariable)
+                var forNotDisposedLocalVariable = Id.ForNotDisposedLocalVariable;
+                yield return new TestCaseData(LocalVariableThatIsPartOfVariableDeclarator, forNotDisposedLocalVariable)
                     .SetName("Undisposed local Variable in VariableDeclarator");
-                yield return new TestCaseData(LocalVariablesThatIsPartOfAssignment, NotDisposed.LocalVariable.ForNotDisposedLocalVariable)
+                yield return new TestCaseData(LocalVariablesThatIsPartOfAssignment, forNotDisposedLocalVariable)
                     .SetName("Undisposed local Variable in Assigment");
-                yield return new TestCaseData(LocalVariableInAwaitThatIsPartOfVariableDeclarator, NotDisposed.LocalVariable.ForNotDisposedLocalVariable)
+                yield return new TestCaseData(LocalVariableInAwaitThatIsPartOfVariableDeclarator, forNotDisposedLocalVariable)
                     .SetName("Undisposed local Variable in await in VariableDeclarator");
-                yield return new TestCaseData(LocalVariableInAwaitThatIsPartOfAssignment, NotDisposed.LocalVariable.ForNotDisposedLocalVariable)
+                yield return new TestCaseData(LocalVariableInAwaitThatIsPartOfAssignment, forNotDisposedLocalVariable)
                     .SetName("Undisposed local Variable in await in Assigment");
             }
         }

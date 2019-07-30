@@ -27,21 +27,21 @@ namespace DisposableFixer.Test.CodeFix.IntroduceFieldAndDisposeInDisposeMethodCo
         public void Should_the_CodeFixProvider_be_responsible_for_undispose_local_fields()
         {
             _sut.FixableDiagnosticIds.Should()
-                .Contain(NotDisposed.LocalVariable.ForNotDisposedLocalVariable);
+                .Contain(Id.ForNotDisposedLocalVariable);
         }
 
         [Test]
         public void Should_the_CodeFixProvider_be_responsible_for_anonymous_objects_from_ObjectCreations()
         {
             _sut.FixableDiagnosticIds.Should()
-                .Contain(NotDisposed.AnonymousObject.ForAnonymousObjectFromObjectCreation);
+                .Contain(Id.ForAnonymousObjectFromObjectCreation);
         }
 
         [Test]
         public void Should_the_CodeFixProvider_be_responsible_for_anonymous_objects_from_MethodInvocations()
         {
             _sut.FixableDiagnosticIds.Should()
-                .Contain(NotDisposed.AnonymousObject.ForAnonymousObjectFromMethodInvocation);
+                .Contain(Id.ForAnonymousObjectFromMethodInvocation);
         }
 
         [Test, TestCaseSource(nameof(TestCases))]
@@ -62,13 +62,14 @@ namespace DisposableFixer.Test.CodeFix.IntroduceFieldAndDisposeInDisposeMethodCo
         {
             get
             {
-                yield return new TestCaseData(AnonymousObjectCreation, NotDisposed.AnonymousObject.ForAnonymousObjectFromObjectCreation)
+                var forAnonymousObjectFromObjectCreation = Id.ForAnonymousObjectFromObjectCreation;
+                yield return new TestCaseData(AnonymousObjectCreation, forAnonymousObjectFromObjectCreation)
                     .SetName("Undisposed anonymous ObjectCreation");
-                yield return new TestCaseData(AnonymousMethodInvoation, NotDisposed.AnonymousObject.ForAnonymousObjectFromMethodInvocation)
+                yield return new TestCaseData(AnonymousMethodInvoation, Id.ForAnonymousObjectFromMethodInvocation)
                     .SetName("Undisposed anonymous MethodInvocation");
-                yield return new TestCaseData(LocalVariable, NotDisposed.LocalVariable.ForNotDisposedLocalVariable)
+                yield return new TestCaseData(LocalVariable, Id.ForNotDisposedLocalVariable)
                     .SetName("Undisposed local variable");
-                yield return new TestCaseData(AnonymousObjectCreationThatIsAArgument, NotDisposed.AnonymousObject.ForAnonymousObjectFromObjectCreation)
+                yield return new TestCaseData(AnonymousObjectCreationThatIsAArgument, forAnonymousObjectFromObjectCreation)
                     .SetName("Undisposed Anonymous variable that is an argument");
             }
         }

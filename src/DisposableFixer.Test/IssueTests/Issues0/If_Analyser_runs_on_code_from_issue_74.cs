@@ -34,8 +34,7 @@ namespace MyNamespace
         {
             _diagnostics.Length.Should().Be(1);
 
-            _diagnostics[0].Id.Should().Be(NotDisposed.Assignment.FromObjectCreation
-                .ForAssignmentFromObjectCreationToPropertyNotDisposed);
+            _diagnostics[0].Id.Should().Be(Id.ForAssignmentFromObjectCreationToPropertyNotDisposed);
         }
     }
 }
