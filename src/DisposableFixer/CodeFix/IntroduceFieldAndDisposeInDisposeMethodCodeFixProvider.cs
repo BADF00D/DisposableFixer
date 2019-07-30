@@ -113,12 +113,16 @@ namespace DisposableFixer.CodeFix
 
             switch (node)
             {
+                case InvocationExpressionSyntax ies:
+                    ReplaceInvocationExpression(model, node, editor, oldClass, fieldName, ies);
+                    break;
                 case ExpressionSyntax expression:
                     ReplaceExpression(model, node, editor, oldClass, fieldName, expression);
                     break;
                 case ArgumentSyntax argument:
                     ReplaceArgument(model, argument, editor, oldClass, fieldName, node);
                     break;
+                
                 default:
                     throw new NotSupportedException($"Cannot wrap type '{node.GetType().FullName}'");
             }
@@ -132,6 +136,12 @@ namespace DisposableFixer.CodeFix
                 editor.AddDisposeMethodAndDisposeCallToMember(oldClass, fieldName, false);
 
             editor.AddImportIfNeeded(Constants.System);
+
+            return editor.GetChangedDocument();
+        }
+
+        private static Document ReplaceInvocationExpression(SemanticModel model, SyntaxNode node, DocumentEditor editor, ClassDeclarationSyntax oldClass, string fieldName, InvocationExpressionSyntax ies)
+        {
 
             return editor.GetChangedDocument();
         }
