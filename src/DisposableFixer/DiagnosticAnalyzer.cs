@@ -25,14 +25,14 @@ namespace DisposableFixer
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
             => ImmutableArray.Create(
-                Descriptor.AnonymousObjectFromObjectCreationDescriptor,
-                Descriptor.AnonymousObjectFromMethodInvocationDescriptor,
-                Descriptor.NotDisposedLocalVariableDescriptor,
+                NotDisposed.AnonymousObject.FromObjectCreationDescriptor,
+                NotDisposed.AnonymousObject.FromMethodInvocationDescriptor,
+                NotDisposed.LocalVariable.Descriptor,
                 
-                Descriptor.AssignmentFromObjectCreationToFieldNotDisposedDescriptor,
-                Descriptor.AssignmentFromObjectCreationToPropertyNotDisposedDescriptor,
-                Descriptor.AssignmentFromMethodInvocationToFieldNotDisposedDescriptor,
-                Descriptor.AssignmentFromMethodInvocationToPropertyNotDisposedDescriptor
+                NotDisposed.Assignment.FromObjectCreation.ToFieldNotDisposedDescriptor,
+                NotDisposed.Assignment.FromObjectCreation.ToPropertyNotDisposedDescriptor,
+                NotDisposed.Assignment.FromMethodInvocation.ToFieldNotDisposedDescriptor,
+                NotDisposed.Assignment.FromMethodInvocation.ToPropertyNotDisposedDescriptor
                 );
 
         public override void Initialize(AnalysisContext context)

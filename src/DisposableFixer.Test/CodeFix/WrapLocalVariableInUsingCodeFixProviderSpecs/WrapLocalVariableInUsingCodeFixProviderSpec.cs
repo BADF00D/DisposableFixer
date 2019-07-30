@@ -93,16 +93,16 @@ namespace SomeNamespace
         private static IEnumerable<TestCaseData> TestCases {
             get {
                 yield return new TestCaseData(CodeWithUndisposedLocalVariableAndTrailingCode,
-                        Id.ForNotDisposedLocalVariable)
+                        NotDisposed.LocalVariable.ForNotDisposedLocalVariable)
                     .SetName("Local variable and more code");
                 yield return new TestCaseData(CodeWithUndisposedLocalVariableAndAMethodInvocation,
-                        Id.ForNotDisposedLocalVariable)
+                        NotDisposed.LocalVariable.ForNotDisposedLocalVariable)
                     .SetName("Local variable and trailing code that makes a MethodInvocation to variable");
                 yield return new TestCaseData(CodeWithUndisposedLocalVariableThatIsAlsoAParameter,
-                        Id.ForNotDisposedLocalVariable)
+                        NotDisposed.LocalVariable.ForNotDisposedLocalVariable)
                     .SetName("Local variable that is a parameter");
                 yield return new TestCaseData(CodeWithUndisposedLocalVariableAndPreceedingCode,
-                        Id.ForNotDisposedLocalVariable)
+                        NotDisposed.LocalVariable.ForNotDisposedLocalVariable)
                     .SetName("Local variable and preceeding code");
             }
         }

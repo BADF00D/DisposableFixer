@@ -25,7 +25,7 @@ namespace DisposableFixer.Test.CodeFix.DisposeLocalVariableAfterLastUsageCodeFix
         public void Should_the_CodeFixProvider_be_responsible_for_undispose_local_fields()
         {
             _sut.FixableDiagnosticIds.Should()
-                .Contain(Id.ForNotDisposedLocalVariable);
+                .Contain(NotDisposed.LocalVariable.ForNotDisposedLocalVariable);
         }
 
         [Test, TestCaseSource(nameof(TestCases))]
@@ -46,13 +46,13 @@ namespace DisposableFixer.Test.CodeFix.DisposeLocalVariableAfterLastUsageCodeFix
         {
             get
             {
-                yield return new TestCaseData(LocalVariableThatIsPartOfVariableDeclarator, Id.ForNotDisposedLocalVariable)
+                yield return new TestCaseData(LocalVariableThatIsPartOfVariableDeclarator, NotDisposed.LocalVariable.ForNotDisposedLocalVariable)
                     .SetName("Undisposed local Variable in VariableDeclarator");
-                yield return new TestCaseData(LocalVariablesThatIsPartOfAssignment, Id.ForNotDisposedLocalVariable)
+                yield return new TestCaseData(LocalVariablesThatIsPartOfAssignment, NotDisposed.LocalVariable.ForNotDisposedLocalVariable)
                     .SetName("Undisposed local Variable in Assigment");
-                yield return new TestCaseData(LocalVariableInAwaitThatIsPartOfVariableDeclarator, Id.ForNotDisposedLocalVariable)
+                yield return new TestCaseData(LocalVariableInAwaitThatIsPartOfVariableDeclarator, NotDisposed.LocalVariable.ForNotDisposedLocalVariable)
                     .SetName("Undisposed local Variable in await in VariableDeclarator");
-                yield return new TestCaseData(LocalVariableInAwaitThatIsPartOfAssignment, Id.ForNotDisposedLocalVariable)
+                yield return new TestCaseData(LocalVariableInAwaitThatIsPartOfAssignment, NotDisposed.LocalVariable.ForNotDisposedLocalVariable)
                     .SetName("Undisposed local Variable in await in Assigment");
             }
         }

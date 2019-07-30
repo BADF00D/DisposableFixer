@@ -25,8 +25,8 @@ namespace DisposableFixer.Utils
         {
             var location = ctx.OriginalNode.GetLocation();
             var descriptor = ctx.Source == DisposableSource.InvocationExpression
-                ? Descriptor.AnonymousObjectFromMethodInvocationDescriptor
-                : Descriptor.AnonymousObjectFromObjectCreationDescriptor;
+                ? NotDisposed.AnonymousObject.FromMethodInvocationDescriptor
+                : NotDisposed.AnonymousObject.FromObjectCreationDescriptor;
             if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
 
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location));
@@ -35,7 +35,7 @@ namespace DisposableFixer.Utils
         public static void ReportNotDisposedLocalVariable(this CustomAnalysisContext ctx)
         {
             var location = ctx.OriginalNode.GetLocation();
-            var descriptor = Descriptor.NotDisposedLocalVariableDescriptor;
+            var descriptor = NotDisposed.LocalVariable.Descriptor;
             if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
 
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location));
@@ -48,8 +48,8 @@ namespace DisposableFixer.Utils
             var properties = ImmutableDictionary.CreateBuilder<string, string>();
             properties.Add(Constants.Variablename, variableName);
             var descriptor = ctx.Source == DisposableSource.InvocationExpression
-                ? Descriptor.AssignmentFromMethodInvocationToFieldNotDisposedDescriptor
-                : Descriptor.AssignmentFromObjectCreationToFieldNotDisposedDescriptor;
+                ? NotDisposed.Assignment.FromMethodInvocation.ToFieldNotDisposedDescriptor
+                : NotDisposed.Assignment.FromObjectCreation.ToFieldNotDisposedDescriptor;
             if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
 
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable()));
@@ -61,8 +61,8 @@ namespace DisposableFixer.Utils
             var properties = ImmutableDictionary.CreateBuilder<string, string>();
             properties.Add(Constants.Variablename, propertyName);
             var descriptor = ctx.Source == DisposableSource.InvocationExpression
-                ? Descriptor.AssignmentFromMethodInvocationToPropertyNotDisposedDescriptor
-                : Descriptor.AssignmentFromObjectCreationToPropertyNotDisposedDescriptor;
+                ? NotDisposed.Assignment.FromMethodInvocation.ToPropertyNotDisposedDescriptor
+                : NotDisposed.Assignment.FromObjectCreation.ToPropertyNotDisposedDescriptor;
             if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
 
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable()));

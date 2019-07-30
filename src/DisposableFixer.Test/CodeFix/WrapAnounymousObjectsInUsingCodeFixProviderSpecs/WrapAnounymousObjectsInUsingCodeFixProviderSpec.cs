@@ -134,23 +134,23 @@ namespace SomeNamespace
             get
             {
                 yield return new TestCaseData(CodeWithAnonymousObjectCreation,
-                        Id.ForAnonymousObjectFromObjectCreation)
+                        NotDisposed.AnonymousObject.ForAnonymousObjectFromObjectCreation)
                     .SetName("Anonymous ObjectCreation");
                 yield return new TestCaseData(CodeWithAnonymousObjectCreationAndOtherCode,
-                        Id.ForAnonymousObjectFromObjectCreation)
+                        NotDisposed.AnonymousObject.ForAnonymousObjectFromObjectCreation)
                     .SetName("Anonymous ObjectCreation and other code");
                 yield return new TestCaseData(CodeWithObjectCreationThatIsAParameter,
-                        Id.ForAnonymousObjectFromObjectCreation)
+                        NotDisposed.AnonymousObject.ForAnonymousObjectFromObjectCreation)
                     .SetName("Anonymous ObjectCreation that is a parameter");
 
                 yield return new TestCaseData(CodeWithMethodInvocationAndOtherCode,
-                        Id.ForAnonymousObjectFromMethodInvocation)
+                        NotDisposed.AnonymousObject.ForAnonymousObjectFromMethodInvocation)
                     .SetName("Anonymous MethodInvocation and other code");
                 yield return new TestCaseData(CodeWithObjectCreationThatIsAParameter,
-                        Id.ForAnonymousObjectFromObjectCreation)
+                        NotDisposed.AnonymousObject.ForAnonymousObjectFromObjectCreation)
                     .SetName("Anonymous ObjectCreation that is a parameter");
                 yield return new TestCaseData(CodeWithMethodInvaocationThatIsAParameter,
-                        Id.ForAnonymousObjectFromMethodInvocation)
+                        NotDisposed.AnonymousObject.ForAnonymousObjectFromMethodInvocation)
                     .SetName("Anonymous MethodInvocation that is a parameter");
             }
         }

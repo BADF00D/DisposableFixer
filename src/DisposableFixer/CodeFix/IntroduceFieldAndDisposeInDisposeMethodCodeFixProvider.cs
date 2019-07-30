@@ -20,9 +20,9 @@ namespace DisposableFixer.CodeFix
     public class IntroduceFieldAndDisposeInDisposeMethodCodeFixProvider : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(
-            Id.ForAnonymousObjectFromMethodInvocation,
-            Id.ForAnonymousObjectFromObjectCreation,
-            Id.ForNotDisposedLocalVariable
+            NotDisposed.AnonymousObject.ForAnonymousObjectFromMethodInvocation,
+            NotDisposed.AnonymousObject.ForAnonymousObjectFromObjectCreation,
+            NotDisposed.LocalVariable.ForNotDisposedLocalVariable
         );
 
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
@@ -30,15 +30,15 @@ namespace DisposableFixer.CodeFix
             var diagnostic = context.Diagnostics.FirstOrDefault();
             if (diagnostic == null) return Task.CompletedTask;
 
-            if (diagnostic.Id == Id.ForNotDisposedLocalVariable)
+            if (diagnostic.Id == NotDisposed.LocalVariable.ForNotDisposedLocalVariable)
             {
                 context.RegisterCodeFix(
                     CodeAction.Create(ActionTitle.CreateFieldAndDisposeInDisposeMethod,
                         cancel => ConvertToFieldDisposeInDisposeMethod(context, cancel)),
                     diagnostic
                 );
-            }else if (diagnostic.Id == Id.ForAnonymousObjectFromObjectCreation
-                      || diagnostic.Id == Id.ForAnonymousObjectFromMethodInvocation)
+            }else if (diagnostic.Id == NotDisposed.AnonymousObject.ForAnonymousObjectFromObjectCreation
+                      || diagnostic.Id == NotDisposed.AnonymousObject.ForAnonymousObjectFromMethodInvocation)
             {
                 context.RegisterCodeFix(
                     CodeAction.Create(ActionTitle.CreateFieldAndDisposeInDisposeMethod,
@@ -208,7 +208,7 @@ namespace DisposableFixer.CodeFix
         private static bool IsUndisposedLocalVariable(CodeFixContext context)
         {
             return context.Diagnostics.First().Id ==
-                   Id.ForNotDisposedLocalVariable;
+                   NotDisposed.LocalVariable.ForNotDisposedLocalVariable;
         }
     }
 }
