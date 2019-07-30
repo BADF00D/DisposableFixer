@@ -22,6 +22,10 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.Using
                     .SetName("FactoryCall in using that is correctly disposed");
                 yield return new TestCaseData(ThreeDisablesInsideUsingBlock, 3)
                     .SetName("Three disposable inside using block");
+                yield return new TestCaseData(ObjectCreationInConditionalExpressionInUsing, 0)
+                    .SetName("OC in ConditionaStatement in using");
+                yield return new TestCaseData(MethodInvocationInConditionalExpressionInUsing, 0)
+                    .SetName("MI in ConditionaStatement in using");
             }
         }
 
@@ -113,6 +117,33 @@ namespace DisFixerTest.ObjectCreation {
         private IDisposable Create() {
             return new MemoryStream();
         }
+    }
+}
+";
+
+        private const string MethodInvocationInConditionalExpressionInUsing = @"
+using System;
+
+internal class SomeTestNamspace
+{
+    Func<IDisposable> f = () => null;
+    public void disposableTest(bool flag)
+    {
+        using (flag ? f() : f()) // whichever one we used will be disposed, but we get a warning on both
+        { }
+    }
+}
+";
+
+        private const string ObjectCreationInConditionalExpressionInUsing = @"
+using System.IO;
+
+internal class SomeTestNamspace
+{
+    public void DisposableTest(bool flag)
+    {
+        using (flag ? new MemoryStream() : new MemoryStream())
+        { }
     }
 }
 ";
