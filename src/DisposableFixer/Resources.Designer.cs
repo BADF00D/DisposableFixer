@@ -179,6 +179,60 @@ namespace DisposableFixer {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Result of method invocation is assigned to a field that is never disposed..
+        /// </summary>
+        internal static string AssignmendFromMethodInvocationToStaticFieldNotDisposedDescription {
+            get {
+                return ResourceManager.GetString("AssignmendFromMethodInvocationToStaticFieldNotDisposedDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Static field is not disposed..
+        /// </summary>
+        internal static string AssignmendFromMethodInvocationToStaticFieldNotDisposedMessageFormat {
+            get {
+                return ResourceManager.GetString("AssignmendFromMethodInvocationToStaticFieldNotDisposedMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Marks undisposed objects assinged to a field, originated from method invocation..
+        /// </summary>
+        internal static string AssignmendFromMethodInvocationToStaticFieldNotDisposedTitle {
+            get {
+                return ResourceManager.GetString("AssignmendFromMethodInvocationToStaticFieldNotDisposedTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Result of method invocation is assigned to a property that is never disposed..
+        /// </summary>
+        internal static string AssignmendFromMethodInvocationToStaticPropertyNotDisposedDescription {
+            get {
+                return ResourceManager.GetString("AssignmendFromMethodInvocationToStaticPropertyNotDisposedDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Static property is not disposed..
+        /// </summary>
+        internal static string AssignmendFromMethodInvocationToStaticPropertyNotDisposedMessageFormat {
+            get {
+                return ResourceManager.GetString("AssignmendFromMethodInvocationToStaticPropertyNotDisposedMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Marks undisposed objects assinged to a property, originated from a method invocation..
+        /// </summary>
+        internal static string AssignmendFromMethodInvocationToStaticPropertyNotDisposedTitle {
+            get {
+                return ResourceManager.GetString("AssignmendFromMethodInvocationToStaticPropertyNotDisposedTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Result of object creation is assigned to a field that is never disposed..
         /// </summary>
         internal static string AssignmendFromObjectCreationToFieldNotDisposedDescription {
@@ -229,6 +283,60 @@ namespace DisposableFixer {
         internal static string AssignmendFromObjectCreationToPropertyNotDisposedTitle {
             get {
                 return ResourceManager.GetString("AssignmendFromObjectCreationToPropertyNotDisposedTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Result of object creation is assigned to a field that is never disposed..
+        /// </summary>
+        internal static string AssignmendFromObjectCreationToStaticFieldNotDisposedDescription {
+            get {
+                return ResourceManager.GetString("AssignmendFromObjectCreationToStaticFieldNotDisposedDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Static field not disposed..
+        /// </summary>
+        internal static string AssignmendFromObjectCreationToStaticFieldNotDisposedMessageFormat {
+            get {
+                return ResourceManager.GetString("AssignmendFromObjectCreationToStaticFieldNotDisposedMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Marks undisposed objects assinged to a field, originated in an object creation..
+        /// </summary>
+        internal static string AssignmendFromObjectCreationToStaticFieldNotDisposedTitle {
+            get {
+                return ResourceManager.GetString("AssignmendFromObjectCreationToStaticFieldNotDisposedTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Result of object creation is assigned to a property that is never disposed..
+        /// </summary>
+        internal static string AssignmendFromObjectCreationToStaticPropertyNotDisposedDescription {
+            get {
+                return ResourceManager.GetString("AssignmendFromObjectCreationToStaticPropertyNotDisposedDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Static property not disposed..
+        /// </summary>
+        internal static string AssignmendFromObjectCreationToStaticPropertyNotDisposedMessageFormat {
+            get {
+                return ResourceManager.GetString("AssignmendFromObjectCreationToStaticPropertyNotDisposedMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Marks undisposed objects assinged to a property, originated in an object creation..
+        /// </summary>
+        internal static string AssignmendFromObjectCreationToStaticPropertyNotDisposedTitle {
+            get {
+                return ResourceManager.GetString("AssignmendFromObjectCreationToStaticPropertyNotDisposedTitle", resourceCulture);
             }
         }
         
