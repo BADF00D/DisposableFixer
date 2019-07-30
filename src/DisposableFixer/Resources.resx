@@ -154,7 +154,7 @@
     <value>Marks undisposed local variables.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToFieldNotDisposedDescription" xml:space="preserve">
-    <value>Result of method invocation is assgined to a field that is never disposed.</value>
+    <value>Result of method invocation is assigned to a field that is never disposed.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToFieldNotDisposedMessageFormat" xml:space="preserve">
     <value>Field is not disposed.</value>
@@ -163,7 +163,7 @@
     <value>Marks undisposed objects assinged to a field, originated from method invocation.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToPropertyNotDisposedDescription" xml:space="preserve">
-    <value>Result of method invocation is assgined to a property that is never disposed.</value>
+    <value>Result of method invocation is assigned to a property that is never disposed.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToPropertyNotDisposedMessageFormat" xml:space="preserve">
     <value>Property is not disposed.</value>
@@ -172,7 +172,7 @@
     <value>Marks undisposed objects assinged to a property, originated from a method invocation.</value>
   </data>
   <data name="AssignmendFromObjectCreationToFieldNotDisposedDescription" xml:space="preserve">
-    <value>Result of object creation is assgined to a field that is never disposed.</value>
+    <value>Result of object creation is assigned to a field that is never disposed.</value>
   </data>
   <data name="AssignmendFromObjectCreationToFieldNotDisposedMessageFormat" xml:space="preserve">
     <value>Field not disposed.</value>
@@ -181,7 +181,7 @@
     <value>Marks undisposed objects assinged to a field, originated in an object creation.</value>
   </data>
   <data name="AssignmendFromObjectCreationToPropertyNotDisposedDescription" xml:space="preserve">
-    <value>Result of object creation is assgined to a property that is never disposed.</value>
+    <value>Result of object creation is assigned to a property that is never disposed.</value>
   </data>
   <data name="AssignmendFromObjectCreationToPropertyNotDisposedTitle" xml:space="preserve">
     <value>Marks undisposed objects assinged to a property, originated in an object creation.</value>
