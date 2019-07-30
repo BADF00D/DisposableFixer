@@ -139,6 +139,11 @@ namespace DisposableFixer.Extensions
             return node.FindParent<ReturnStatementSyntax, BlockSyntax>() != null;
         }
 
+        public static bool IsPartOfYielReturnStatementInBlock(this SyntaxNode node)
+        {
+            return node.FindParent<YieldStatementSyntax, BlockSyntax>() != null;
+        }
+
         public static bool IsPartOfSimpleLambdaExpression(this SyntaxNode node)
         {
             return node?.Parent is SimpleLambdaExpressionSyntax;

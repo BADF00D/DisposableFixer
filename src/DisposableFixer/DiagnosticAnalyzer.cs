@@ -55,6 +55,7 @@ namespace DisposableFixer
             else if (Detector.IsIgnoredTypeOrImplementsIgnoredInterface(ctx.Type)) { } 
             else if (node.IsReturnedInProperty()) AnalyzeNodeInReturnStatementOfProperty(ctx);
             else if (node.IsPartOfReturnStatementInBlock()) { } // return new MemoryStream() or return Task.FromResult(new MemoryStream())
+            else if (node.IsPartOfYielReturnStatementInBlock()) { } //yield return new MemoryStream()
             else if (node.IsArrowExpressionClauseOfMethod()) { } // void Create()=>CreateMemoryStream()
             else if (node.IsReturnValueInLambdaExpression()) { }
             else if (node.IsReturnedLaterWithinMethod()) { }
@@ -353,6 +354,7 @@ namespace DisposableFixer
                 AnalyzePartOfMethodCall(ctx);
             }
             else if (node.IsPartOfReturnStatementInBlock()) { } // return new MemoryStream() or return Task.FromResult(new MemoryStream())
+            else if (node.IsPartOfYielReturnStatementInBlock()) { } //yield return CreateMemoryStream()
             else if (node.IsArrowExpressionClauseOfMethod()) { } // void Create()=>new MemoryStream()
             else if (node.IsReturnValueInLambdaExpression()) { } //e.g. ()=> new MemoryStream
             else if (node.IsReturnedLaterWithinMethod()) { }
