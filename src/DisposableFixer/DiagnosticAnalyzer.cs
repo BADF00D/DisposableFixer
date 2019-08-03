@@ -270,12 +270,7 @@ namespace DisposableFixer
                 }
 
                 //assignment to field or property
-                var containingClass = node.FindContainingClass();
-                if (containingClass == null) return;
-                if (containingClass.FindFieldNamed(variableName) != null)
-                    context.ReportNotDisposedField(variableName);
-                else
-                    context.ReportNotDisposedProperty(variableName);
+                ReportStaticOrNonStaticNotDisposedMember(context, variableName);
 
                 return;
             }
@@ -299,15 +294,64 @@ namespace DisposableFixer
                 {
                     if (node.IsDisposedInDisposingMethod(variableName, Configuration, context.SemanticModel)) return;
 
-                    if (node.IsAssignmentToProperty(variableName))
+                    if (node.IsAssignmentToProperty(variableName, out var isStatic))
                     {
-                        context.ReportNotDisposedProperty(variableName);
+                        if (isStatic)
+                        {
+                            context.ReportNotDisposedStaticProperty(variableName);
+                        }
+                        else
+                        {
+                            context.ReportNotDisposedProperty(variableName);
+                        }
                     }
                     else
                     {
-                        context.ReportNotDisposedField(variableName);
+
+                        if (node.IsAssignmentToStaticField(variableName))
+                        {
+                            context.ReportNotDisposedStaticField(variableName);
+                        }
+                        else
+                        {
+                            context.ReportNotDisposedField(variableName);
+                        }
+                        
                     }
                     
+                }
+            }
+        }
+
+        private static void ReportStaticOrNonStaticNotDisposedMember(CustomAnalysisContext context, string variableName)
+        {
+            var node = context.Node;
+            var containingClass = node.FindContainingClass();
+            if (containingClass == null) return;
+            var fieldDeclarationSyntax = containingClass.FindFieldNamed(variableName);
+            if (fieldDeclarationSyntax != null)
+            {
+                if (fieldDeclarationSyntax.IsStatic())
+                {
+                    context.ReportNotDisposedStaticField(variableName);
+                }
+                else
+                {
+                    context.ReportNotDisposedField(variableName);
+                }
+
+            }
+            else
+            {
+                var prop = containingClass.FindPropertyNamed(variableName);
+                if (prop == null) return; //this should never happen
+                if (prop.IsStatic())
+                {
+                    context.ReportNotDisposedStaticProperty(variableName);
+                }
+                else
+                {
+                    context.ReportNotDisposedProperty(variableName);
                 }
             }
         }

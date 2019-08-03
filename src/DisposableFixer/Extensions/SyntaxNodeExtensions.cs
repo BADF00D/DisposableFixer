@@ -2,6 +2,7 @@
 using System.Linq;
 using DisposableFixer.Configuration;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DisposableFixer.Extensions
@@ -116,14 +117,31 @@ namespace DisposableFixer.Extensions
                    && node.Parent?.Parent?.Parent?.Parent is UsingStatementSyntax;
         }
 
-        public static bool IsAssignmentToProperty(this SyntaxNode node, string variableName)
+        public static bool IsAssignmentToProperty(this SyntaxNode node, string variableName, out bool isStatic)
         {
             var @class = node.FindContainingClass();
-            if (@class == null) return false;
+            isStatic = false;
 
-            return @class
-                .DescendantNodes<PropertyDeclarationSyntax>()
-                .Any(pd => pd.Identifier.Text == variableName);
+            var propertyDeclaration =  @class?.DescendantNodes<PropertyDeclarationSyntax>()
+                .FirstOrDefault(pd => pd.Identifier.Text == variableName);
+            if (propertyDeclaration == null)
+            {
+                return false;
+            }
+
+            isStatic = propertyDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword);
+            return true;
+        }
+
+        public static bool IsAssignmentToStaticField(this SyntaxNode node, string fieldName)
+        {
+            var @class = node.FindContainingClass();
+
+            return @class?
+                       .DescendantNodes<FieldDeclarationSyntax>()
+                       .Any(fds => fds.DescendantNodes<VariableDeclaratorSyntax>().Any(vds =>
+                           vds.Identifier.Text == fieldName && fds.Modifiers.Any(SyntaxKind.StaticKeyword)))
+                   ?? false;
         }
 
         public static bool IsDescendantOfVariableDeclarator(this SyntaxNode node)
