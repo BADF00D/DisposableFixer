@@ -167,7 +167,7 @@ namespace DisposableFixer.Extensions
             return node.FindParent<ReturnStatementSyntax, BlockSyntax>() != null;
         }
 
-        public static bool IsPartOfYielReturnStatementInBlock(this SyntaxNode node)
+        public static bool IsPartOfYieldReturnStatementInBlock(this SyntaxNode node)
         {
             return node.FindParent<YieldStatementSyntax, BlockSyntax>() != null;
         }
