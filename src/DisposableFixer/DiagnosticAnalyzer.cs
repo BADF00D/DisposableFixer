@@ -100,9 +100,16 @@ namespace DisposableFixer
         {
             var node = context.Node;
             if (!(node.Parent.Parent.Parent.Parent.Parent is PropertyDeclarationSyntax propertyDeclaration)) return; // should not happen => we cke this before
-            
+
             if (node.IsDisposedInDisposingMethod(propertyDeclaration.Identifier.Text, Configuration, context.SemanticModel)) return;
-            context.ReportNotDisposedProperty(propertyDeclaration.Identifier.Text);
+            if (propertyDeclaration.IsStatic())
+            {
+                context.ReportNotDisposedStaticField(propertyDeclaration.Identifier.Text);
+            }
+            else
+            {
+                context.ReportNotDisposedProperty(propertyDeclaration.Identifier.Text);
+            }
         }
 
         private static void AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(CustomAnalysisContext context)
