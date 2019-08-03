@@ -222,4 +222,22 @@
   <data name="AssignmendFromObjectCreationToStaticPropertyNotDisposedMessageFormat" xml:space="preserve">
     <value>Static property not disposed.</value>
   </data>
+  <data name="NotDisposedFactoryPropertyDescription" xml:space="preserve">
+    <value>Marks factory property that creates an IDisposable without tracking it.</value>
+  </data>
+  <data name="NotDisposedFactoryPropertyMessageFormat" xml:space="preserve">
+    <value>Factory Properties cannot be disposed. It recommended to change this to a factory method.</value>
+  </data>
+  <data name="NotDisposedFactoryPropertyTitle" xml:space="preserve">
+    <value>Marks undisposed factory properties.</value>
+  </data>
+  <data name="NotDisposedFactoryStaticPropertyDescription" xml:space="preserve">
+    <value>Marks static factory property that creates an IDisposable without tracking it.</value>
+  </data>
+  <data name="NotDisposedFactoryStaticPropertyMessageFormat" xml:space="preserve">
+    <value>Static factory properties cannot be disposed. It recommended to change this to a static factory method.</value>
+  </data>
+  <data name="NotDisposedFactoryStaticPropertyTitle" xml:space="preserve">
+    <value>Marks undisposed static factory properties.</value>
+  </data>
 </root>

@@ -341,6 +341,60 @@ namespace DisposableFixer {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Marks factory property that creates an IDisposable without tracking it..
+        /// </summary>
+        internal static string NotDisposedFactoryPropertyDescription {
+            get {
+                return ResourceManager.GetString("NotDisposedFactoryPropertyDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Factory Properties cannot be disposed. It recommended to change this to a factory method..
+        /// </summary>
+        internal static string NotDisposedFactoryPropertyMessageFormat {
+            get {
+                return ResourceManager.GetString("NotDisposedFactoryPropertyMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Marks undisposed factory properties..
+        /// </summary>
+        internal static string NotDisposedFactoryPropertyTitle {
+            get {
+                return ResourceManager.GetString("NotDisposedFactoryPropertyTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Marks static factory property that creates an IDisposable without tracking it..
+        /// </summary>
+        internal static string NotDisposedFactoryStaticPropertyDescription {
+            get {
+                return ResourceManager.GetString("NotDisposedFactoryStaticPropertyDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Static factory properties cannot be disposed. It recommended to change this to a static factory method..
+        /// </summary>
+        internal static string NotDisposedFactoryStaticPropertyMessageFormat {
+            get {
+                return ResourceManager.GetString("NotDisposedFactoryStaticPropertyMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Marks undisposed static factory properties..
+        /// </summary>
+        internal static string NotDisposedFactoryStaticPropertyTitle {
+            get {
+                return ResourceManager.GetString("NotDisposedFactoryStaticPropertyTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Undisposed local variables.
         /// </summary>
         internal static string NotDisposedLocalVariableDescription {

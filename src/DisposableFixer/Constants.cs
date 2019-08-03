@@ -40,6 +40,8 @@ namespace DisposableFixer
         public const string ForAssignmentFromMethodInvocationToStaticFieldNotDisposed = "DF0025";
         public const string ForAssignmentFromObjectCreationToStaticPropertyNotDisposed = "DF0026";
         public const string ForAssignmentFromMethodInvocationToStaticPropertyNotDisposed = "DF0027";
+        public const string ForNotDisposedFactoryProperty = "DF0028";
+        public const string ForNotDisposedStaticFactoryProperty = "DF0029";
     }
 
     internal static class NotDisposed
@@ -259,6 +261,48 @@ namespace DisposableFixer
                 isEnabledByDefault: true,
                 description: new LocalizableResourceString(
                     nameOfLocalizableResource: nameof(Resources.NotDisposedLocalVariableDescription),
+                    resourceManager: Resources.ResourceManager,
+                    resourceSource: typeof(Resources)));
+        }
+
+        internal static class FactoryProperty
+        {
+            public static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
+                id: Id.ForNotDisposedFactoryProperty,
+                title: new LocalizableResourceString(
+                    nameOfLocalizableResource: nameof(Resources.NotDisposedFactoryPropertyTitle),
+                    resourceManager: Resources.ResourceManager,
+                    resourceSource: typeof(Resources)),
+                messageFormat: new LocalizableResourceString(
+                    nameOfLocalizableResource: nameof(Resources.NotDisposedFactoryPropertyMessageFormat),
+                    resourceManager: Resources.ResourceManager,
+                    resourceSource: typeof(Resources)),
+                category: Category.WrongUsage,
+                defaultSeverity: DiagnosticSeverity.Warning,
+                isEnabledByDefault: true,
+                description: new LocalizableResourceString(
+                    nameOfLocalizableResource: nameof(Resources.NotDisposedFactoryPropertyDescription),
+                    resourceManager: Resources.ResourceManager,
+                    resourceSource: typeof(Resources)));
+        }
+
+        internal static class StaticFactoryProperty
+        {
+            public static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
+                id: Id.ForNotDisposedStaticFactoryProperty,
+                title: new LocalizableResourceString(
+                    nameOfLocalizableResource: nameof(Resources.NotDisposedFactoryStaticPropertyTitle),
+                    resourceManager: Resources.ResourceManager,
+                    resourceSource: typeof(Resources)),
+                messageFormat: new LocalizableResourceString(
+                    nameOfLocalizableResource: nameof(Resources.NotDisposedFactoryStaticPropertyMessageFormat),
+                    resourceManager: Resources.ResourceManager,
+                    resourceSource: typeof(Resources)),
+                category: Category.WrongUsage,
+                defaultSeverity: DiagnosticSeverity.Warning,
+                isEnabledByDefault: true,
+                description: new LocalizableResourceString(
+                    nameOfLocalizableResource: nameof(Resources.NotDisposedFactoryStaticPropertyDescription),
                     resourceManager: Resources.ResourceManager,
                     resourceSource: typeof(Resources)));
         }
