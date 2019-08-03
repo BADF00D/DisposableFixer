@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.IdTests
 {
     [TestFixture]
-    internal class If_Analyser_runs_on_Code_with_undisposed_variables
+    internal class If_Analyser_runs_on_Code_with_undisposed_Variables
     {
         private readonly DisposableFixerAnalyzer _disposableFixerAnalyzer = new DisposableFixerAnalyzer();
 
@@ -25,6 +25,8 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.IdTests
                 yield return NoneStaticPropertyInitializedDirectlyViaMethodInvocation();
                 yield return StaticFieldInitializedDirectlyViaMethodInvocation();
                 yield return NoneStaticFieldInitializedDirectlyViaMethodInvocation();
+                yield return NoneStaticPropertyInitializedDirectlyViaMethodInvocationInExpressionBody();
+                yield return StaticPropertyInitializedDirectlyViaMethodInvocationInExpressionBody();
 
             }
         }
@@ -177,6 +179,90 @@ internal class SomeTestNamspace
             return new TestCaseData(code)
                 .Returns(Id.ForAssignmentFromMethodInvocationToStaticFieldNotDisposed)
                 .SetName("Static field initialized directly via MethodInvocation");
+        }
+
+        private static TestCaseData NoneStaticPropertyInitializedDirectlyViaMethodInvocationInExpressionBody()
+        {
+            const string code = @"
+using System;
+using System.IO;
+
+internal class SomeTestNamspace
+{
+    private class SomeTest
+    {
+        private IDisposable Property => Create();
+        public static IDisposable Create() => new MemoryStream();
+    }
+}";
+            return new TestCaseData(code)
+                .Returns(Id.ForAssignmentFromMethodInvocationToPropertyNotDisposed)
+                .SetName("None static Property initialized directly via MethodInvocation in ExpressionBody");
+        }
+
+        private static TestCaseData StaticPropertyInitializedDirectlyViaMethodInvocationInExpressionBody()
+        {
+            const string code = @"
+using System;
+using System.IO;
+
+internal class SomeTestNamspace
+{
+    private class SomeTest
+    {
+        private static IDisposable Property => Create();
+        public static IDisposable Create() => new MemoryStream();
+    }
+}";
+            return new TestCaseData(code)
+                .Returns(Id.ForAssignmentFromMethodInvocationToStaticPropertyNotDisposed)
+                .SetName("Static Property initialized directly via MethodInvocation in ExpressionBody");
+        }
+
+        private static TestCaseData NoneStaticPropertyInitializedDirectlyViaMethodInvocationInGetter()
+        {
+            const string code = @"
+using System;
+using System.IO;
+
+internal class SomeTestNamspace
+{
+    private class SomeTest
+    {
+        private IDisposable Property
+        {
+            get { return Create(); }
+        }
+
+        public static IDisposable Create() => new MemoryStream();
+    }
+}";
+            return new TestCaseData(code)
+                .Returns(Id.ForAssignmentFromMethodInvocationToPropertyNotDisposed)
+                .SetName("None static Property initialized directly via MethodInvocation in Getter");
+        }
+
+        private static TestCaseData StaticPropertyInitializedDirectlyViaMethodInvocationInGetter()
+        {
+            const string code = @"
+using System;
+using System.IO;
+
+internal class SomeTestNamspace
+{
+    private class SomeTest
+    {
+        private static IDisposable Property
+        {
+            get { return Create(); }
+        }
+
+        public static IDisposable Create() => new MemoryStream();
+    }
+}}";
+            return new TestCaseData(code)
+                .Returns(Id.ForAssignmentFromMethodInvocationToStaticPropertyNotDisposed)
+                .SetName("Static Property initialized directly via MethodInvocation in Getter");
         }
     }
 }
