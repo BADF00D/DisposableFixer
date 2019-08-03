@@ -32,7 +32,11 @@ namespace DisposableFixer
                 NotDisposed.Assignment.FromObjectCreation.ToFieldNotDisposedDescriptor,
                 NotDisposed.Assignment.FromObjectCreation.ToPropertyNotDisposedDescriptor,
                 NotDisposed.Assignment.FromMethodInvocation.ToFieldNotDisposedDescriptor,
-                NotDisposed.Assignment.FromMethodInvocation.ToPropertyNotDisposedDescriptor
+                NotDisposed.Assignment.FromMethodInvocation.ToPropertyNotDisposedDescriptor,
+                NotDisposed.Assignment.FromObjectCreation.ToStaticFieldNotDisposedDescriptor,
+                NotDisposed.Assignment.FromObjectCreation.ToStaticPropertyNotDisposedDescriptor,
+                NotDisposed.Assignment.FromMethodInvocation.ToStaticFieldNotDisposedDescriptor,
+                NotDisposed.Assignment.FromMethodInvocation.ToStaticPropertyNotDisposedDescriptor
                 );
 
         public override void Initialize(AnalysisContext context)
@@ -107,7 +111,15 @@ namespace DisposableFixer
             if (!(node.Parent.Parent is PropertyDeclarationSyntax propertyDeclaration)) return; // should not happen => we cke this before
 
             if (node.IsDisposedInDisposingMethod(propertyDeclaration.Identifier.Text, Configuration, context.SemanticModel)) return;
-            context.ReportNotDisposedProperty(propertyDeclaration.Identifier.Text);
+            if (propertyDeclaration.IsStatic())
+            {
+                context.ReportNotDisposedStaticProperty(propertyDeclaration.Identifier.Text);
+            }
+            else
+            {
+                context.ReportNotDisposedProperty(propertyDeclaration.Identifier.Text);
+            }
+            
         }
 
         private static void AnalyzeNodeWithinVariableDeclarator(CustomAnalysisContext context)
@@ -228,11 +240,22 @@ namespace DisposableFixer
         }
 
         private static void AnalyzeNodeInFieldDeclaration(CustomAnalysisContext context,
-            string variableName)
+            string fieldName)
         {
-            if (context.Node.IsDisposedInDisposingMethod(variableName, Configuration, context.SemanticModel)) return;
+            if (context.Node.IsDisposedInDisposingMethod(fieldName, Configuration, context.SemanticModel)) return;
+
+            var containeringClass = context.Node.FindContainingClass();
+            var fieldDeclaration = containeringClass?.FindFieldNamed(fieldName);
+            if (fieldDeclaration == null) return;
+            if (fieldDeclaration.IsStatic())
+            {
+                context.ReportNotDisposedStaticField(fieldName);
+            }
+            else
+            {
+                context.ReportNotDisposedField(fieldName);
+            }
             
-            context.ReportNotDisposedField(variableName);
         }
 
         private static void AnalyzeNodeInAssignmentExpression(CustomAnalysisContext context)
