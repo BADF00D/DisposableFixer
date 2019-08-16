@@ -59,6 +59,10 @@ namespace DisposableFixer.Configuration {
                 {
                     new MethodCall("Add", new [] {"System.IDisposable"}, false)
                 },
+                ["System.Reactive.Disposables.DisposableMixins"] = new List<MethodCall>
+                {
+                    new MethodCall("DisposeWith", new [] {"T", "System.Reactive.Disposables"}, true),
+                },
                 ["System.Diagnostics.Process"] = new List<MethodCall>
                 {
                     new MethodCall("GetCurrentProcess", new string[0] , true)
