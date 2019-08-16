@@ -29,7 +29,7 @@ namespace DisFixerTest.ObjectCreationAssignedToField {
         {
             var diagnostic = _diagnostics.First();
             diagnostic.Descriptor.Should()
-                .Be(NotDisposed.Assignment.FromObjectCreation.ToPropertyNotDisposedDescriptor);
+                .Be(NotDisposed.FactoryProperty.Descriptor);
         }
     }
 }

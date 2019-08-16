@@ -36,7 +36,10 @@ namespace DisposableFixer
                 NotDisposed.Assignment.FromObjectCreation.ToStaticFieldNotDisposedDescriptor,
                 NotDisposed.Assignment.FromObjectCreation.ToStaticPropertyNotDisposedDescriptor,
                 NotDisposed.Assignment.FromMethodInvocation.ToStaticFieldNotDisposedDescriptor,
-                NotDisposed.Assignment.FromMethodInvocation.ToStaticPropertyNotDisposedDescriptor
+                NotDisposed.Assignment.FromMethodInvocation.ToStaticPropertyNotDisposedDescriptor,
+
+                NotDisposed.FactoryProperty.Descriptor,
+                NotDisposed.StaticFactoryProperty.Descriptor
                 );
 
         public override void Initialize(AnalysisContext context)
@@ -104,11 +107,11 @@ namespace DisposableFixer
             if (node.IsDisposedInDisposingMethod(propertyDeclaration.Identifier.Text, Configuration, context.SemanticModel)) return;
             if (propertyDeclaration.IsStatic())
             {
-                context.ReportNotDisposedStaticField(propertyDeclaration.Identifier.Text);
+                context.ReportNotDisposedStaticPropertFactory(propertyDeclaration.Identifier.Text);
             }
             else
             {
-                context.ReportNotDisposedProperty(propertyDeclaration.Identifier.Text);
+                context.ReportNotDisposedPropertFactory(propertyDeclaration.Identifier.Text);
             }
         }
 
@@ -116,17 +119,30 @@ namespace DisposableFixer
         {
             var node = context.Node;
             if (!(node.Parent.Parent is PropertyDeclarationSyntax propertyDeclaration)) return; // should not happen => we cke this before
-
+            
             if (node.IsDisposedInDisposingMethod(propertyDeclaration.Identifier.Text, Configuration, context.SemanticModel)) return;
-            if (propertyDeclaration.IsStatic())
+            if (propertyDeclaration.ExpressionBody != null)
             {
-                context.ReportNotDisposedStaticProperty(propertyDeclaration.Identifier.Text);
+                if (propertyDeclaration.IsStatic())
+                {
+                    context.ReportNotDisposedStaticPropertFactory(propertyDeclaration.Identifier.Text);
+                }
+                else
+                {
+                    context.ReportNotDisposedPropertFactory(propertyDeclaration.Identifier.Text);
+                }
             }
             else
             {
-                context.ReportNotDisposedProperty(propertyDeclaration.Identifier.Text);
+                if (propertyDeclaration.IsStatic())
+                {
+                    context.ReportNotDisposedStaticProperty(propertyDeclaration.Identifier.Text);
+                }
+                else
+                {
+                    context.ReportNotDisposedProperty(propertyDeclaration.Identifier.Text);
+                }
             }
-            
         }
 
         private static void AnalyzeNodeWithinVariableDeclarator(CustomAnalysisContext context)

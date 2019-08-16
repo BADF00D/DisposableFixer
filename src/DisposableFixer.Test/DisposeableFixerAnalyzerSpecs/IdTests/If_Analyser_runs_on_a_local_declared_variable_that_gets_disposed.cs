@@ -27,7 +27,8 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.IdTests
                 yield return NoneStaticFieldInitializedDirectlyViaMethodInvocation();
                 yield return NoneStaticPropertyInitializedDirectlyViaMethodInvocationInExpressionBody();
                 yield return StaticPropertyInitializedDirectlyViaMethodInvocationInExpressionBody();
-
+                yield return NoneStaticPropertyInitializedDirectlyViaMethodInvocationInGetter();
+                yield return StaticPropertyInitializedDirectlyViaMethodInvocationInGetter();
             }
         }
         
@@ -196,7 +197,7 @@ internal class SomeTestNamspace
     }
 }";
             return new TestCaseData(code)
-                .Returns(Id.ForAssignmentFromMethodInvocationToPropertyNotDisposed)
+                .Returns(Id.ForNotDisposedFactoryProperty)
                 .SetName("None static Property initialized directly via MethodInvocation in ExpressionBody");
         }
 
@@ -215,7 +216,7 @@ internal class SomeTestNamspace
     }
 }";
             return new TestCaseData(code)
-                .Returns(Id.ForAssignmentFromMethodInvocationToStaticPropertyNotDisposed)
+                .Returns(Id.ForNotDisposedStaticFactoryProperty)
                 .SetName("Static Property initialized directly via MethodInvocation in ExpressionBody");
         }
 
@@ -238,7 +239,7 @@ internal class SomeTestNamspace
     }
 }";
             return new TestCaseData(code)
-                .Returns(Id.ForAssignmentFromMethodInvocationToPropertyNotDisposed)
+                .Returns(Id.ForNotDisposedFactoryProperty)
                 .SetName("None static Property initialized directly via MethodInvocation in Getter");
         }
 
@@ -261,7 +262,7 @@ internal class SomeTestNamspace
     }
 }}";
             return new TestCaseData(code)
-                .Returns(Id.ForAssignmentFromMethodInvocationToStaticPropertyNotDisposed)
+                .Returns(Id.ForNotDisposedStaticFactoryProperty)
                 .SetName("Static Property initialized directly via MethodInvocation in Getter");
         }
     }

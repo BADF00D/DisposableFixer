@@ -10,14 +10,18 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.InvokationExpressio
     internal class If_Analyser_runs_MethodInvocation_that_is_part_of_property : DisposeableFixerAnalyzerSpec
     {
         private const string Code = @"
-namespace SomeNamespace
-     public class SomeCode {
-        public System.IDisposable Property {
-            get{ return Create();}
-        }
+using System;
+using System.IO;
 
-        private static System.IDisposable Create() {
-            return new System.IO.MemoryStream();
+namespace SomeNamespace
+{
+    public class SomeCode
+    {
+        public IDisposable Property => Create();
+
+        private static IDisposable Create()
+        {
+            return new MemoryStream();
         }
     }
 }";
@@ -34,7 +38,7 @@ namespace SomeNamespace
         {
             var diagnostic = _diagnostics.First();
             diagnostic.Id.Should()
-                .Be(Id.ForAssignmentFromMethodInvocationToPropertyNotDisposed);
+                .Be(Id.ForNotDisposedFactoryProperty);
         }
     }
 }

@@ -28,11 +28,11 @@ namespace DisFixerTest.ObjectCreationAssignedToField {
         }
 
         [Test]
-        public void Then_there_should_be_no_Diagnostics()
+        public void Then_there_should_one_Diagnostics()
         {
             var diagnostic = _diagnostics.First();
             diagnostic.Descriptor.Should()
-                .Be(NotDisposed.Assignment.FromObjectCreation.ToPropertyNotDisposedDescriptor);
+                .Be(NotDisposed.FactoryProperty.Descriptor);
         }
     }
 }

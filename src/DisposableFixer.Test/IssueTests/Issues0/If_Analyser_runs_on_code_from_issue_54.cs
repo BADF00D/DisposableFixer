@@ -9,7 +9,7 @@ namespace DisposableFixer.Test.IssueTests.Issues0
     internal class If_Analyser_runs_on_code_from_issue_54 : IssueSpec
     {
         private const string Code = @"
-namespace SomeNamespace
+namespace SomeNamespace{
     public class SomeCode{
         public System.IDisposable Property {
             get {
@@ -33,7 +33,7 @@ namespace SomeNamespace
 
             var diagnostic = _diagnostics.First();
             diagnostic.Descriptor.Should()
-                .Be(NotDisposed.Assignment.FromObjectCreation.ToPropertyNotDisposedDescriptor);
+                .Be(NotDisposed.FactoryProperty.Descriptor);
         }
     }
 }
