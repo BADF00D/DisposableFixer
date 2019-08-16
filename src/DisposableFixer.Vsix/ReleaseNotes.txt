@@ -1,4 +1,12 @@
-﻿Release 1.6.0
+﻿Release 2.0.0
+* Issue 117: Added support for yield return IDisposable
+* Issue 115: Add support for conditionals in using declarations
+* Issue 116: BREAKING CHANGE: Added new diagnostics id when field or property is static
+* Issue 118: BREAKING CHANGE: Factory properties got their own diagnostic ids
+* Issue 120: Add support for ReactiveUI's DisposeWith method.
+
+
+Release 1.6.0
 Issue 113: Via Internal configuration certain types can report a different severity then warning. CancellationTokenRegistration is only reported as info this way.
 
 Release 1.5.0
