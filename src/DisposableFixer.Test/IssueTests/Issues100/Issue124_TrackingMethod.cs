@@ -4,30 +4,13 @@ using NUnit.Framework;
 namespace DisposableFixer.Test.IssueTests.Issues100
 {
     [TestFixture]
-    internal class Issue124_TrackingMethod_on_parent_member : IssueSpec
+    internal class Issue124_TrackingMethod : IssueSpec
     {
 
         private const string Code = @"
 using System;
 using System.IO;
 using System.Reactive.Disposables;
-
-public class BaseCase : IDisposable
-{
-    private MemoryStream field;
-    public MemoryStream Property { get; set; }
-    public BaseCase()
-    {
-        field = new MemoryStream(); //no warning as expected
-        Property = new MemoryStream(); //no warning as expected
-    }
-
-    public void Dispose()
-    {
-        field.Dispose();
-        Property.Dispose();
-    }
-}
 
 public class WithTrackingMethod : IDisposable
 {

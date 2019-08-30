@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DisposableFixer.Configuration;
+using DisposableFixer.Utils;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -284,6 +285,16 @@ namespace DisposableFixer.Extensions
             return objectCreation?.Parent is MemberAccessExpressionSyntax
                    && objectCreation.Parent?.Parent is InvocationExpressionSyntax;
         }
+
+        internal static bool IsTrackedViaTrackingMethod(this SyntaxNode node, CustomAnalysisContext context, BaseMethodDeclarationSyntax scope,
+            string variableName)
+        {
+            return scope
+                .DescendantNodes<InvocationExpressionSyntax>()
+                .Any(ies => ies.IsInvocationExpressionSyntaxOn(variableName) && context.Detector.IsTrackingMethodCall(ies, context.SemanticModel));
+        }
+
+
         
 
         internal static bool IsPartOfMethodCall(this SyntaxNode node)

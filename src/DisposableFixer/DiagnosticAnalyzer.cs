@@ -335,6 +335,8 @@ namespace DisposableFixer
                 else //field or property
                 {
                     if (node.IsDisposedInDisposingMethod(variableName, Configuration, context.SemanticModel)) return;
+                    if (node.IsTrackedViaTrackingMethod(context, ctor, variableName)) return;
+
 
                     if (node.IsAssignmentToProperty(variableName, out var isStatic))
                     {

@@ -168,5 +168,11 @@ namespace DisposableFixer.Extensions
             var symbol = symbolInfo.Symbol as IMethodSymbol;
             return symbol?.ReturnType as INamedTypeSymbol;
         }
+
+        public static bool IsInvocationExpressionSyntaxOn(this InvocationExpressionSyntax ies, string variableName)
+        {
+            return (ies.ArgumentList.Arguments[0]?.Expression as IdentifierNameSyntax)
+                   ?.Identifier.Text == variableName;
+        }
     }
 }
