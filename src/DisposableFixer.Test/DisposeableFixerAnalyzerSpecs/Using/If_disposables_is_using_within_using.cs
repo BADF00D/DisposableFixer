@@ -23,13 +23,18 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.Using
                 yield return new TestCaseData(ThreeDisablesInsideUsingBlock, 3)
                     .SetName("Three disposable inside using block");
                 yield return new TestCaseData(ObjectCreationInConditionalExpressionInUsing, 0)
-                    .SetName("OC in ConditionaStatement in using");
+                    .SetName("OC in ConditionalStatement in using");
                 yield return new TestCaseData(MethodInvocationInConditionalExpressionInUsing, 0)
-                    .SetName("MI in ConditionaStatement in using");
+                    .SetName("MI in ConditionalStatement in using");
                 yield return new TestCaseData(ObjectCreationInConditionalExpressionInUsingWithLocalVariable, 0)
-                    .SetName("OC in ConditionaStatement in using with using");
+                    .SetName("OC in ConditionalStatement in using with using");
                 yield return new TestCaseData(MethodInvocationInConditionalExpressionInUsingWithLocalVariable, 0)
-                    .SetName("MI in ConditionaStatement in using with using");
+                    .SetName("MI in ConditionalStatement in using with using");
+
+                yield return new TestCaseData(DisposableMethodInvocationThatIsPartOfSimpleMemberAccessThatReturnsAnDisposable, 1)
+                    .SetName("Disposable MI that is part of SimpleMemberAccess that returns an disposable");
+                yield return new TestCaseData(DisposableObjectCreationThatIsPartOfSimpleMemberAccessThatReturnsAnDisposable,1)
+                    .SetName("Disposable OC that is part of SimpleMemberAccess that returns an disposable");
             }
         }
 
@@ -177,6 +182,65 @@ internal class SomeTestNamspace
     }
 }
 ";
+
+        private const string DisposableObjectCreationThatIsPartOfSimpleMemberAccessThatReturnsAnDisposable = @"
+using System;
+
+namespace RxTimeoutTest
+{
+    internal class SomeClass
+    {
+        private IDisposable _field;
+
+        public void Exchange() {
+            using (var disposable = new SomeDisposable().CreateDisposable()) {
+            }
+        }
+    }
+
+    internal class SomeDisposable : IDisposable
+    {
+        public void Dispose()
+        {
+        }
+
+        public SomeDisposable CreateDisposable()
+        {
+            return new SomeDisposable();
+        }
+    }
+}";
+
+        private const string DisposableMethodInvocationThatIsPartOfSimpleMemberAccessThatReturnsAnDisposable = @"
+using System;
+
+namespace RxTimeoutTest
+{
+    internal class SomeClass
+    {
+        private IDisposable _field;
+
+        public void Exchange()
+        {
+            using (var disposable = Create().CreateDisposable())
+            {
+            }
+        }
+        private SomeDisposable Create() => new SomeDisposable();
+    }
+
+    internal class SomeDisposable : IDisposable
+    {
+        public void Dispose()
+        {
+        }
+
+        public SomeDisposable CreateDisposable()
+        {
+            return new SomeDisposable();
+        }
+    }
+}";
 
         [Test, TestCaseSource(nameof(TestCases))]
         public void Then_there_should_be_no_Diagnostics(string code, int numberOfDiagnostics)
