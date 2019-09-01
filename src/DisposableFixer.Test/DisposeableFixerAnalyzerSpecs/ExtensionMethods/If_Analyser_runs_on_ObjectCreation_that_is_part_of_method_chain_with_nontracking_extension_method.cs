@@ -26,6 +26,7 @@ namespace DisFixerTest {
         private readonly List<IDisposable> _disposables = new List<IDisposable>(); 
         public Usage()
         {
+            // two diagnostics newMemoryStream() and return value of AddTo - both are the same instance, but analyzer does'nt know that
             new MemoryStream().AddTo(_disposables);
         }
         public void SomeMethod(){}
@@ -55,7 +56,8 @@ namespace Reactive.Bindings.Extensions{
         [Test]
         public void Then_there_should_be_one_Diagnostics()
         {
-            _diagnostics.Length.Should().Be(1);
+            PrintCodeToFix(Code);
+            _diagnostics.Length.Should().Be(2);
         }
     }
 }
