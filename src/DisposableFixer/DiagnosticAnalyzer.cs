@@ -28,7 +28,7 @@ namespace DisposableFixer
                 NotDisposed.AnonymousObject.FromObjectCreationDescriptor,
                 NotDisposed.AnonymousObject.FromMethodInvocationDescriptor,
                 NotDisposed.LocalVariable.Descriptor,
-                
+
                 NotDisposed.Assignment.FromObjectCreation.ToFieldNotDisposedDescriptor,
                 NotDisposed.Assignment.FromObjectCreation.ToPropertyNotDisposedDescriptor,
                 NotDisposed.Assignment.FromMethodInvocation.ToFieldNotDisposedDescriptor,
@@ -59,7 +59,7 @@ namespace DisposableFixer
             if (!ctx.CouldDetectType()) { }
             else if (!ctx.IsDisposableOrImplementsDisposable()) return;
             else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new MemoryStream()).Dispose()
-            else if (Detector.IsIgnoredTypeOrImplementsIgnoredInterface(ctx.Type)) { } 
+            else if (Detector.IsIgnoredTypeOrImplementsIgnoredInterface(ctx.Type)) { }
             else if (node.IsReturnedInProperty()) AnalyzeNodeInReturnStatementOfProperty(ctx);
             else if (node.IsPartOfReturnStatementInBlock()) { } // return new MemoryStream() or return Task.FromResult(new MemoryStream())
             else if (node.IsPartOfYieldReturnStatementInBlock()) { } //yield return new MemoryStream()
@@ -71,11 +71,7 @@ namespace DisposableFixer
             {
                 AnalyzePartOfMethodCall(ctx);
             }
-            else if (node.IsMaybePartOfMethodChainUsingTrackingExtensionMethod())
-            {
-                var methodInvocation = node.Parent.Parent as InvocationExpressionSyntax;
-                if (Detector.IsTrackingMethodCall(methodInvocation, context.SemanticModel)) return;
-            }
+            else if (node.IsMaybePartOfMethodChainUsingTrackingExtensionMethod() && Detector.IsTrackingMethodCall(node.Parent.Parent as InvocationExpressionSyntax, context.SemanticModel)) return;
             else if (node.IsArgumentInObjectCreation()) AnalyzeNodeInArgumentList(ctx);
             else if (node.IsPartIfArrayInitializerThatIsPartOfObjectCreation())
             {
@@ -119,7 +115,7 @@ namespace DisposableFixer
         {
             var node = context.Node;
             if (!(node.Parent.Parent is PropertyDeclarationSyntax propertyDeclaration)) return; // should not happen => we cke this before
-            
+
             if (node.IsDisposedInDisposingMethod(propertyDeclaration.Identifier.Text, Configuration, context.SemanticModel)) return;
             if (propertyDeclaration.ExpressionBody != null)
             {
@@ -187,7 +183,7 @@ namespace DisposableFixer
             if (IsArgumentInTrackingMethod(context, localVariableName, invocationExpressions)) return;
             if (IsArgumentInConstructorOfTrackingType(context, localVariableName, parentScope)) return;
             if (IsCallToMethodThatIsConsideredAsDisposeCall(invocationExpressions, context)) return;
-            
+
             context.ReportNotDisposedLocalVariable();
         }
 
@@ -195,7 +191,7 @@ namespace DisposableFixer
             CustomAnalysisContext context)
         {
             var fullName = GetReturnOrReceivedType(context);
-            return Configuration.DisposingMethodsAtSpecialClasses.TryGetValue(fullName, out var methodCalls) 
+            return Configuration.DisposingMethodsAtSpecialClasses.TryGetValue(fullName, out var methodCalls)
                    && methodCalls.Any(mc => invocations.Any(ies => ies.IsCallToMethod(mc)));
         }
 
@@ -256,7 +252,7 @@ namespace DisposableFixer
 
                         //check if is tracking instance
                         var sym = context.SemanticModel.GetSymbolInfo(oce);
-                        return (sym.Symbol as IMethodSymbol)?.ReceiverType is INamedTypeSymbol type2 
+                        return (sym.Symbol as IMethodSymbol)?.ReceiverType is INamedTypeSymbol type2
                                && Detector.IsTrackedType(type2, oce, context.SemanticModel);
                     });
                 });
@@ -278,7 +274,7 @@ namespace DisposableFixer
             {
                 context.ReportNotDisposedField(fieldName);
             }
-            
+
         }
 
         private static void AnalyzeNodeInAssignmentExpression(CustomAnalysisContext context)
@@ -362,9 +358,9 @@ namespace DisposableFixer
                         {
                             context.ReportNotDisposedField(variableName);
                         }
-                        
+
                     }
-                    
+
                 }
             }
         }
@@ -401,7 +397,7 @@ namespace DisposableFixer
                 }
             }
         }
-        
+
         private static void AnalyzeNodeInArgumentList(CustomAnalysisContext context)
         {
             var objectCreation = context.Node.Parent.Parent.Parent as ObjectCreationExpressionSyntax;
@@ -453,7 +449,7 @@ namespace DisposableFixer
             else if (node.IsPartIfArrayInitializerThatIsPartOfObjectCreation()) {
                 var objectCreation = node.Parent.Parent.Parent.Parent.Parent as ObjectCreationExpressionSyntax;
                 CheckIfObjectCreationTracksNode(ctx, objectCreation);
-            } 
+            }
             else if (node.IsDescendantOfUsingHeader()) { } //using(memstream) or using(new MemoryStream())
             else if (node.IsDescendantOfVariableDeclarator()) AnalyzeNodeWithinVariableDeclarator(ctx);
             else if (node.IsPartOfAssignmentExpression()) AnalyzeNodeInAssignmentExpression(ctx);
