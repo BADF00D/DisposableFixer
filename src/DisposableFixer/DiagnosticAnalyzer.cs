@@ -425,16 +425,7 @@ namespace DisposableFixer
             else if (ctx.IsTypeIgnoredOrImplementsIgnoredInterface()) { } //GetEnumerator()
             else if (Detector.IsTrackingMethodCall(node, context.SemanticModel)) { }//ignored extension methods
             else if (Detector.IsIgnoredFactoryMethod(node, context.SemanticModel)) return; //A.Fake<IDisposable>
-            else if (node.IsMaybePartOfMethodChainUsingTrackingExtensionMethod())
-            {
-                //there maybe multiple method invocations within one chain
-                var baseNode = node;
-                while(baseNode?.Parent is MemberAccessExpressionSyntax && baseNode?.Parent?.Parent is InvocationExpressionSyntax parentIes)
-                {
-                    baseNode = parentIes;
-                    if (Detector.IsTrackingMethodCall(baseNode, context.SemanticModel)) return;
-                }
-            }
+            else if (node.IsMaybePartOfMethodChainUsingTrackingExtensionMethod() && IsTrackingMethod(node, ctx)) return;
             else if (node.IsPartOfMethodCall())
             {
                 AnalyzePartOfMethodCall(ctx);
@@ -456,6 +447,17 @@ namespace DisposableFixer
             else if (node.IsPartOfAutoProperty()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(ctx);
             else if (node.IsPartOfPropertyExpressionBody()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(ctx);
             else ctx.ReportNotDisposedAnonymousObject(); //call to Create(): MemeoryStream
+        }
+
+        private static bool IsTrackingMethod(InvocationExpressionSyntax node, CustomAnalysisContext context)
+        {
+            var baseNode = node;
+            while (baseNode?.Parent is MemberAccessExpressionSyntax && baseNode?.Parent?.Parent is InvocationExpressionSyntax parentIes)
+            {
+                baseNode = parentIes;
+                if (Detector.IsTrackingMethodCall(baseNode, context.SemanticModel)) return true;
+            }
+            return false;
         }
 
         private static void AnalyzePartOfMethodCall(CustomAnalysisContext ctx)
