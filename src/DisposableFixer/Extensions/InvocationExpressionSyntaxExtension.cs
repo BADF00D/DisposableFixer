@@ -171,7 +171,8 @@ namespace DisposableFixer.Extensions
 
         public static bool IsInvocationExpressionSyntaxOn(this InvocationExpressionSyntax ies, string variableName)
         {
-            return (ies.ArgumentList.Arguments[0]?.Expression as IdentifierNameSyntax)
+            return ies.ArgumentList.Arguments.Any() &&
+                (ies.ArgumentList.Arguments[0]?.Expression as IdentifierNameSyntax)
                    ?.Identifier.Text == variableName;
         }
     }

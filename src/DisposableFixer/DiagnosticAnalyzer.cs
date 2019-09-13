@@ -311,6 +311,11 @@ namespace DisposableFixer
                     return;
                 }
 
+                if (node.IsTrackedViaTrackingMethod(context, containingMethod, variableName))
+                {
+                    return;
+                }
+
                 //assignment to field or property
                 ReportStaticOrNonStaticNotDisposedMember(context, variableName);
 
