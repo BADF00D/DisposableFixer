@@ -33,7 +33,7 @@ namespace SomeNamespace
             PrintCodeToAnalyze(Code);
             var diagnostics = MyHelper.RunAnalyser(Code, new DisposableFixerAnalyzer());
             diagnostics.Should().HaveCount(1);
-            diagnostics[0].Should().Be(NotDisposed.Assignment.FromMethodInvocation.ToFieldNotDisposedDescriptor);
+            diagnostics[0].Id.Should().Be(NotDisposed.Assignment.FromMethodInvocation.ToFieldNotDisposedDescriptor.Id);
         }
     }
 }

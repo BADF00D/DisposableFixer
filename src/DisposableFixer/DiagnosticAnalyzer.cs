@@ -497,9 +497,44 @@ namespace DisposableFixer
                 if (node.TryFindParentClass(out var @class))
                 {
                     var assignment = awaitExpression?.Parent as AssignmentExpressionSyntax;
-                    var member = (assignment?.Left as IdentifierNameSyntax)?.Identifier.Text;
-                    var isDisposed = @class.ContainsDisposeCallFor(member, context.SemanticModel, Configuration);
+                    var memberName = (assignment?.Left as IdentifierNameSyntax)?.Identifier.Text;
+                    var isDisposed = @class.ContainsDisposeCallFor(memberName, context.SemanticModel, Configuration);
                     if (isDisposed) return;
+                    var fieldDeclarations = @class
+                        .DescendantNodes<FieldDeclarationSyntax>()
+                        .FirstOrDefault(fds =>
+                            fds.DescendantNodes<VariableDeclaratorSyntax>()
+                                .Any(vds => vds.Identifier.Text == memberName));
+                    if (fieldDeclarations != null)
+                    {
+                        if (fieldDeclarations.IsStatic())
+                        {
+                            context.ReportNotDisposedStaticField(memberName);
+                        }
+                        else
+                        {
+                            context.ReportNotDisposedField(memberName);
+                        }
+
+                        return;
+                    }
+
+                    var propertyDeclaations = @class
+                        .DescendantNodes<PropertyDeclarationSyntax>()
+                        .FirstOrDefault(pds => pds.Identifier.Text == memberName);
+                    if (propertyDeclaations != null)
+                    {
+                        if (propertyDeclaations.IsStatic())
+                        {
+                            context.ReportNotDisposedStaticProperty(memberName);
+                        }
+                        else
+                        {
+                            context.ReportNotDisposedProperty(memberName);
+                        }
+
+                        return;
+                    }
                 }
                 context.ReportNotDisposedLocalVariable();
             }
