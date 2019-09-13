@@ -1,4 +1,9 @@
-﻿Release 2.0.0
+﻿Release 2.0.1
+* Issue 108: Anonymous variables inside using declaration get detected correctly.
+* Issue 122: Assigning a field/property via await yields correct diagnistic.
+* Issue 124: Fixed problem with tracing methods.
+
+Release 2.0.0
 * Issue 117: Added support for yield return IDisposable
 * Issue 115: Add support for conditionals in using declarations
 * Issue 116: BREAKING CHANGE: Added new diagnostics id when field or property is static
