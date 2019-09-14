@@ -12,6 +12,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace DisposableFixer.CodeFix
 {
@@ -58,16 +59,16 @@ namespace DisposableFixer.CodeFix
             var model = editor.SemanticModel;
 
             if (!node.TryFindParent<ClassDeclarationSyntax>(out var oldClass)) return editor.GetChangedDocument();
-            editor.AddInterfaceIfNeeded(oldClass, SyntaxFactory.IdentifierName(Constants.IDisposable));
+            editor.AddInterfaceIfNeeded(oldClass, IdentifierName(Constants.IDisposable));
 
             if (node.Parent is AwaitExpressionSyntax awaitExpression)
             {
                 var type = (model.GetAwaitExpressionInfo(awaitExpression).GetResultMethod?.ReturnType as INamedTypeSymbol)?.Name;
                 editor.AddUninitializedFieldNamed(oldClass, fieldName, type);
-                var assignment = SyntaxFactory.ExpressionStatement(
-                    SyntaxFactory.AssignmentExpression(
+                var assignment = ExpressionStatement(
+                    AssignmentExpression(
                         SyntaxKind.SimpleAssignmentExpression,
-                        SyntaxFactory.IdentifierName(fieldName),
+                        IdentifierName(fieldName),
                         awaitExpression));
                 editor.ReplaceNode(node.Parent.Parent.Parent.Parent.Parent, assignment);
             }
@@ -75,10 +76,10 @@ namespace DisposableFixer.CodeFix
             {
                 var type = model.GetTypeInfo(node).Type?.Name ?? Constants.IDisposable;
                 editor.AddUninitializedFieldNamed(oldClass, fieldName, type);
-                var assignment = SyntaxFactory.ExpressionStatement(
-                    SyntaxFactory.AssignmentExpression(
+                var assignment = ExpressionStatement(
+                    AssignmentExpression(
                         SyntaxKind.SimpleAssignmentExpression,
-                        SyntaxFactory.IdentifierName(fieldName),
+                        IdentifierName(fieldName),
                         node as ExpressionSyntax
                     )
                 );
@@ -108,14 +109,11 @@ namespace DisposableFixer.CodeFix
 
             if (!node.TryFindParent<ClassDeclarationSyntax>(out var oldClass)) return editor.GetChangedDocument();
 
-            editor.AddInterfaceIfNeeded(oldClass, SyntaxFactory.IdentifierName(Constants.IDisposable));
+            editor.AddInterfaceIfNeeded(oldClass, IdentifierName(Constants.IDisposable));
 
 
             switch (node)
             {
-                case InvocationExpressionSyntax ies:
-                    ReplaceInvocationExpression(model, node, editor, oldClass, fieldName, ies);
-                    break;
                 case ExpressionSyntax expression:
                     ReplaceExpression(model, node, editor, oldClass, fieldName, expression);
                     break;
@@ -140,12 +138,6 @@ namespace DisposableFixer.CodeFix
             return editor.GetChangedDocument();
         }
 
-        private static Document ReplaceInvocationExpression(SemanticModel model, SyntaxNode node, DocumentEditor editor, ClassDeclarationSyntax oldClass, string fieldName, InvocationExpressionSyntax ies)
-        {
-
-            return editor.GetChangedDocument();
-        }
-
         private static void ReplaceArgument(SemanticModel model, ArgumentSyntax argumentSyntax, DocumentEditor editor,
             ClassDeclarationSyntax oldClass, string fieldName, SyntaxNode node)
         {
@@ -154,10 +146,10 @@ namespace DisposableFixer.CodeFix
             editor.AddUninitializedFieldNamed(oldClass, fieldName, type);
             if (!node.TryFindContainingBlock(out var block)) return;
 
-            var assignmentExpression = SyntaxFactory.ExpressionStatement(
-                SyntaxFactory.AssignmentExpression(
+            var assignmentExpression = ExpressionStatement(
+                AssignmentExpression(
                     SyntaxKind.SimpleAssignmentExpression,
-                    SyntaxFactory.IdentifierName(fieldName),
+                    IdentifierName(fieldName),
                     argumentSyntax.Expression
                 )
             );
@@ -165,7 +157,7 @@ namespace DisposableFixer.CodeFix
                 block.Statements.TakeWhile(ss =>
                     ss.DescendantNodes<ArgumentSyntax>().All(@as => @as != argumentSyntax));
 
-            var variable = SyntaxFactory.Argument(SyntaxFactory.IdentifierName(fieldName));
+            var variable = Argument(IdentifierName(fieldName));
             var currentStatement = block.Statements
                 .SkipWhile(ss => ss.DescendantNodes<ArgumentSyntax>().All(@as => @as != argumentSyntax))
                 .FirstOrDefault()
@@ -173,7 +165,7 @@ namespace DisposableFixer.CodeFix
             var trailingStatements = block.Statements
                 .SkipWhile(ss => ss.DescendantNodes<ArgumentSyntax>().All(@as => @as != argumentSyntax))
                 .Skip(1);
-            var newBlock = SyntaxFactory.Block(precedingStatements
+            var newBlock = Block(precedingStatements
                 .Concat(assignmentExpression)
                 .Concat(currentStatement)
                 .Concat(trailingStatements));
@@ -187,14 +179,30 @@ namespace DisposableFixer.CodeFix
             var typeInfo = model.GetTypeInfo(node);
             var type = typeInfo.Type?.Name ?? Constants.IDisposable;
             editor.AddUninitializedFieldNamed(oldClass, fieldName, type);
-            var assignment = SyntaxFactory.ExpressionStatement(
-                SyntaxFactory.AssignmentExpression(
-                    SyntaxKind.SimpleAssignmentExpression,
-                    SyntaxFactory.IdentifierName(fieldName),
-                    expressionSyntax
-                )
-            );
-            editor.ReplaceNode(node.Parent, assignment);
+
+
+            if (node.Parent is MemberAccessExpressionSyntax)
+            {
+                var x = ParenthesizedExpression(
+                    AssignmentExpression(
+                        SyntaxKind.SimpleAssignmentExpression,
+                        IdentifierName(fieldName),
+                        expressionSyntax)
+                    );
+
+                editor.ReplaceNode(node, x);
+            }
+            else
+            {
+                var assignment = ExpressionStatement(
+                    AssignmentExpression(
+                        SyntaxKind.SimpleAssignmentExpression,
+                        IdentifierName(fieldName),
+                        expressionSyntax
+                    )
+                );
+                editor.ReplaceNode(node.Parent, assignment);
+            }
         }
 
         private static string RetrieveFieldName(CodeFixContext context, SyntaxNode node)
