@@ -240,4 +240,13 @@
   <data name="NotDisposedFactoryStaticPropertyTitle" xml:space="preserve">
     <value>Marks undisposed static factory properties.</value>
   </data>
+  <data name="HiddenDisposableDescription" xml:space="preserve">
+    <value>IDisposable implementation can't be seen by caller.</value>
+  </data>
+  <data name="HiddenDisposableMessageFormat" xml:space="preserve">
+    <value>{0} implements IDisposable but return value {1} does not.</value>
+  </data>
+  <data name="HiddenDisposableTitle" xml:space="preserve">
+    <value>Marks return values that hides the IDisposable implementation of return value.</value>
+  </data>
 </root>

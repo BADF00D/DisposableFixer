@@ -341,6 +341,33 @@ namespace DisposableFixer {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to IDisposable implementation can&apos;t be seen by caller..
+        /// </summary>
+        internal static string HiddenDisposableDescription {
+            get {
+                return ResourceManager.GetString("HiddenDisposableDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} implements IDisposable but return value {1} does not..
+        /// </summary>
+        internal static string HiddenDisposableMessageFormat {
+            get {
+                return ResourceManager.GetString("HiddenDisposableMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Marks return values that hides the IDisposable implementation of return value..
+        /// </summary>
+        internal static string HiddenDisposableTitle {
+            get {
+                return ResourceManager.GetString("HiddenDisposableTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Marks factory property that creates an IDisposable without tracking it..
         /// </summary>
         internal static string NotDisposedFactoryPropertyDescription {

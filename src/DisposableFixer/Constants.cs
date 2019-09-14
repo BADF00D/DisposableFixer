@@ -42,6 +42,30 @@ namespace DisposableFixer
         public const string ForAssignmentFromMethodInvocationToStaticPropertyNotDisposed = "DF0027";
         public const string ForNotDisposedFactoryProperty = "DF0028";
         public const string ForNotDisposedStaticFactoryProperty = "DF0029";
+
+        public const string ForHiddenIDisposable = "DF0100";
+    }
+
+    internal static class Hidden
+    {
+        public static readonly DiagnosticDescriptor Disposable =
+            new DiagnosticDescriptor(
+                id: Id.ForHiddenIDisposable,
+                title: new LocalizableResourceString(
+                    nameOfLocalizableResource: nameof(Resources.HiddenDisposableTitle),
+                    resourceManager: Resources.ResourceManager,
+                    resourceSource: typeof(Resources)),
+                messageFormat: new LocalizableResourceString(
+                    nameOfLocalizableResource: nameof(Resources.HiddenDisposableMessageFormat),
+                    resourceManager: Resources.ResourceManager,
+                    resourceSource: typeof(Resources)),
+                category: Category.WrongUsage,
+                defaultSeverity: DiagnosticSeverity.Warning,
+                isEnabledByDefault: true,
+                description: new LocalizableResourceString(
+                    nameOfLocalizableResource: nameof(Resources.HiddenDisposableDescription),
+                    resourceManager: Resources.ResourceManager,
+                    resourceSource: typeof(Resources)));
     }
 
     internal static class NotDisposed

@@ -39,7 +39,9 @@ namespace DisposableFixer
                 NotDisposed.Assignment.FromMethodInvocation.ToStaticPropertyNotDisposedDescriptor,
 
                 NotDisposed.FactoryProperty.Descriptor,
-                NotDisposed.StaticFactoryProperty.Descriptor
+                NotDisposed.StaticFactoryProperty.Descriptor,
+
+                Hidden.Disposable
                 );
 
         public override void Initialize(AnalysisContext context)
