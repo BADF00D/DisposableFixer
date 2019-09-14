@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using DisposableFixer.CodeFix;
-using DisposableFixer.Extensions;
 using FluentAssertions;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using NUnit.Framework;
 
 namespace DisposableFixer.Test.CodeFix.IntroduceFieldAndDisposeInDisposeMethodCodeFixProviderSpecs
@@ -62,19 +60,17 @@ namespace DisposableFixer.Test.CodeFix.IntroduceFieldAndDisposeInDisposeMethodCo
         {
             get
             {
-                var forAnonymousObjectFromObjectCreation = Id.ForAnonymousObjectFromObjectCreation;
-                yield return new TestCaseData(AnonymousObjectCreation, forAnonymousObjectFromObjectCreation)
-                    .SetName("Undisposed anonymous ObjectCreation");
-                yield return new TestCaseData(AnonymousMethodInvoation, Id.ForAnonymousObjectFromMethodInvocation)
-                    .SetName("Undisposed anonymous MethodInvocation");
-                yield return new TestCaseData(LocalVariable, Id.ForNotDisposedLocalVariable)
-                    .SetName("Undisposed local variable");
-                yield return new TestCaseData(AnonymousObjectCreationThatIsAArgument, forAnonymousObjectFromObjectCreation)
-                    .SetName("Undisposed Anonymous variable that is an argument");
+                yield return AnonymousObjectCreation();
+                yield return AnonymousMethodInvoation();
+                yield return LocalVariable();
+                yield return AnonymousObjectCreationThatIsAArgument();
+                yield return UndisposedAnoymousMethodInvocationWithMemberAccess();
             }
         }
 
-        private const string AnonymousObjectCreation = @"
+        private static TestCaseData AnonymousObjectCreation()
+        {
+            const string code = @"
 using System.IO;
 
 namespace MyNamespace
@@ -89,7 +85,14 @@ namespace MyNamespace
 
 }
 ";
-        private const string AnonymousMethodInvoation = @"
+            return new TestCaseData(code, Id.ForAnonymousObjectFromObjectCreation)
+                .SetName("Undisposed anonymous ObjectCreation");
+        }
+
+
+        private static TestCaseData AnonymousMethodInvoation()
+        {
+            const string code = @"
 using System;
 using System.IO;
 
@@ -110,8 +113,13 @@ namespace MyNamespace
 
 }
 ";
+            return new TestCaseData(code, Id.ForAnonymousObjectFromMethodInvocation)
+                .SetName("Undisposed anonymous MethodInvocation");
+        }
 
-        private const string LocalVariable = @"
+        private static TestCaseData LocalVariable()
+        {
+            const string code = @"
 using System;
 using System.IO;
 
@@ -131,7 +139,13 @@ namespace MyNamespace
     }
 }
 ";
-        private const string AnonymousObjectCreationThatIsAArgument = @"
+            return new TestCaseData(code, Id.ForNotDisposedLocalVariable)
+                .SetName("Undisposed local variable");
+        }
+
+        private static TestCaseData AnonymousObjectCreationThatIsAArgument()
+        {
+            const string code = @"
 using System.IO;
 using System.Text;
 
@@ -150,7 +164,41 @@ namespace Demo
     }
 }
 ";
+            return new TestCaseData(code, Id.ForAnonymousObjectFromObjectCreation)
+                .SetName("Undisposed Anonymous variable that is an argument");
+        }
 
-        
+        private static TestCaseData UndisposedAnoymousMethodInvocationWithMemberAccess()
+        {
+            const string code = @"
+using System;
+
+namespace RxTimeoutTest
+{
+    internal class SomeClass
+    {
+        public void Exchange()
+        {
+            var x = Create().SomeProperty;
+        }
+
+        public MyDisposable Create()
+        {
+            return null;
+        }
+    }
+
+    public class MyDisposable : IDisposable
+    {
+        public int SomeProperty { get; set; }
+
+        public void Dispose()
+        {
+        }
+    }
+}";
+            return new TestCaseData(code, Id.ForAnonymousObjectFromMethodInvocation)
+                .SetName("Undisposed anonymous MethodInvocation with MemberAccess");
+        }
     }
 }

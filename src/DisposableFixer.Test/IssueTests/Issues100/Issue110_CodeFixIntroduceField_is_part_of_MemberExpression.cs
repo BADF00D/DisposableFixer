@@ -1,13 +1,12 @@
 using DisposableFixer.Test.CodeFix;
 using FluentAssertions;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using NUnit.Framework;
 
 namespace DisposableFixer.Test.IssueTests.Issues100
 {
     [TestFixture]
-    internal class If_Analyser_runs_on_code_from_issue_110 : DisposableAnalyserCodeFixVerifierSpec
+    internal class Issue110_CodeFixIntroduceField_is_part_of_MemberExpression : DisposableAnalyserCodeFixVerifierSpec
     {
 
         protected override CodeFixProvider GetCSharpCodeFixProvider()
