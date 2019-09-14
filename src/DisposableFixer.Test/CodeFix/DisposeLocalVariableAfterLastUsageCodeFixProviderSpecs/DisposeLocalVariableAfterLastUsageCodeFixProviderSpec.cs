@@ -46,19 +46,16 @@ namespace DisposableFixer.Test.CodeFix.DisposeLocalVariableAfterLastUsageCodeFix
         {
             get
             {
-                var forNotDisposedLocalVariable = Id.ForNotDisposedLocalVariable;
-                yield return new TestCaseData(LocalVariableThatIsPartOfVariableDeclarator, forNotDisposedLocalVariable)
-                    .SetName("Undisposed local Variable in VariableDeclarator");
-                yield return new TestCaseData(LocalVariablesThatIsPartOfAssignment, forNotDisposedLocalVariable)
-                    .SetName("Undisposed local Variable in Assigment");
-                yield return new TestCaseData(LocalVariableInAwaitThatIsPartOfVariableDeclarator, forNotDisposedLocalVariable)
-                    .SetName("Undisposed local Variable in await in VariableDeclarator");
-                yield return new TestCaseData(LocalVariableInAwaitThatIsPartOfAssignment, forNotDisposedLocalVariable)
-                    .SetName("Undisposed local Variable in await in Assigment");
+                yield return LocalVariableThatIsPartOfVariableDeclarator();
+                yield return LocalVariablesThatIsPartOfAssignment();
+                yield return LocalVariableInAwaitThatIsPartOfVariableDeclarator();
+                yield return LocalVariableInAwaitThatIsPartOfAssignment();
             }
         }
 
-        private const string LocalVariableThatIsPartOfVariableDeclarator = @"
+        private static TestCaseData LocalVariableThatIsPartOfVariableDeclarator()
+        {
+            const string code = @"
 using System.IO;
 
 namespace SomeNamespace {
@@ -72,8 +69,13 @@ namespace SomeNamespace {
         }
     }
 }";
+            return new TestCaseData(code, Id.ForNotDisposedLocalVariable)
+                .SetName("Undisposed local Variable in VariableDeclarator");
+        }
 
-        private const string LocalVariablesThatIsPartOfAssignment = @"
+        private static TestCaseData LocalVariablesThatIsPartOfAssignment()
+        {
+            const string LocalVariablesThatIsPartOfAssignment = @"
 using System.IO;
 
 namespace SomeNamespace
@@ -91,7 +93,13 @@ namespace SomeNamespace
         }
     }
 }";
-        private const string LocalVariableInAwaitThatIsPartOfVariableDeclarator = @"
+            return new TestCaseData(LocalVariablesThatIsPartOfAssignment, Id.ForNotDisposedLocalVariable)
+                .SetName("Undisposed local Variable in Assigment");
+        }
+
+        private static TestCaseData LocalVariableInAwaitThatIsPartOfVariableDeclarator()
+        {
+            const string code = @"
 using System.IO;
 using System.Threading.Tasks;
 
@@ -114,8 +122,13 @@ namespace SomeNamespace
         }
     }
 }";
+            return new TestCaseData(code, Id.ForNotDisposedLocalVariable)
+                .SetName("Undisposed local Variable in await in VariableDeclarator");
+        }
 
-        private const string LocalVariableInAwaitThatIsPartOfAssignment = @"
+        private static TestCaseData LocalVariableInAwaitThatIsPartOfAssignment()
+        {
+            const string code = @"
 using System.IO;
 using System.Threading.Tasks;
 
@@ -139,5 +152,8 @@ namespace SomeNamespace
         }
     }
 }";
+            return new TestCaseData(code, Id.ForNotDisposedLocalVariable)
+                .SetName("Undisposed local Variable in await in Assigment");
+        }
     }
 }
