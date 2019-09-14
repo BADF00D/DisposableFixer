@@ -50,6 +50,9 @@ namespace DisposableFixer.Test.CodeFix.DisposeLocalVariableAfterLastUsageCodeFix
                 yield return LocalVariablesThatIsPartOfAssignment();
                 yield return LocalVariableInAwaitThatIsPartOfVariableDeclarator();
                 yield return LocalVariableInAwaitThatIsPartOfAssignment();
+                yield return LocalVariableUsedInInvocationExpressionAsMemberAccessExpression();
+                yield return LocalVariableUsedInInvocationExpressionAsArgument();
+                yield return LocalVariableUsedInObjectCreationExpressionAsArgument();
             }
         }
 
@@ -75,7 +78,7 @@ namespace SomeNamespace {
 
         private static TestCaseData LocalVariablesThatIsPartOfAssignment()
         {
-            const string LocalVariablesThatIsPartOfAssignment = @"
+            const string code = @"
 using System.IO;
 
 namespace SomeNamespace
@@ -93,7 +96,7 @@ namespace SomeNamespace
         }
     }
 }";
-            return new TestCaseData(LocalVariablesThatIsPartOfAssignment, Id.ForNotDisposedLocalVariable)
+            return new TestCaseData(code, Id.ForNotDisposedLocalVariable)
                 .SetName("Undisposed local Variable in Assigment");
         }
 
@@ -154,6 +157,76 @@ namespace SomeNamespace
 }";
             return new TestCaseData(code, Id.ForNotDisposedLocalVariable)
                 .SetName("Undisposed local Variable in await in Assigment");
+        }
+
+        private static TestCaseData LocalVariableUsedInInvocationExpressionAsMemberAccessExpression()
+        {
+            const string code = @"
+using System.IO;
+using System.Threading.Tasks;
+
+namespace Test
+{
+    public class DisposeAfterLastUsageDoesNotWork
+    {
+        public async Task Do()
+        {
+            var fac = new MemoryStream();
+            var bytesRead = await fac.ReadAsync(new byte[10], 0, 10);
+        }
+    }
+}";
+            return new TestCaseData(code, Id.ForNotDisposedLocalVariable)
+                .SetName("Local variable used in InvocationExpression as MemberAccessExpression");
+        }
+
+        private static TestCaseData LocalVariableUsedInInvocationExpressionAsArgument()
+        {
+            const string code = @"
+using System;
+using System.IO;
+using System.Threading.Tasks;
+
+namespace Test
+{
+    public class DisposeAfterLastUsageDoesNotWork
+    {
+        public async Task Do()
+        {
+            var fac = new MemoryStream();
+            var x = Create(fac);
+        }
+
+        private object Create(MemoryStream m)
+        {
+            throw new ArgumentException();
+        }
+    }
+}";
+            return new TestCaseData(code, Id.ForNotDisposedLocalVariable)
+                .SetName("Local variable used in InvocationExpression as Argument");
+        }
+
+        private static TestCaseData LocalVariableUsedInObjectCreationExpressionAsArgument()
+        {
+            const string code = @"
+using System;
+using System.IO;
+using System.Threading.Tasks;
+
+namespace Test
+{
+    public class DisposeAfterLastUsageDoesNotWork
+    {
+        public async Task Do()
+        {
+            var fac = new MemoryStream();
+            var writer = new StreamReader(fac);
+        }
+    }
+}";
+            return new TestCaseData(code, Id.ForNotDisposedLocalVariable)
+                .SetName("Local variable used in ObjectCreationExpression as Argument");
         }
     }
 }
