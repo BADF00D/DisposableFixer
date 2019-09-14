@@ -38,8 +38,29 @@ namespace DisposableFixer.CodeFix
             if (node.TryFindContainingBlock(out var parentBlock))
             {
                 var lastUsage = parentBlock
-                    .DescendantNodes<VariableDeclaratorSyntax>()
-                    .Last(ins => ins.Identifier.Text == variableName);
+                    .DescendantNodes()
+                    .Last(sn =>
+                    {
+                        if (sn is ObjectCreationExpressionSyntax oces)
+                        {
+                            return oces.ArgumentList.Arguments.Any(arg =>
+                                arg.Expression is SimpleNameSyntax sns && sns.Identifier.Text == variableName);
+                        }
+
+                        if (sn is InvocationExpressionSyntax ies)
+                        {
+                            if(ies.Expression is MemberAccessExpressionSyntax maes && maes.Expression is IdentifierNameSyntax ins && ins.Identifier.Text == variableName)
+                                return true;
+                            if(ies.ArgumentList.Arguments.Any(arg => arg.Expression is SimpleNameSyntax sns && sns.Identifier.Text == variableName))
+                                return true;
+                        }
+
+                        if (sn is VariableDeclaratorSyntax vds && vds.Identifier.Text == variableName) return true;
+
+                        return false;
+                    });
+
+
                 if(lastUsage.TryFindParent<StatementSyntax>(parentBlock, out var lastUsageStatement))
                 {
                     var disposeCall = SyntaxCreator.CreateDisposeCallFor(variableName);

@@ -95,6 +95,7 @@ namespace TestHelper
             for (var i = 0; i < analyzerDiagnostics.Length; ++i)
             {
                 var actions = new List<CodeAction>();
+
                 var context = new CodeFixContext(document, analyzerDiagnostics[i], (a, d) => actions.Add(a), CancellationToken.None);
                 codeFixProvider.RegisterCodeFixesAsync(context).Wait();
 
