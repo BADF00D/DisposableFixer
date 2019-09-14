@@ -540,5 +540,10 @@ namespace DisposableFixer.Extensions
                 temp = temp.Parent;
             }
         }
+
+        public static bool IsVariableDeclaratorSyntaxFor(this SyntaxNode sn, string variableName)
+        {
+            return sn is VariableDeclaratorSyntax vds && vds.Identifier.Text == variableName;
+        }
     }
 }

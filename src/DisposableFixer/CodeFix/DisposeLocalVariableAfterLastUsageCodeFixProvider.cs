@@ -35,55 +35,35 @@ namespace DisposableFixer.CodeFix
             var editor = await DocumentEditor.CreateAsync(context.Document, cancel);
             var node = editor.OriginalRoot.FindNode(context.Span);
             var variableName = FindVariableName(node);
-            if (node.TryFindContainingBlock(out var parentBlock))
-            {
-                var lastUsage = parentBlock
-                    .DescendantNodes()
-                    .Last(sn =>
-                    {
-                        if (sn is ObjectCreationExpressionSyntax oces)
-                        {
-                            return oces.ArgumentList.Arguments.Any(arg =>
-                                arg.Expression is SimpleNameSyntax sns && sns.Identifier.Text == variableName);
-                        }
+            if (node.TryFindContainingBlock(out var parentBlock) 
+                && parentBlock.TryFindLastStatementThatUsesVariableWithName(variableName, out var lastUsageStatement))
+            { 
+                CreateAndPlaceDisposeCallAfterLastUsage(variableName, parentBlock, lastUsageStatement, editor);
 
-                        if (sn is InvocationExpressionSyntax ies)
-                        {
-                            if(ies.Expression is MemberAccessExpressionSyntax maes && maes.Expression is IdentifierNameSyntax ins && ins.Identifier.Text == variableName)
-                                return true;
-                            if(ies.ArgumentList.Arguments.Any(arg => arg.Expression is SimpleNameSyntax sns && sns.Identifier.Text == variableName))
-                                return true;
-                        }
-
-                        if (sn is VariableDeclaratorSyntax vds && vds.Identifier.Text == variableName) return true;
-
-                        return false;
-                    });
-
-
-                if(lastUsage.TryFindParent<StatementSyntax>(parentBlock, out var lastUsageStatement))
-                {
-                    var disposeCall = SyntaxCreator.CreateDisposeCallFor(variableName);
-
-                    var statementsBeforeLastUsage = parentBlock.Statements
-                        .TakeWhile(s => s != lastUsageStatement);
-                    var statementsAfterLastUsage = parentBlock.Statements
-                        .SkipWhile(s => s != lastUsageStatement)
-                        .Skip(1);
-
-                    var newBlock = SyntaxFactory.Block(
-                        statementsBeforeLastUsage
-                            .Concat(lastUsageStatement)
-                            .Concat(disposeCall)
-                            .Concat(statementsAfterLastUsage)
-                    ).WithoutAnnotations(Formatter.Annotation);
-                    editor.ReplaceNode(parentBlock, newBlock);
-
-                    return editor.GetChangedDocument();
-                }
+                return editor.GetChangedDocument();
             }
 
             return context.Document;
+        }
+
+        private static void CreateAndPlaceDisposeCallAfterLastUsage(string variableName, BlockSyntax parentBlock,
+            StatementSyntax lastUsageStatement, SyntaxEditor editor)
+        {
+            var disposeCall = SyntaxCreator.CreateDisposeCallFor(variableName);
+
+            var statementsBeforeLastUsage = parentBlock.Statements
+                .TakeWhile(s => s != lastUsageStatement);
+            var statementsAfterLastUsage = parentBlock.Statements
+                .SkipWhile(s => s != lastUsageStatement)
+                .Skip(1);
+
+            var newBlock = SyntaxFactory.Block(
+                statementsBeforeLastUsage
+                    .Concat(lastUsageStatement)
+                    .Concat(disposeCall)
+                    .Concat(statementsAfterLastUsage)
+            ).WithoutAnnotations(Formatter.Annotation);
+            editor.ReplaceNode(parentBlock, newBlock);
         }
 
         private static string FindVariableName(SyntaxNode node)

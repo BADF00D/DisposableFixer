@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using DisposableFixer.Configuration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -99,6 +100,7 @@ namespace DisposableFixer.Extensions
             return expression.Name.Identifier.Text == "Dispose";
         }
 
+        [Obsolete("Use ArgumentList.HasArgumentWithName instead")]
         public static bool UsesVariableInArguments(this InvocationExpressionSyntax invocationExpression,
             string variable)
         {
@@ -174,6 +176,13 @@ namespace DisposableFixer.Extensions
             return ies.ArgumentList.Arguments.Any() &&
                 (ies.ArgumentList.Arguments[0]?.Expression as IdentifierNameSyntax)
                    ?.Identifier.Text == variableName;
+        }
+
+        public static bool IsMemberAccessExpressionTo(this InvocationExpressionSyntax ies, string memberName)
+        {
+            return ies?.Expression is MemberAccessExpressionSyntax maes
+                   && maes.Expression is IdentifierNameSyntax ins
+                   && ins.Identifier.Text == memberName;
         }
     }
 }

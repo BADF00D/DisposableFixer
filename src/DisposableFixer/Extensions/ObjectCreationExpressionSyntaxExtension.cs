@@ -17,5 +17,10 @@ namespace DisposableFixer.Extensions
                 ? null
                 : node.ArgumentList.Arguments[position].DescendantNodes().FirstOrDefault();
         }
+
+        public static bool HasArgumentWithName(this ObjectCreationExpressionSyntax oces, string variableName)
+        {
+            return oces?.ArgumentList.HasArgumentWithName(variableName) ?? false;
+        }
     }
 }
