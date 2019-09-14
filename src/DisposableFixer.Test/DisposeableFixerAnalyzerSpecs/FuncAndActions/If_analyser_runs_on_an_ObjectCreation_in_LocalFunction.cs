@@ -5,24 +5,22 @@ using NUnit.Framework;
 namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.FuncAndActions
 {
     [TestFixture]
-    internal class If_analyser_runs_on_an_MethodInvokation_in_LocalFunction : DisposeableFixerAnalyzerSpec
+    internal class If_analyser_runs_on_an_MethodInvocation_in_LocalFunction : DisposeableFixerAnalyzerSpec
     {
         private readonly string _code = @"
-using System;
 using System.IO;
 
-using System.IO;
-namespace GivenToNonDisposedTrackingInstance {
-	internal class Program {
-
-            public void SomeMethod()
-            {
-                Func<int,MemoryStream> create = i => Create(i);
-            }
-            private MemoryStream Create(int i){
-                return new MemoryStream();
-            }
+namespace RxTimeoutTest
+{
+    internal class SomeClass
+    {
+        public object CreateDisposable()
+        {
+            MemoryStream Create() => CreateDisposableInternal();
+            return Create();
         }
+
+        private static MemoryStream CreateDisposableInternal() => new MemoryStream();
     }
 }";
 
@@ -37,6 +35,7 @@ namespace GivenToNonDisposedTrackingInstance {
         [Test]
         public void Then_there_should_be_no_Diagnostics()
         {
+            PrintCodeToFix(_code);
             _diagnostics.Length.Should().Be(0);
         }
     }
