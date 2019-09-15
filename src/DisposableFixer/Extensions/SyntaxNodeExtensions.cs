@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DisposableFixer.Configuration;
 using DisposableFixer.Utils;
@@ -220,6 +221,46 @@ namespace DisposableFixer.Extensions
 
             var identifier = node.GetIdentifierIfIsPartOfVariableDeclarator();
             return method.Returns(identifier);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        public static bool IsReturnedValue(this ObjectCreationExpressionSyntax objectCreationExpression)
+        {
+            return IsReturnedValue(objectCreationExpression as ExpressionSyntax);
+        }
+
+        public static bool IsReturnedValue(this InvocationExpressionSyntax invocationExpression)
+        {
+            return IsReturnedValue(invocationExpression as ExpressionSyntax);
+        }
+
+        private static bool IsReturnedValue(this ExpressionSyntax expressionSyntax)
+        {
+            switch (expressionSyntax?.Parent)
+            {
+                case ArrowExpressionClauseSyntax _: return true; // => new MemoryStream()
+                case ReturnStatementSyntax _: // return new MemoryStream()
+                    return true;
+                case EqualsValueClauseSyntax _ when expressionSyntax.Parent?.Parent is VariableDeclaratorSyntax vds:
+                    var variableName = vds.Identifier.Text;
+                    var parentScope = expressionSyntax.FindParent<BlockSyntax, ClassDeclarationSyntax>();
+                    if (parentScope == null) return false;
+
+                    return parentScope.DescendantNodes<ReturnStatementSyntax>()
+                        .Any(rs => rs.Expression is IdentifierNameSyntax ins && ins.Identifier.Text == variableName);
+            }
+
+            return false;
+        }
+
+        public static bool IsPartOfLocalFunction(this SyntaxNode node, out LocalFunctionStatementSyntax localFunctionStatement)
+        {
+            localFunctionStatement = node.FindParent<LocalFunctionStatementSyntax, ClassDeclarationSyntax>();
+            return localFunctionStatement != null;
         }
 
         /// <summary>
@@ -544,6 +585,19 @@ namespace DisposableFixer.Extensions
         public static bool IsVariableDeclaratorSyntaxFor(this SyntaxNode sn, string variableName)
         {
             return sn is VariableDeclaratorSyntax vds && vds.Identifier.Text == variableName;
+        }
+
+        public static bool IsExpressionBodyOfLocalFunctionStatement(this SyntaxNode node)
+        {
+            return node?.Parent is ArrowExpressionClauseSyntax &&
+                   node.Parent?.Parent is LocalFunctionStatementSyntax;
+        }
+
+        public static bool IsReturnStatementInLocalFunctionStatement(this SyntaxNode node)
+        {
+            return node?.Parent is ReturnStatementSyntax
+                   && node.Parent?.Parent is BlockSyntax
+                   && node.Parent.Parent?.Parent is LocalFunctionStatementSyntax;
         }
     }
 }
