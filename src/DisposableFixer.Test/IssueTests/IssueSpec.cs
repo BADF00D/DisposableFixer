@@ -12,11 +12,5 @@ namespace DisposableFixer.Test.IssueTests
         {
             Sut = new DisposableFixerAnalyzer();
         }
-
-        protected static void PrintCodeToAnalyze(string code)
-        {
-            Console.WriteLine("Code to analyze:");
-            Console.WriteLine(code);
-        }
     }
 }

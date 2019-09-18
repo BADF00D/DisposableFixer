@@ -74,5 +74,11 @@ namespace DisposableFixer.Test
         {
             _dispose_actions.Add(() => disposable?.Dispose());
         }
+
+        protected static void PrintCodeToAnalyze(string code)
+        {
+            Console.WriteLine("Code to analyze:");
+            Console.WriteLine(code);
+        }
     }
 }
