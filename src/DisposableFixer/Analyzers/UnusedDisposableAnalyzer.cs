@@ -19,7 +19,13 @@ namespace DisposableFixer.Analyzers
 
         private static void AnalyzeMethod(SyntaxNodeAnalysisContext context)
         {
+            var node = context.Node as MethodDeclarationSyntax;
 
+            if (node?.Identifier.Text != Constants.Dispose) return;
+
+            if (node.ExpressionBody != null) return;
+
+            context.ReportDiagnostic(Diagnostic.Create(Unused.DisposableDescriptor, node.GetLocation()));
         }
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
