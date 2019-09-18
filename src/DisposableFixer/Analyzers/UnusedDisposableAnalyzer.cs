@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Linq;
-using System.Reflection.Metadata;
+using DisposableFixer.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -23,9 +22,18 @@ namespace DisposableFixer.Analyzers
 
             if (node?.Identifier.Text != Constants.Dispose) return;
 
-            if (node.ExpressionBody != null) return;
+            if (node.ExpressionBody != null || node.Body == null) return;
 
-            context.ReportDiagnostic(Diagnostic.Create(Unused.DisposableDescriptor, node.GetLocation()));
+            var statements = node.Body.DescendantNodes<StatementSyntax>();
+            if (statements.Any()) return;
+
+            if (node.TryFindParentClass(out var @class))
+            {
+                var has = @class.BaseList?.Types.Any(bts => bts.Type is NameSyntax ns && ns.IsIDisposable()) ?? false;
+                if (!has) return;
+
+                context.ReportDiagnostic(Diagnostic.Create(Unused.DisposableDescriptor, node.GetLocation()));
+            }
         }
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =

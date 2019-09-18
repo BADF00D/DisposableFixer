@@ -110,6 +110,31 @@ namespace SomeNamespace
     }
 
     [TestFixture]
+    internal class If_Analyzer_runs_on_empty_dispose_method_inherited_from_an_interface2 : Spec
+    {
+        private const string Code = @"
+using System;
+
+namespace SomeNamespace
+{
+    internal class EmptyDisposable : System.IDisposable
+    {
+        public void Dispose()
+        {
+        }
+    }
+}";
+        [Test]
+        public void Apply_CodeFix_should_not_throw_Exception()
+        {
+            PrintCodeToAnalyze(Code);
+            var diagnostics = MyHelper.RunAnalyser(Code, new UnusedDisposableAnalyzer());
+            // The interfaces requires a dispose method - we cannot change this here. So we expect no diagnostic
+            diagnostics.Length.Should().Be(1);
+        }
+    }
+
+    [TestFixture]
     internal class If_Analyzer_runs_on_empty_dispose_method_inherited_from_an_interface_and_a_base_class : Spec
     {
         private const string Code = @"
