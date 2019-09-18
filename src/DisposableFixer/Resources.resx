@@ -240,4 +240,13 @@
   <data name="NotDisposedFactoryStaticPropertyTitle" xml:space="preserve">
     <value>Marks undisposed static factory properties.</value>
   </data>
+  <data name="EmptyDisposableDescription" xml:space="preserve">
+    <value>This dispose method contains no statements and can safely be removed.</value>
+  </data>
+  <data name="EmptyDisposableMessageFormat" xml:space="preserve">
+    <value>This dispose method contains no statements and can safely be removed.</value>
+  </data>
+  <data name="EmptyDisposableTitle" xml:space="preserve">
+    <value>Marks an Dispose implementation that is not in use.</value>
+  </data>
 </root>
