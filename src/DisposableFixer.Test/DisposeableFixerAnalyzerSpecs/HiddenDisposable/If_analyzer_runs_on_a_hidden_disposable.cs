@@ -1,17 +1,21 @@
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.HiddenDisposable
 {
     [TestFixture]
-    internal class If_analyzer_runs_on_a_hidden_disposable
+    internal class If_analyzer_runs_on_a_hidden_disposable : ATest
     {
         private readonly DisposableFixerAnalyzer _disposableFixerAnalyzer = new DisposableFixerAnalyzer();
 
         [TestCaseSource(nameof(TestCases))]
         public string Then_there_should_be_one_Diagnostic_with_correct_id(string code)
         {
-            return MyHelper.RunAnalyser(code, _disposableFixerAnalyzer)[0].Id;
+            PrintCodeToAnalyze(code);
+            return MyHelper.RunAnalyser(code, _disposableFixerAnalyzer)
+                .Select(dd => dd.Id)
+                .FirstOrDefault();
         }
 
         private static IEnumerable<TestCaseData> TestCases {
@@ -21,12 +25,15 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.HiddenDisposable
                 yield return HiddenInvocationExpressionUsingStaticMethod();
                 yield return HiddenInvocationExpressionUsingStaticFactoryClass();
                 yield return HiddenInvocationExpressionUsingFactoryClass();
+                yield return HiddenInvocationExpressionUsingLocalFunction();
+                yield return HiddenInvocationExpressionOfLocalFunction();
 
                 yield return HiddenObjectCreationReturnedLater();
                 yield return HiddenInvocationExpressionUsingFuncReturnedLater();
                 yield return HiddenInvocationExpressionUsingStaticMethodReturnedLater();
                 yield return HiddenInvocationExpressionUsingStaticFactoryClassReturnedLater();
                 yield return HiddenInvocationExpressionUsingFactoryClassReturnedLater();
+                yield return HiddenInvocationExpressionUsingLocalFunctionReturnedLater();
             }
         }
         
@@ -149,8 +156,60 @@ namespace RxTimeoutTest
                 .SetName("Hidden InvokcationExpression using factory class");
         }
 
+        private static TestCaseData HiddenInvocationExpressionUsingLocalFunction()
+        {
+            const string code = @"
+using System.IO;
 
-        
+namespace RxTimeoutTest
+{
+    internal class SomeClass
+    {
+        public object CreateDisposable()
+        {
+            MemoryStream Create()
+            {
+                return new MemoryStream();
+            }
+
+            return Create();
+        }
+    }
+}
+";
+            return new TestCaseData(code)
+                .Returns(Id.ForHiddenIDisposable)
+                .SetName("Hidden InvokcationExpression using local function");
+        }
+
+        private static TestCaseData HiddenInvocationExpressionOfLocalFunction()
+        {
+            const string code = @"
+using System.IO;
+
+namespace RxTimeoutTest
+{
+    internal class SomeClass
+    {
+        public object CreateDisposable()
+        {
+            object Create()
+            {
+                return new MemoryStream();
+            }
+
+            return Create();
+        }
+    }
+}
+";
+            return new TestCaseData(code)
+                .Returns(Id.ForHiddenIDisposable)
+                .SetName("Hidden InvokcationExpression of local function");
+        }
+
+
+
         private static TestCaseData HiddenObjectCreationReturnedLater()
         {
             const string code = @"
@@ -275,5 +334,32 @@ namespace RxTimeoutTest
             .SetName("Hidden InvokcationExpression using factory class returned later");
         }
 
+
+        private static TestCaseData HiddenInvocationExpressionUsingLocalFunctionReturnedLater()
+        {
+            const string code = @"
+using System.IO;
+
+namespace RxTimeoutTest
+{
+    internal class SomeClass
+    {
+        public object CreateDisposable()
+        {
+            MemoryStream Create()
+            {
+                return new MemoryStream();
+            }
+
+            var memoryStream = Create();
+            return memoryStream;
+        }
+    }
+}
+";
+            return new TestCaseData(code)
+                .Returns(Id.ForHiddenIDisposable)
+                .SetName("Hidden InvokcationExpression using local function returned later");
+        }
     }
 }
