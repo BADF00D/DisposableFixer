@@ -114,6 +114,14 @@ namespace DisposableFixer.Utils
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable()));
         }
 
+        public static void ReportHiddenDisposable(this CustomAnalysisContext ctx)
+        {
+            var location = ctx.OriginalNode.GetLocation();
+            var descriptor = Hidden.Disposable;
+
+            ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location));
+        }
+
         public static CustomAnalysisContext NewWith(this CustomAnalysisContext ctx, SyntaxNode newNode)
         {
             return CustomAnalysisContext.WithOtherNode(ctx.Context, newNode, ctx.Source, ctx.Type, ctx.Detector,
