@@ -1,4 +1,11 @@
-﻿Release 2.0.1
+﻿Release 2.1.0
+* Issue 91: If disposable is not used, a warning is presented.
+* Issue 110: Introduce-fild-and-dispose code fix works now as expected.
+* Issue 119: A warning is generated, if return type of a method is not IDisposable, but return value is.
+* Issue 121: Dispose-After-Last-Usage analyser works now as expected.
+* Issue 125: Values returned in local function get ignored during analysis, because they are a factory method.
+
+Release 2.0.1
 * Issue 108: Anonymous variables inside using declaration get detected correctly.
 * Issue 122: Assigning a field/property via await yields correct diagnistic.
 * Issue 124: Fixed problem with tracing methods.
