@@ -63,12 +63,22 @@ namespace DisposableFixer
             else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new MemoryStream()).Dispose()
             else if (Detector.IsIgnoredTypeOrImplementsIgnoredInterface(ctx.Type)) { }
             else if (node.IsReturnedInProperty()) AnalyzeNodeInReturnStatementOfProperty(ctx);
-            else if (node.IsPartOfReturnStatementInBlock()) { } // return new MemoryStream() or return Task.FromResult(new MemoryStream())
-            else if (node.IsPartOfLocalFunction(out var _) && node.IsReturnedValue()){}
+            else if (node.IsPartOfReturnStatementInBlock())
+            {
+                AnalyzeForHiddenDisposables(node, ctx);
+            } // return new MemoryStream() or return Task.FromResult(new MemoryStream())
+            else if (node.IsPartOfLocalFunction(out var localFunctionStatement) && node.IsReturnedValue())
+            {
+                var returnTypeSyntax = localFunctionStatement.ReturnType;
+                var returnType = ctx.SemanticModel.GetSymbolInfo(returnTypeSyntax);
+            }
             else if (node.IsPartOfYieldReturnStatementInBlock()) { } //yield return new MemoryStream()
             else if (node.IsArrowExpressionClauseOfMethod()) { } // void Create()=>CreateMemoryStream()
             else if (node.IsReturnValueInLambdaExpression()) { }
-            else if (node.IsReturnedLaterWithinMethod()) { }
+            else if (node.IsReturnedLaterWithinMethod())
+            {
+                AnalyzeForHiddenDisposables(node, ctx);
+            }
             else if (node.IsReturnedLaterWithinParenthesizedLambdaExpression()) { }
             else if (node.IsPartOfMethodCall())
             {
@@ -440,12 +450,22 @@ namespace DisposableFixer
             {
                 AnalyzePartOfMethodCall(ctx);
             }
-            else if (node.IsPartOfReturnStatementInBlock()) { } // return new MemoryStream() or return Task.FromResult(new MemoryStream())
-            else if (node.IsPartOfLocalFunction(out var _) && node.IsReturnedValue()) { }
+            else if (node.IsPartOfReturnStatementInBlock())
+            {
+                AnalyzeForHiddenDisposables(node, ctx);
+            } // return new MemoryStream() or return Task.FromResult(new MemoryStream())
+            else if (node.IsPartOfLocalFunction(out var localFunctionStatement) && node.IsReturnedValue())
+            {
+                var returnTypeSyntax = localFunctionStatement.ReturnType;
+                var returnType = ctx.SemanticModel.GetSymbolInfo(returnTypeSyntax);
+            }
             else if (node.IsPartOfYieldReturnStatementInBlock()) { } //yield return CreateMemoryStream()
             else if (node.IsArrowExpressionClauseOfMethod()) { } // void Create()=>new MemoryStream()
             else if (node.IsReturnValueInLambdaExpression()) { } //e.g. ()=> new MemoryStream
-            else if (node.IsReturnedLaterWithinMethod()) { }
+            else if (node.IsReturnedLaterWithinMethod())
+            {
+                AnalyzeForHiddenDisposables(node, ctx);
+            }
             else if (node.IsReturnedLaterWithinParenthesizedLambdaExpression()) { }
             else if (node.IsArgumentInObjectCreation()) AnalyzeNodeInArgumentList(ctx);
             else if (node.IsPartIfArrayInitializerThatIsPartOfObjectCreation()) {
@@ -458,6 +478,31 @@ namespace DisposableFixer
             else if (node.IsPartOfAutoProperty()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(ctx);
             else if (node.IsPartOfPropertyExpressionBody()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(ctx);
             else ctx.ReportNotDisposedAnonymousObject(); //call to Create(): MemeoryStream
+        }
+
+        private static void AnalyzeForHiddenDisposables(SyntaxNode invocationExpressionSyntax,
+            CustomAnalysisContext ctx)
+        {
+            if (invocationExpressionSyntax.TryFindContainingBlock(out var block))
+            {
+                if (block.Parent is MethodDeclarationSyntax mds)
+                {
+                    var returnTypeSyntax = mds.ReturnType;
+                    var returnTypeInfo = ctx.SemanticModel.GetSymbolInfo(returnTypeSyntax);
+                    if (returnTypeInfo.Symbol is INamedTypeSymbol nts && nts.IsDisposableOrImplementsDisposable()) return;
+
+                    ctx.ReportHiddenDisposable();
+                }
+                else if (block.Parent is LocalFunctionStatementSyntax lfds)
+                {
+                    var returnTypeSyntax = lfds.ReturnType;
+                    var returnTypeInfo = ctx.SemanticModel.GetSymbolInfo(returnTypeSyntax);
+                    if (returnTypeInfo.Symbol is INamedTypeSymbol nts &&
+                        nts.IsDisposableOrImplementsDisposable()) return;
+
+                    ctx.ReportHiddenDisposable();
+                }
+            }
         }
 
         private static bool IsTrackingMethod(InvocationExpressionSyntax node, CustomAnalysisContext context)
