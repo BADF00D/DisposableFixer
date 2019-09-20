@@ -12,7 +12,7 @@ using System.IO;
 namespace GivenToNonDisposedTrackingInstance {
 	internal class Program {
 
-            public IDisposable SomeMethod()
+            public System.IDisposable SomeMethod()
             {
                 var reader = Create();//this was marked as not disposed
                 return reader;
@@ -38,6 +38,7 @@ namespace GivenToNonDisposedTrackingInstance {
         [Test]
         public void Then_there_should_be_no_Diagnostics()
         {
+            PrintCodeToAnalyze(Code);
             _diagnostics.Length.Should().Be(0);
         }
     }

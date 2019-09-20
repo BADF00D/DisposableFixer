@@ -16,11 +16,10 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.NullConditionalOper
         }
 
         private const string Code = @"
-using System.IO;
-using System.Threading.Tasks;
+using System;
 namespace DisFixerTest.Async
 {
-    internal class MyClass : IDisposable
+    internal class MyClass
     {
         public MyClass()
         {

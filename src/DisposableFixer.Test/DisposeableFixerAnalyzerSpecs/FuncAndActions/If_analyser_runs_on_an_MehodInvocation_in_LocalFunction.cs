@@ -14,7 +14,7 @@ namespace RxTimeoutTest
 {
     internal class SomeClass
     {
-        public object CreateDisposable()
+        public System.IDisposable CreateDisposable()
         {
             MemoryStream Create() => new MemoryStream();
             return Create();

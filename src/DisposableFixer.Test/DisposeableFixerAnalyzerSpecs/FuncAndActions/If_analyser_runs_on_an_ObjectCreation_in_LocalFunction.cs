@@ -14,7 +14,7 @@ namespace RxTimeoutTest
 {
     internal class SomeClass
     {
-        public object CreateDisposable()
+        public System.IDisposable CreateDisposable()
         {
             MemoryStream Create() => CreateDisposableInternal();
             return Create();
@@ -36,7 +36,7 @@ namespace RxTimeoutTest
         public void Then_there_should_be_no_Diagnostics()
         {
             PrintCodeToFix(_code);
-            _diagnostics.Length.Should().Be(0);
+            _diagnostics.Should().BeEmpty();
         }
     }
 }

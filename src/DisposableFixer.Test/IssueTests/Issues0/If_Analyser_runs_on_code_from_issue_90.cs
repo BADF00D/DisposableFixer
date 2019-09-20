@@ -16,7 +16,7 @@ namespace MyNamespace
 {
     public class Dummy
     {
-        public object Create()
+        public IDisposable Create()
         {
             return Do(
                 () => {
