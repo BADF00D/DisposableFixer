@@ -44,6 +44,7 @@ namespace DisposableFixer
         public const string ForNotDisposedStaticFactoryProperty = "DF0029";
 
         public const string ForHiddenIDisposable = "DF0100";
+        public const string EmptyDisposable = "DF0110";
     }
 
     internal static class Hidden
@@ -67,6 +68,32 @@ namespace DisposableFixer
                     resourceManager: Resources.ResourceManager,
                     resourceSource: typeof(Resources)));
     }
+    internal static class Unused
+    {
+        public static readonly DiagnosticDescriptor DisposableDescriptor =
+            new DiagnosticDescriptor(
+                id: Id.EmptyDisposable,
+                title: new LocalizableResourceString(
+                    nameOfLocalizableResource: nameof(Resources.EmptyDisposableTitle),
+                    resourceManager: Resources.ResourceManager,
+                    resourceSource: typeof(Resources)),
+                messageFormat: new LocalizableResourceString(
+                    nameOfLocalizableResource: nameof(Resources.EmptyDisposableMessageFormat),
+                    resourceManager: Resources.ResourceManager,
+                    resourceSource: typeof(Resources)),
+                category: Category.WrongUsage,
+                defaultSeverity: DiagnosticSeverity.Warning,
+                isEnabledByDefault: true,
+                description: new LocalizableResourceString(
+                    nameOfLocalizableResource: nameof(Resources.EmptyDisposableDescription),
+                    resourceManager: Resources.ResourceManager,
+                    resourceSource: typeof(Resources)));
+    }
+
+
+
+    
+    
 
     internal static class NotDisposed
     {
@@ -86,8 +113,8 @@ namespace DisposableFixer
                             resourceManager: Resources.ResourceManager,
                             resourceSource: typeof(Resources)),
                         category: Category.WrongUsage,
-                        defaultSeverity: DiagnosticSeverity.Warning, 
-                        isEnabledByDefault: true, 
+                        defaultSeverity: DiagnosticSeverity.Warning,
+                        isEnabledByDefault: true,
                         description: new LocalizableResourceString(
                             nameOfLocalizableResource: nameof(Resources.AssignmendFromObjectCreationToPropertyNotDisposedDescription),
                             resourceManager: Resources.ResourceManager,
@@ -123,8 +150,8 @@ namespace DisposableFixer
                             resourceManager: Resources.ResourceManager,
                             resourceSource: typeof(Resources)),
                         category: Category.WrongUsage,
-                        defaultSeverity: DiagnosticSeverity.Warning, 
-                        isEnabledByDefault: true, 
+                        defaultSeverity: DiagnosticSeverity.Warning,
+                        isEnabledByDefault: true,
                         description: new LocalizableResourceString(
                             nameOfLocalizableResource: nameof(Resources.AssignmendFromObjectCreationToFieldNotDisposedDescription),
                             resourceManager: Resources.ResourceManager,
@@ -332,5 +359,5 @@ namespace DisposableFixer
         }
     }
 
-    
+
 }

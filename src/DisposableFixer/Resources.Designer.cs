@@ -20,7 +20,7 @@ namespace DisposableFixer {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -337,6 +337,33 @@ namespace DisposableFixer {
         internal static string AssignmendFromObjectCreationToStaticPropertyNotDisposedTitle {
             get {
                 return ResourceManager.GetString("AssignmendFromObjectCreationToStaticPropertyNotDisposedTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This dispose method contains no statements and can safely be removed..
+        /// </summary>
+        internal static string EmptyDisposableDescription {
+            get {
+                return ResourceManager.GetString("EmptyDisposableDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This dispose method contains no statements and can safely be removed..
+        /// </summary>
+        internal static string EmptyDisposableMessageFormat {
+            get {
+                return ResourceManager.GetString("EmptyDisposableMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Marks an Dispose implementation that is not in use..
+        /// </summary>
+        internal static string EmptyDisposableTitle {
+            get {
+                return ResourceManager.GetString("EmptyDisposableTitle", resourceCulture);
             }
         }
         
