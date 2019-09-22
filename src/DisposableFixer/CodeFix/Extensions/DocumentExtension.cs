@@ -8,6 +8,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Formatting;
 
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+
 namespace DisposableFixer.CodeFix.Extensions
 {
     public static class DocumentExtension
@@ -41,11 +43,11 @@ namespace DisposableFixer.CodeFix.Extensions
                 return;
             var model = editor.SemanticModel;
             var oc = model.GetDeclaredSymbol(oldClass);
-            
+
             if (oc.AllInterfaces.Any(i => i.Name == baseClass.Identifier.Text))
             {
                 return;
-            } 
+            }
 
             editor.AddInterfaceType(oldClass, baseClass);
         }
@@ -100,7 +102,7 @@ namespace DisposableFixer.CodeFix.Extensions
                                             SyntaxFactory.Token(SyntaxKind.QuestionToken)))
                                 .WithSemicolonToken(
                                     SyntaxFactory.Token(SyntaxKind.SemicolonToken));
-        
+
             return SyntaxCreator.CreateConditionalAccessDisposeCallFor(memberName);
         }
 
@@ -125,23 +127,17 @@ namespace DisposableFixer.CodeFix.Extensions
 
         public static void AddUninitializedFieldNamed(this DocumentEditor editor, ClassDeclarationSyntax oldClass, string name, string typeName)
         {
-            var fieldDeclaration = SyntaxFactory.FieldDeclaration(
-                    SyntaxFactory.VariableDeclaration(
-                            SyntaxFactory.IdentifierName(typeName)
-                        )
-                        .WithVariables(
-                            SyntaxFactory.SingletonSeparatedList(
-                                SyntaxFactory.VariableDeclarator(
-                                    SyntaxFactory.Identifier(name)
-                                )
-                            )
-                        )
-                )
-                .WithModifiers(
-                    SyntaxFactory.TokenList(
-                        SyntaxFactory.Token(SyntaxKind.PrivateKeyword)
-                    )
-                ).WithoutAnnotations(Formatter.Annotation);
+            var fieldDeclaration = FieldDeclaration(
+                                VariableDeclaration(
+                                    IdentifierName(typeName))
+                                .WithVariables(
+                                    SingletonSeparatedList<VariableDeclaratorSyntax>(
+                                        VariableDeclarator(
+                                            Identifier(name)))))
+                            .WithModifiers(
+                                TokenList(
+                                    Token(SyntaxKind.PrivateKeyword)))
+                            .WithAdditionalAnnotations(Formatter.Annotation);
             editor.AddMember(oldClass, fieldDeclaration);
         }
     }

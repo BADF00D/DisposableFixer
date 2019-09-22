@@ -84,8 +84,16 @@ namespace DisposableFixer.CodeFix
                     )
                 );
                 editor.ReplaceNode(node.Parent.Parent, assignment);
+                //if (node.TryFindParent<StatementSyntax>(out var statementToReplace))
+                //{
+                //    editor.ReplaceNode(statementToReplace, assignment);
+                //}
+                //else
+                //{
+                //    throw new Exception($"Cannot find ExpressionStatement of node '{node}' to replace");
+                //}
             }
-            
+
             var disposeMethods = oldClass.GetParameterlessMethodNamed(Constants.Dispose).ToArray();
 
             if (disposeMethods.Any())
@@ -120,7 +128,7 @@ namespace DisposableFixer.CodeFix
                 case ArgumentSyntax argument:
                     ReplaceArgument(model, argument, editor, oldClass, fieldName, node);
                     break;
-                
+
                 default:
                     throw new NotSupportedException($"Cannot wrap type '{node.GetType().FullName}'");
             }
@@ -219,7 +227,7 @@ namespace DisposableFixer.CodeFix
             {
                 variableDeclarator = node.Parent?.Parent as VariableDeclaratorSyntax;
             }
-            
+
             return variableDeclarator?.Identifier.Text ?? defaultName;
         }
 
