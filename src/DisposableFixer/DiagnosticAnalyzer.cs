@@ -489,18 +489,19 @@ namespace DisposableFixer
                 {
                     var returnTypeSyntax = mds.ReturnType;
                     var returnTypeInfo = ctx.SemanticModel.GetSymbolInfo(returnTypeSyntax);
-                    if (returnTypeInfo.Symbol is INamedTypeSymbol nts && nts.IsDisposableOrImplementsDisposable()) return;
+                    if (!(returnTypeInfo.Symbol is INamedTypeSymbol nts)) return;
+                    if (nts.IsDisposableOrImplementsDisposable()) return;
 
-                    ctx.ReportHiddenDisposable();
+                    ctx.ReportHiddenDisposable(ctx.Type.Name, nts.Name, mds.Identifier.Text);
                 }
                 else if (block.Parent is LocalFunctionStatementSyntax lfds)
                 {
                     var returnTypeSyntax = lfds.ReturnType;
                     var returnTypeInfo = ctx.SemanticModel.GetSymbolInfo(returnTypeSyntax);
-                    if (returnTypeInfo.Symbol is INamedTypeSymbol nts &&
-                        nts.IsDisposableOrImplementsDisposable()) return;
+                    if (!(returnTypeInfo.Symbol is INamedTypeSymbol nts)) return;
+                    if (nts.IsDisposableOrImplementsDisposable()) return;
 
-                    ctx.ReportHiddenDisposable();
+                    ctx.ReportHiddenDisposable(ctx.Type.Name, nts.Name, lfds.Identifier.Text);
                 }
             }
         }

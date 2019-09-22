@@ -26,9 +26,9 @@ namespace DisposableFixer.Test
             PrintCodeToAnalyze(Code);
             var diagnostics = MyHelper.RunAnalyser(Code, new DisposableFixerAnalyzer());
             diagnostics.Should().HaveCount(1);
-            diagnostics[0].Descriptor.MessageFormat.ToString().Should().NotContain("{0}");
-            diagnostics[0].Descriptor.MessageFormat.ToString().Should().NotContain("{1}");
-            diagnostics[0].Descriptor.MessageFormat.ToString().Should().NotContain("{2}");
+            var message = diagnostics[0].GetMessage();
+
+            message.Should().Be("'MemoryStream' implements IDisposable but return type 'Object' of 'Create' does not.");
         }
     }
 }

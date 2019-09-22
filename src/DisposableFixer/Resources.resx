@@ -247,9 +247,9 @@
     <value>This dispose method contains no statements and can safely be removed.</value>
   </data>
   <data name="HiddenDisposableMessageFormat" xml:space="preserve">
-    <value>{0} implements IDisposable but return value {1} does not.</value>
+    <value>'{0}' implements IDisposable but return type '{1}' of '{2}' does not.</value>
   </data>
-   <data name="EmptyDisposableMessageFormat" xml:space="preserve">
+  <data name="EmptyDisposableMessageFormat" xml:space="preserve">
     <value>This dispose method contains no statements and can safely be removed.</value>
   </data>
   <data name="HiddenDisposableTitle" xml:space="preserve">
@@ -258,5 +258,4 @@
   <data name="EmptyDisposableTitle" xml:space="preserve">
     <value>Marks an Dispose implementation that is not in use.</value>
   </data>
-
 </root>
