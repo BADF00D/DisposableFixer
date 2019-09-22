@@ -1,4 +1,7 @@
-﻿Release 2.1.0
+﻿Release 2.1.1
+* Issue 127: Fixed false positive detection of hidden disposables.
+
+Release 2.1.0
 * Issue 91: If disposable is not used, a warning is presented.
 * Issue 110: Introduce-fild-and-dispose code fix works now as expected.
 * Issue 119: A warning is generated, if return type of a method is not IDisposable, but return value is.
