@@ -1,4 +1,7 @@
-﻿Release 2.1.1
+﻿Release 2.1.2
+* Issue 129: "Create field and dispose in Dispose method" code fix works as expected.
+
+Release 2.1.1
 * Issue 127: Fixed false positive detection of hidden disposables.
 
 Release 2.1.0

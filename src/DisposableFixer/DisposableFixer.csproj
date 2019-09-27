@@ -11,7 +11,7 @@
   
   <PropertyGroup>
     <PackageId>DisposableFixer</PackageId>
-    <PackageVersion>2.1.1.0</PackageVersion>
+    <PackageVersion>2.1.2.0</PackageVersion>
     <Authors>David Störmer</Authors>
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/BADF00D/DisposableFixer</PackageProjectUrl>
@@ -19,9 +19,7 @@
     <RepositoryUrl>https://github.com/BADF00D/DisposableFixer</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Description>DisposableFixer</Description>
-    <PackageReleaseNotes>﻿Release 1.4.0
-Issue 101: Support for Visual Studio 2019. Thanks to xperiandri
-</PackageReleaseNotes>
+    <PackageReleaseNotes>Issue 129: "Create field and dispose in Dispose method" code fix works as expected.</PackageReleaseNotes>
     <Copyright>Copyright</Copyright>
     <PackageTags>DisposableFixer, analyzers</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
