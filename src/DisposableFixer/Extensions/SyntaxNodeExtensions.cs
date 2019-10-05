@@ -150,6 +150,28 @@ namespace DisposableFixer.Extensions
         {
             return node.Parent?.Parent is VariableDeclaratorSyntax;
         }
+
+        public static bool TryGetParentVariableDeclarator(this SyntaxNode node,
+            out VariableDeclaratorSyntax variableDeclarator)
+        {
+            if (node.Parent?.Parent is VariableDeclaratorSyntax vds1)
+            {
+                variableDeclarator = vds1;
+                return true;
+            }
+
+            if (node.Parent is ConditionalExpressionSyntax
+                && node.Parent?.Parent is EqualsValueClauseSyntax
+                && node.Parent.Parent?.Parent is VariableDeclaratorSyntax vds2)
+            {
+                variableDeclarator = vds2;
+                return true;
+            }
+
+            variableDeclarator = null;
+            return false;
+        }
+
         public static bool IsDescendantOfAwaitingVariableDeclarator(this SyntaxNode node)
         {
             return node.Parent is AwaitExpressionSyntax && 

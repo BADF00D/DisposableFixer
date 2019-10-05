@@ -92,7 +92,7 @@ namespace DisposableFixer
                 CheckIfObjectCreationTracksNode(ctx, objectCreation);
             }
             else if (node.IsDescendantOfUsingHeader()) { }//this have to be checked after IsArgumentInObjectCreation
-            else if (node.IsDescendantOfVariableDeclarator()) AnalyzeNodeWithinVariableDeclarator(ctx);
+            else if (node.TryGetParentVariableDeclarator(out var vds)) AnalyzeNodeWithinVariableDeclarator(ctx, vds);
             else if (node.IsPartOfAssignmentExpression()) AnalyzeNodeInAssignmentExpression(ctx);
             else if (node.IsPartOfPropertyExpressionBody())  AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(ctx);
             else if (node.IsPartOfAutoProperty()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(ctx);
@@ -154,11 +154,10 @@ namespace DisposableFixer
             }
         }
 
-        private static void AnalyzeNodeWithinVariableDeclarator(CustomAnalysisContext context)
+        private static void AnalyzeNodeWithinVariableDeclarator(CustomAnalysisContext context, VariableDeclaratorSyntax variableDeclarator)
         {
             var node = context.Node;
-            var identifier = node.GetIdentifierIfIsPartOfVariableDeclarator();//getIdentifier
-            if (identifier == null) return;
+            var identifier = variableDeclarator.Identifier.Text;
             if (node.IsLocalDeclaration()) //var m = new MemoryStream();
             {
                 AnalyzeNodeWithinLocalDeclaration(context, identifier);
@@ -473,7 +472,7 @@ namespace DisposableFixer
                 CheckIfObjectCreationTracksNode(ctx, objectCreation);
             }
             else if (node.IsDescendantOfUsingHeader()) { } //using(memstream) or using(new MemoryStream())
-            else if (node.IsDescendantOfVariableDeclarator()) AnalyzeNodeWithinVariableDeclarator(ctx);
+            else if (node.TryGetParentVariableDeclarator(out var vds)) AnalyzeNodeWithinVariableDeclarator(ctx, vds);
             else if (node.IsPartOfAssignmentExpression()) AnalyzeNodeInAssignmentExpression(ctx);
             else if (node.IsPartOfAutoProperty()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(ctx);
             else if (node.IsPartOfPropertyExpressionBody()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(ctx);
@@ -539,9 +538,9 @@ namespace DisposableFixer
             if (awaitExpression.IsPartOfVariableDeclaratorInsideAUsingDeclaration()) return;
             if (awaitExpression.IsPartOfReturnStatementInMethod()) return;
             if (awaitExpression.IsReturnedLaterWithinMethod()) return;
-            if (awaitExpression.IsDescendantOfVariableDeclarator())
+            if (awaitExpression.TryGetParentVariableDeclarator(out var variableDeclarator))
             {
-                AnalyzeNodeWithinVariableDeclarator(context.NewWith(awaitExpression));
+                AnalyzeNodeWithinVariableDeclarator(context.NewWith(awaitExpression), variableDeclarator);
             }else if (awaitExpression.IsDescendantOfAssignmentExpressionSyntax())
             {
                 if (node.TryFindParentClass(out var @class))
