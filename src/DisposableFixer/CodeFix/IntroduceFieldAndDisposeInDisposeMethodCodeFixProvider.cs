@@ -61,6 +61,8 @@ namespace DisposableFixer.CodeFix
             if (!node.TryFindParent<ClassDeclarationSyntax>(out var oldClass)) return editor.GetChangedDocument();
             editor.AddInterfaceIfNeeded(oldClass, IdentifierName(Constants.IDisposable));
 
+            string oldName = null;
+
             if (node.Parent is AwaitExpressionSyntax awaitExpression)
             {
                 var type = (model.GetAwaitExpressionInfo(awaitExpression).GetResultMethod?.ReturnType as INamedTypeSymbol)?.Name;
@@ -71,6 +73,37 @@ namespace DisposableFixer.CodeFix
                         IdentifierName(fieldName),
                         awaitExpression));
                 editor.ReplaceNode(node.Parent.Parent.Parent.Parent.Parent, assignment);
+                if (node.TryGetParentVariableDeclaratorInScope(out var vds))
+                {
+                    oldName = vds.Identifier.Text;
+                }
+
+            }else if (node.TryGetParentVariableDeclarator(out var vds) && node.Parent is ConditionalExpressionSyntax ces)
+            {
+                if (vds.Parent is VariableDeclarationSyntax _ 
+                    && vds.Parent.Parent is LocalDeclarationStatementSyntax localDeclarationStatement
+                    )
+                {
+                    var type = model.GetTypeInfo(node).Type?.Name ?? Constants.IDisposable;
+                    editor.AddUninitializedFieldNamed(oldClass, fieldName, type);
+                    var assignment = ExpressionStatement(
+                        AssignmentExpression(
+                            SyntaxKind.SimpleAssignmentExpression,
+                            IdentifierName(fieldName),
+                            ces
+                        )
+                    );
+                    if (node.TryFindParent<StatementSyntax>(out var statementToReplace))
+                    {
+                        editor.ReplaceNode(statementToReplace, assignment);
+                    }
+                    else
+                    {
+                        throw new Exception($"Cannot find ExpressionStatement of node '{node}' to replace");
+                    }
+
+                    oldName = vds.Identifier.Text;
+                }
             }
             else
             {
@@ -83,17 +116,25 @@ namespace DisposableFixer.CodeFix
                         node as ExpressionSyntax
                     )
                 );
-                editor.ReplaceNode(node.Parent.Parent, assignment);
-                //if (node.TryFindParent<StatementSyntax>(out var statementToReplace))
-                //{
-                //    editor.ReplaceNode(statementToReplace, assignment);
-                //}
-                //else
-                //{
-                //    throw new Exception($"Cannot find ExpressionStatement of node '{node}' to replace");
-                //}
+                if (node.TryFindParent<StatementSyntax>(out var statementToReplace))
+                {
+                    editor.ReplaceNode(statementToReplace, assignment);
+                }
+                else
+                {
+                    throw new Exception($"Cannot find ExpressionStatement of node '{node}' to replace");
+                }
             }
 
+            if (node.TryFindParentScope(out var scope))
+            {
+                var nodeWithOldName = scope.DescendantNodes<IdentifierNameSyntax>()
+                    .Where(ins => ins.Identifier.Text == oldName);
+                foreach (var identifierNameSyntax in nodeWithOldName)
+                {
+                    editor.ReplaceNode(identifierNameSyntax, IdentifierName(fieldName));
+                }
+            }
             var disposeMethods = oldClass.GetParameterlessMethodNamed(Constants.Dispose).ToArray();
 
             if (disposeMethods.Any())
@@ -218,17 +259,14 @@ namespace DisposableFixer.CodeFix
             const string defaultName = "_disposable";
             if (!IsUndisposedLocalVariable(context)) return defaultName;
 
-            VariableDeclaratorSyntax variableDeclarator;
-            if (node.Parent is AwaitExpressionSyntax)
-            {
-                variableDeclarator = node.Parent?.Parent?.Parent as VariableDeclaratorSyntax;
-            }
-            else
-            {
-                variableDeclarator = node.Parent?.Parent as VariableDeclaratorSyntax;
-            }
+            return node.TryGetParentVariableDeclaratorInScope(out var vds) 
+                ? ToFieldName(vds.Identifier.Text)
+                : defaultName;
+        }
 
-            return variableDeclarator?.Identifier.Text ?? defaultName;
+        private static string ToFieldName(string typeName)
+        {
+            return "_" + typeName.Substring(0, 1).ToLower() + typeName.Substring(1);
         }
 
         private static bool IsUndisposedLocalVariable(CodeFixContext context)

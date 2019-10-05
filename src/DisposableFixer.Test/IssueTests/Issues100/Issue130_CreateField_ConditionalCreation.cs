@@ -62,8 +62,8 @@ namespace ConsoleApp
                 .Should().BeEmpty();
 
 
-            fixedCode.Should().Contain("private StreamWriter sw;");
-            var disposeFieldRegex = new Regex(@"public void Dispose\(\s*\)\s*{\s*sw\?\.Dispose\(\);\s*}");
+            fixedCode.Should().Contain("private StreamWriter _sw;");
+            var disposeFieldRegex = new Regex(@"public void Dispose\(\s*\)\s*{\s*_sw\?\.Dispose\(\);\s*}");
             disposeFieldRegex.IsMatch(fixedCode).Should().BeTrue();
         }
     }

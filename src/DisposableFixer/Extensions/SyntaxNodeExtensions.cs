@@ -151,6 +151,17 @@ namespace DisposableFixer.Extensions
             return node.Parent?.Parent is VariableDeclaratorSyntax;
         }
 
+        /// <summary>
+        /// Returns true if
+        /// <list type="bullet">
+        /// <item>var x = NODE</item>
+        /// <item>var x = flag ? NODE : NODE</item>
+        /// <item>var x = await NODE</item>
+        /// </list>
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="variableDeclarator"></param>
+        /// <returns></returns>
         public static bool TryGetParentVariableDeclarator(this SyntaxNode node,
             out VariableDeclaratorSyntax variableDeclarator)
         {
@@ -170,6 +181,12 @@ namespace DisposableFixer.Extensions
 
             variableDeclarator = null;
             return false;
+        }
+
+        public static bool TryGetParentVariableDeclaratorInScope(this SyntaxNode node, out VariableDeclaratorSyntax variableDeclarator)
+        {
+            variableDeclarator = node.FindParentinScopeOfType<VariableDeclaratorSyntax>();
+            return variableDeclarator != null;
         }
 
         public static bool IsDescendantOfAwaitingVariableDeclarator(this SyntaxNode node)
@@ -599,6 +616,28 @@ namespace DisposableFixer.Extensions
                 var result = temp.Parent as TOut;
                 if (result != null)
                     return result;
+
+                temp = temp.Parent;
+            }
+        }
+
+        private static TOut FindParentinScopeOfType<TOut>(this SyntaxNode node) where TOut : SyntaxNode
+        {
+            var temp = node;
+            while (true)
+            {
+                switch (temp.Parent)
+                {
+                    case null:
+                    case ClassDeclarationSyntax _:
+                    case MethodDeclarationSyntax _:
+                    case LocalFunctionStatementSyntax _:
+                    case ParenthesizedLambdaExpressionSyntax _:
+                    case ArrowExpressionClauseSyntax _:
+                        return null;
+                    case TOut result:
+                        return result;
+                }
 
                 temp = temp.Parent;
             }
