@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis;
 namespace DisposableFixer.Configuration {
 	internal class DefaultConfiguration : IConfiguration {
 		public DefaultConfiguration() {
-			TrackingTypes = new HashSet<string> {
+            TrackingTypes = new HashSet<string> {
 				"System.IO.StreamReader",
 				"System.IO.StreamWriter",
 				"System.IO.BinaryReader",
@@ -86,6 +86,16 @@ namespace DisposableFixer.Configuration {
                 ["Microsoft.Extensions.Logging"] = new List<MethodCall>
                 {
                     new MethodCall("AddConsole", Empty.Array<string>(), true)
+                }
+                ,
+                ["Reactive.Binding.ReactiveProperty"] = new List<MethodCall>
+                {
+                    new MethodCall("SetValidateNotifyError", new []{"System.Func<T,System.String>"}, false),
+                    new MethodCall("SetValidateNotifyError", new []{"System.Func<T,System.Threading.Tasks.Task<System.String>>"}, false),
+                    new MethodCall("SetValidateNotifyError", new []{"System.Func<T,System.Threading.Tasks.Task<System.Collections.IEnumerable>>"}, false),
+                    new MethodCall("SetValidateNotifyError", new []{"System.Func<T,System.Collections.IEnumerable>"}, false),
+                    new MethodCall("SetValidateNotifyError", new []{"System.Func<System.IObservable<T>,System.IObservable<System.String>>"}, false),
+                    new MethodCall("SetValidateNotifyError", new []{"System.Func<System.IObservable<T>,System.IObservable<System.Collections.IEnumerable>>"}, false)
                 }
             };
             TrackingFactoryMethods = new Dictionary<string, IReadOnlyCollection<MethodCall>>

@@ -9,6 +9,7 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.ThirdParty.Reactive
         [Test, TestCaseSource(nameof(TestCases))]
         public void Then_there_should_be_no_Diagnostics(string code)
         {
+            PrintCodeToFix(code);
             var diagnostics = MyHelper.RunAnalyser(code, Sut);
             diagnostics.Length.Should().Be(0);
         }
@@ -90,28 +91,14 @@ class Program
         public TestViewModel()
         {
             ###SUT###
-            RP = new ReactiveProperty<int>().SetValidateNotifyError(validate)
-
-            //Func<int, string> validate1 = null;
-            //Func<int, Task<string>> validate2 = null;
-            //Func<int, Task<IEnumerable>> validate3 = null;
-            //Func<int, IEnumerable> validate4 = null;
-            //Func<IObservable<int>, IObservable<string>> validate5 = null;
-            //Func<IObservable<int>, IObservable<IEnumerable>> validate6 = null;
-
-            RP = RP
-                    .SetValidateNotifyError(###VALIDATE###)
-                ;
+            RP = new ReactiveProperty<int>().SetValidateNotifyError(validate);
         }
-
-
 
         public void Dispose()
         {
             RP?.Dispose();
         }
     }
-    
 }
 
 namespace Reactive.Binding
