@@ -46,8 +46,12 @@ namespace DisposableFixer
 
         public override void Initialize(AnalysisContext context)
         {
-            context.RegisterSyntaxNodeAction(AnalyzeInvocationExpressionStatement, SyntaxKind.InvocationExpression);
-            context.RegisterSyntaxNodeAction(AnalyzeObjectCreationExpressionStatement,
+            context.RegisterSyntaxNodeAction(
+                AnalyzeInvocationExpressionStatement, 
+                SyntaxKind.InvocationExpression);
+
+            context.RegisterSyntaxNodeAction(
+                AnalyzeObjectCreationExpressionStatement,
                 SyntaxKind.ObjectCreationExpression);
         }
 
