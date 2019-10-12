@@ -7,9 +7,10 @@ namespace DisposableFixer.Extensions
     {
         public static bool TryFindLastStatementThatUsesVariableWithName(this BlockSyntax block, string variableName, out StatementSyntax lastUsageStatement)
         {
+            lastUsageStatement = null;
             var lastUsage = block
                 .DescendantNodes()
-                .Last(sn =>
+                .LastOrDefault(sn =>
                 {
                     switch (sn)
                     {
@@ -25,7 +26,8 @@ namespace DisposableFixer.Extensions
 
                     return sn.IsVariableDeclaratorSyntaxFor(variableName);
                 });
-            return lastUsage.TryFindParent<StatementSyntax>(block, out lastUsageStatement);
+            return lastUsage != null 
+                   && lastUsage.TryFindParent<StatementSyntax>(block, out lastUsageStatement);
         }
     }
 }
