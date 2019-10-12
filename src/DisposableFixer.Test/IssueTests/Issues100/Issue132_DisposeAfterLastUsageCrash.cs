@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
 using DisposableFixer.CodeFix;
 using DisposableFixer.Test.CodeFix;
 using FluentAssertions;
@@ -90,7 +88,7 @@ namespace System.Net.Http
                 .Should().BeEmpty();
 
 
-            fixedCode.Should().Contain("resp?.Dispose();");
+            fixedCode.Should().Contain("resp.Dispose();");
         }
     }
 }

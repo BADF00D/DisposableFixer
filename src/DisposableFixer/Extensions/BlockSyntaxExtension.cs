@@ -16,11 +16,18 @@ namespace DisposableFixer.Extensions
                     {
                         case ObjectCreationExpressionSyntax oces:
                             return oces.HasArgumentWithName(variableName);
-                        case InvocationExpressionSyntax ies when ies.IsInvocationExpressionSyntaxOn(variableName):
+                        case InvocationExpressionSyntax ies when 
+                            ies.IsInvocationExpressionSyntaxOn(variableName):
                             return true;
-                        case InvocationExpressionSyntax ies when ies.IsMemberAccessExpressionTo(variableName):
+                        case InvocationExpressionSyntax ies when 
+                            ies.IsMemberAccessExpressionTo(variableName):
                             return true;
-                        case InvocationExpressionSyntax ies when ies.ArgumentList.HasArgumentWithName(variableName):
+                        case InvocationExpressionSyntax ies when 
+                            ies.ArgumentList.HasArgumentWithName(variableName):
+                            return true;
+                        case ExpressionStatementSyntax ess when 
+                            ess.Expression is AssignmentExpressionSyntax aes 
+                            && aes.IsAssignmentToLocalVariable(variableName):
                             return true;
                     }
 
