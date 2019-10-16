@@ -190,7 +190,7 @@ namespace DisposableFixer
                 }
                 if (IsArgumentInConstructorOfTrackingTypeWithinUsing(context, localVariableInsideUsing)) return;
 
-                context.ReportNotDisposedLocalVariable();
+                context.ReportNotDisposedLocalVariable(localVariableName);
                 return;
             }
             var invocationExpressions = parentScope.DescendantNodes<InvocationExpressionSyntax>().ToArray();
@@ -200,7 +200,7 @@ namespace DisposableFixer
             if (IsArgumentInConstructorOfTrackingType(context, localVariableName, parentScope)) return;
             if (IsCallToMethodThatIsConsideredAsDisposeCall(invocationExpressions, context)) return;
 
-            context.ReportNotDisposedLocalVariable();
+            context.ReportNotDisposedLocalVariable(localVariableName);
         }
 
         private static bool IsCallToMethodThatIsConsideredAsDisposeCall(IEnumerable<InvocationExpressionSyntax> invocations,
@@ -317,7 +317,7 @@ namespace DisposableFixer
 
                     if (containingMethod.HasInterlockedExchangeWith(variableName)) return;
                     //is part of tracking call
-                    context.ReportNotDisposedLocalVariable();
+                    context.ReportNotDisposedLocalVariable(variableName);
                     return;
                 }
                 if (node.IsDisposedInDisposingMethod(variableName, Configuration, context.SemanticModel)) return;
@@ -351,7 +351,7 @@ namespace DisposableFixer
                         return;
                     }
                     if (ctor.ContainsDisposeCallFor(variableName, context.SemanticModel, Configuration)) return;
-                    context.ReportNotDisposedLocalVariable();
+                    context.ReportNotDisposedLocalVariable(variableName);
                 }
                 else //field or property
                 {
@@ -572,12 +572,12 @@ namespace DisposableFixer
                         return;
                     }
 
-                    var propertyDeclaations = @class
+                    var propertyDeclaration = @class
                         .DescendantNodes<PropertyDeclarationSyntax>()
                         .FirstOrDefault(pds => pds.Identifier.Text == memberName);
-                    if (propertyDeclaations != null)
+                    if (propertyDeclaration != null)
                     {
-                        if (propertyDeclaations.IsStatic())
+                        if (propertyDeclaration.IsStatic())
                         {
                             context.ReportNotDisposedStaticProperty(memberName);
                         }
@@ -589,7 +589,7 @@ namespace DisposableFixer
                         return;
                     }
                 }
-                context.ReportNotDisposedLocalVariable();
+                context.ReportNotDisposedLocalVariable("class not found");
             }
             else
             {

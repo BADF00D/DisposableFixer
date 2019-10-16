@@ -32,13 +32,13 @@ namespace DisposableFixer.Utils
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location));
         }
 
-        public static void ReportNotDisposedLocalVariable(this CustomAnalysisContext ctx)
+        public static void ReportNotDisposedLocalVariable(this CustomAnalysisContext ctx, string variableName)
         {
             var location = ctx.OriginalNode.GetLocation();
             var descriptor = NotDisposed.LocalVariable.Descriptor;
             if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
 
-            ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location));
+            ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, variableName));
         }
 
 

@@ -458,7 +458,7 @@ namespace DisposableFixer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Local variable is not disposed.
+        ///   Looks up a localized string similar to Local variable &apos;{0}&apos; is not disposed.
         /// </summary>
         internal static string NotDisposedLocalVariableMessageFormat {
             get {

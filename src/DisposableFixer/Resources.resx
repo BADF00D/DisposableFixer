@@ -133,7 +133,7 @@
     <value>Undisposed anonymous object.</value>
   </data>
   <data name="NotDisposedLocalVariableMessageFormat" xml:space="preserve">
-    <value>Local variable is not disposed</value>
+    <value>Local variable '{0}' is not disposed</value>
   </data>
   <data name="NotDisposedMessageFormat" xml:space="preserve">
     <value>This disposable is not disposed.</value>
