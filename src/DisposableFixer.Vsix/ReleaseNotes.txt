@@ -1,4 +1,10 @@
-﻿Release 2.1.3
+﻿Release 2.2.0
+* Issue 136: Warning of undisposed static and none static members contain the member name.
+* Issue 135: ReactiveProperty.SetValidateNotifyError is now supported.
+* Issue 133: Warning of undisposed local variable contains varibale name.
+* Issue 132: Fixed issue.
+
+Release 2.1.3
 * Issue 130: Introduce-fild-and-dispose can not handle conditional creations.
 * Issue 131: Disposing of conditional creations is now detected correctly.
 
