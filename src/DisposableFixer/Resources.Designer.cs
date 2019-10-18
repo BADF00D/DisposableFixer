@@ -404,7 +404,7 @@ namespace DisposableFixer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Factory Properties cannot be disposed. It recommended to change this to a factory method..
+        ///   Looks up a localized string similar to Factory properties &apos;{0}&apos; cannot be disposed. It recommended to change this to a factory method..
         /// </summary>
         internal static string NotDisposedFactoryPropertyMessageFormat {
             get {
@@ -431,7 +431,7 @@ namespace DisposableFixer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Static factory properties cannot be disposed. It recommended to change this to a static factory method..
+        ///   Looks up a localized string similar to Static factory property &apos;{0}&apos; cannot be disposed. It recommended to change this to a static factory method..
         /// </summary>
         internal static string NotDisposedFactoryStaticPropertyMessageFormat {
             get {
