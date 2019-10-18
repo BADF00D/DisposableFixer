@@ -120,11 +120,11 @@ namespace DisposableFixer
             if (node.IsDisposedInDisposingMethod(propertyDeclaration.Identifier.Text, Configuration, context.SemanticModel)) return;
             if (propertyDeclaration.IsStatic())
             {
-                context.ReportNotDisposedStaticPropertFactory(propertyDeclaration.Identifier.Text);
+                context.ReportNotDisposedStaticPropertyFactory(propertyDeclaration.Identifier.Text);
             }
             else
             {
-                context.ReportNotDisposedPropertFactory(propertyDeclaration.Identifier.Text);
+                context.ReportNotDisposedPropertyFactory(propertyDeclaration.Identifier.Text);
             }
         }
 
@@ -138,11 +138,11 @@ namespace DisposableFixer
             {
                 if (propertyDeclaration.IsStatic())
                 {
-                    context.ReportNotDisposedStaticPropertFactory(propertyDeclaration.Identifier.Text);
+                    context.ReportNotDisposedStaticPropertyFactory(propertyDeclaration.Identifier.Text);
                 }
                 else
                 {
-                    context.ReportNotDisposedPropertFactory(propertyDeclaration.Identifier.Text);
+                    context.ReportNotDisposedPropertyFactory(propertyDeclaration.Identifier.Text);
                 }
             }
             else

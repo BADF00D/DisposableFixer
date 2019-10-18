@@ -9,15 +9,18 @@ namespace DisposableFixer.Test.IssueTests.Issues100
     {
         private static IEnumerable<TestCaseData> TestCases {
             get {
-                yield return CreateForStaticFieldFromObjectCreation();
-                yield return CreateForNoneStaticFieldFromObjectCreation();
-                yield return CreateForNoneStaticPropertyFromObjectCreation();
-                yield return CreateForStaticPropertyFromObjectCreation();
+                yield return StaticFieldFromObjectCreation();
+                yield return NoneStaticFieldFromObjectCreation();
+                yield return NoneStaticPropertyFromObjectCreation();
+                yield return StaticPropertyFromObjectCreation();
 
-                yield return CreateForStaticFieldFromMethodInvocation();
-                yield return CreateForNoneStaticFieldFromMethodInvocation();
-                yield return CreateForNoneStaticPropertyFromMethodInvocation();
-                yield return CreateForStaticPropertyFromMethodInvocation();
+                yield return StaticFieldFromMethodInvocation();
+                yield return NoneStaticFieldFromMethodInvocation();
+                yield return NoneStaticPropertyFromMethodInvocation();
+                yield return StaticPropertyFromMethodInvocation();
+
+                yield return StaticPropertyFactory();
+                yield return NoneStaticPropertyFactory();
             }
         }
 
@@ -31,7 +34,7 @@ namespace DisposableFixer.Test.IssueTests.Issues100
             diagnostics[0].GetMessage().Should().Be(expectedMessage);
         }
 
-        private static TestCaseData CreateForStaticPropertyFromObjectCreation()
+        private static TestCaseData StaticPropertyFromObjectCreation()
         {
             const string code = @"
 using System;
@@ -55,7 +58,7 @@ namespace MyNamespace
                 "static property from ObjectCreation");
         }
 
-        private static TestCaseData CreateForNoneStaticPropertyFromObjectCreation()
+        private static TestCaseData NoneStaticPropertyFromObjectCreation()
         {
             const string code = @"
 using System;
@@ -79,7 +82,7 @@ namespace MyNamespace
                 "none static property from ObjectCretion");
         }
 
-        private static TestCaseData CreateForNoneStaticFieldFromObjectCreation()
+        private static TestCaseData NoneStaticFieldFromObjectCreation()
         {
             const string code = @"
 using System;
@@ -103,7 +106,7 @@ namespace MyNamespace
                 .SetName("none static field from ObjectCreation");
         }
 
-        private static TestCaseData CreateForStaticFieldFromObjectCreation()
+        private static TestCaseData StaticFieldFromObjectCreation()
         {
             const string code = @"
 using System;
@@ -129,7 +132,7 @@ namespace MyNamespace
 
 
 
-        private static TestCaseData CreateForStaticPropertyFromMethodInvocation()
+        private static TestCaseData StaticPropertyFromMethodInvocation()
         {
             const string code = @"
 using System;
@@ -154,7 +157,7 @@ namespace MyNamespace
                 "static property from MethodInvocation");
         }
 
-        private static TestCaseData CreateForNoneStaticPropertyFromMethodInvocation()
+        private static TestCaseData NoneStaticPropertyFromMethodInvocation()
         {
             const string code = @"
 using System;
@@ -179,7 +182,7 @@ namespace MyNamespace
                 "none static property from MethodInvocation");
         }
 
-        private static TestCaseData CreateForNoneStaticFieldFromMethodInvocation()
+        private static TestCaseData NoneStaticFieldFromMethodInvocation()
         {
             const string code = @"
 using System;
@@ -203,7 +206,7 @@ namespace MyNamespace
             return new TestCaseData(code, "Field 'MemoryStream' is not disposed.").SetName("none static field from MethodInvocation");
         }
 
-        private static TestCaseData CreateForStaticFieldFromMethodInvocation()
+        private static TestCaseData StaticFieldFromMethodInvocation()
         {
             const string code = @"
 using System;
@@ -226,6 +229,45 @@ namespace MyNamespace
 ";
             return new TestCaseData(code, "Static field 'MemoryStream' is not disposed.").SetName(
                 "static field from MethodInvocation");
+        }
+
+
+        private static TestCaseData StaticPropertyFactory()
+        {
+            const string code = @"
+using System;
+using System.IO;
+
+namespace MyNamespace
+{
+    class MyClass
+    {
+        public static IDisposable MemoryStream => new MemoryStream();
+    }
+
+}
+";
+            return new TestCaseData(code, "Static factory property 'MemoryStream' cannot be disposed. It recommended to change this to a static factory method.").SetName(
+                "Static property factory");
+        }
+
+        private static TestCaseData NoneStaticPropertyFactory()
+        {
+            const string code = @"
+using System;
+using System.IO;
+
+namespace MyNamespace
+{
+    class MyClass
+    {
+        public IDisposable MemoryStream => new MemoryStream();
+    }
+
+}
+";
+            return new TestCaseData(code, "Factory properties 'MemoryStream' cannot be disposed. It recommended to change this to a factory method.").SetName(
+                "None static property factory");
         }
     }
 }

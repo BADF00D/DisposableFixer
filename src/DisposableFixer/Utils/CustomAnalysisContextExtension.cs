@@ -94,7 +94,7 @@ namespace DisposableFixer.Utils
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), propertyName));
         }
 
-        public static void ReportNotDisposedStaticPropertFactory(this CustomAnalysisContext ctx, string propertyName)
+        public static void ReportNotDisposedStaticPropertyFactory(this CustomAnalysisContext ctx, string propertyName)
         {
             var location = ctx.OriginalNode.GetLocation();
             var properties = ImmutableDictionary.CreateBuilder<string, string>();
@@ -104,7 +104,7 @@ namespace DisposableFixer.Utils
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor,location, properties.ToImmutable()));
         }
 
-        public static void ReportNotDisposedPropertFactory(this CustomAnalysisContext ctx, string propertyName)
+        public static void ReportNotDisposedPropertyFactory(this CustomAnalysisContext ctx, string propertyName)
         {
             var location = ctx.OriginalNode.GetLocation();
             var properties = ImmutableDictionary.CreateBuilder<string, string>();
