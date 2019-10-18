@@ -139,7 +139,7 @@
     <value>This disposable is not disposed.</value>
   </data>
   <data name="AssignmendFromObjectCreationToPropertyNotDisposedMessageFormat" xml:space="preserve">
-    <value>Property is not disposed.</value>
+    <value>Property '{0}' is not disposed.</value>
   </data>
   <data name="AnonymousObjectFromMethodInvocationDescription" xml:space="preserve">
     <value>MethodInvocation returns an anonymous object that is not disposed.</value>
@@ -157,7 +157,7 @@
     <value>Result of method invocation is assigned to a field that is never disposed.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToFieldNotDisposedMessageFormat" xml:space="preserve">
-    <value>Field is not disposed.</value>
+    <value>Field '{0}' is not disposed.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToFieldNotDisposedTitle" xml:space="preserve">
     <value>Marks undisposed objects assinged to a field, originated from method invocation.</value>
@@ -166,7 +166,7 @@
     <value>Result of method invocation is assigned to a field that is never disposed.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToStaticFieldNotDisposedMessageFormat" xml:space="preserve">
-    <value>Static field is not disposed.</value>
+    <value>Static field '{0}' is not disposed.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToStaticFieldNotDisposedTitle" xml:space="preserve">
     <value>Marks undisposed objects assinged to a field, originated from method invocation.</value>
@@ -175,7 +175,7 @@
     <value>Result of method invocation is assigned to a property that is never disposed.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToPropertyNotDisposedMessageFormat" xml:space="preserve">
-    <value>Property is not disposed.</value>
+    <value>Property '{0}' is not disposed.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToPropertyNotDisposedTitle" xml:space="preserve">
     <value>Marks undisposed objects assinged to a property, originated from a method invocation.</value>
@@ -184,7 +184,7 @@
     <value>Result of method invocation is assigned to a property that is never disposed.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToStaticPropertyNotDisposedMessageFormat" xml:space="preserve">
-    <value>Static property is not disposed.</value>
+    <value>Static property '{0}' is not disposed.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToStaticPropertyNotDisposedTitle" xml:space="preserve">
     <value>Marks undisposed objects assinged to a property, originated from a method invocation.</value>
@@ -193,7 +193,7 @@
     <value>Result of object creation is assigned to a field that is never disposed.</value>
   </data>
   <data name="AssignmendFromObjectCreationToFieldNotDisposedMessageFormat" xml:space="preserve">
-    <value>Field not disposed.</value>
+    <value>Field '{0}' not disposed.</value>
   </data>
   <data name="AssignmendFromObjectCreationToFieldNotDisposedTitle" xml:space="preserve">
     <value>Marks undisposed objects assinged to a field, originated in an object creation.</value>
@@ -208,7 +208,7 @@
     <value>Result of object creation is assigned to a field that is never disposed.</value>
   </data>
   <data name="AssignmendFromObjectCreationToStaticFieldNotDisposedMessageFormat" xml:space="preserve">
-    <value>Static field not disposed.</value>
+    <value>Static field '{0}' not disposed.</value>
   </data>
   <data name="AssignmendFromObjectCreationToStaticFieldNotDisposedTitle" xml:space="preserve">
     <value>Marks undisposed objects assinged to a field, originated in an object creation.</value>
@@ -220,7 +220,7 @@
     <value>Marks undisposed objects assinged to a property, originated in an object creation.</value>
   </data>
   <data name="AssignmendFromObjectCreationToStaticPropertyNotDisposedMessageFormat" xml:space="preserve">
-    <value>Static property not disposed.</value>
+    <value>Static property '{0}' not disposed.</value>
   </data>
   <data name="NotDisposedFactoryPropertyDescription" xml:space="preserve">
     <value>Marks factory property that creates an IDisposable without tracking it.</value>

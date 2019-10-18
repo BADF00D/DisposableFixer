@@ -134,7 +134,7 @@ namespace DisposableFixer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Field is not disposed..
+        ///   Looks up a localized string similar to Field &apos;{0}&apos; is not disposed..
         /// </summary>
         internal static string AssignmendFromMethodInvocationToFieldNotDisposedMessageFormat {
             get {
@@ -161,7 +161,7 @@ namespace DisposableFixer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Property is not disposed..
+        ///   Looks up a localized string similar to Property &apos;{0}&apos; is not disposed..
         /// </summary>
         internal static string AssignmendFromMethodInvocationToPropertyNotDisposedMessageFormat {
             get {
@@ -188,7 +188,7 @@ namespace DisposableFixer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Static field is not disposed..
+        ///   Looks up a localized string similar to Static field &apos;{0}&apos; is not disposed..
         /// </summary>
         internal static string AssignmendFromMethodInvocationToStaticFieldNotDisposedMessageFormat {
             get {
@@ -215,7 +215,7 @@ namespace DisposableFixer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Static property is not disposed..
+        ///   Looks up a localized string similar to Static property &apos;{0}&apos; is not disposed..
         /// </summary>
         internal static string AssignmendFromMethodInvocationToStaticPropertyNotDisposedMessageFormat {
             get {
@@ -242,7 +242,7 @@ namespace DisposableFixer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Field not disposed..
+        ///   Looks up a localized string similar to Field &apos;{0}&apos; not disposed..
         /// </summary>
         internal static string AssignmendFromObjectCreationToFieldNotDisposedMessageFormat {
             get {
@@ -269,7 +269,7 @@ namespace DisposableFixer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Property is not disposed..
+        ///   Looks up a localized string similar to Property &apos;{0}&apos; is not disposed..
         /// </summary>
         internal static string AssignmendFromObjectCreationToPropertyNotDisposedMessageFormat {
             get {
@@ -296,7 +296,7 @@ namespace DisposableFixer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Static field not disposed..
+        ///   Looks up a localized string similar to Static field &apos;{0}&apos; not disposed..
         /// </summary>
         internal static string AssignmendFromObjectCreationToStaticFieldNotDisposedMessageFormat {
             get {
@@ -323,7 +323,7 @@ namespace DisposableFixer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Static property not disposed..
+        ///   Looks up a localized string similar to Static property &apos;{0}&apos; not disposed..
         /// </summary>
         internal static string AssignmendFromObjectCreationToStaticPropertyNotDisposedMessageFormat {
             get {
