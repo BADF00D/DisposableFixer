@@ -51,7 +51,7 @@ namespace MyNamespace
 
 }
 ";
-            return new TestCaseData(code, "Static property 'MemoryStream' not disposed").SetName(
+            return new TestCaseData(code, "Static property 'MemoryStream' is not disposed.").SetName(
                 "static property from ObjectCreation");
         }
 
@@ -75,7 +75,7 @@ namespace MyNamespace
 
 }
 ";
-            return new TestCaseData(code, "Property 'MemoryStream' not disposed").SetName(
+            return new TestCaseData(code, "Property 'MemoryStream' is not disposed.").SetName(
                 "none static property from ObjectCretion");
         }
 
@@ -99,7 +99,8 @@ namespace MyNamespace
 
 }
 ";
-            return new TestCaseData(code, "Field 'MemoryStream' not disposed").SetName("none static field from ObjectCreation");
+            return new TestCaseData(code, "Field 'MemoryStream' is not disposed.")
+                .SetName("none static field from ObjectCreation");
         }
 
         private static TestCaseData CreateForStaticFieldFromObjectCreation()
@@ -122,7 +123,7 @@ namespace MyNamespace
 
 }
 ";
-            return new TestCaseData(code, "Static field 'MemoryStream' not disposed").SetName(
+            return new TestCaseData(code, "Static field 'MemoryStream' is not disposed.").SetName(
                 "static field from ObjectCreation");
         }
 
@@ -149,7 +150,7 @@ namespace MyNamespace
 
 }
 ";
-            return new TestCaseData(code, "Static property 'MemoryStream' not disposed").SetName(
+            return new TestCaseData(code, "Static property 'MemoryStream' is not disposed.").SetName(
                 "static property from MethodInvocation");
         }
 
@@ -174,7 +175,7 @@ namespace MyNamespace
 
 }
 ";
-            return new TestCaseData(code, "Property 'MemoryStream' not disposed").SetName(
+            return new TestCaseData(code, "Property 'MemoryStream' is not disposed.").SetName(
                 "none static property from MethodInvocation");
         }
 
@@ -199,7 +200,7 @@ namespace MyNamespace
 
 }
 ";
-            return new TestCaseData(code, "Field 'MemoryStream' not disposed").SetName("none static field from MethodInvocation");
+            return new TestCaseData(code, "Field 'MemoryStream' is not disposed.").SetName("none static field from MethodInvocation");
         }
 
         private static TestCaseData CreateForStaticFieldFromMethodInvocation()
@@ -223,7 +224,7 @@ namespace MyNamespace
 
 }
 ";
-            return new TestCaseData(code, "Static field 'MemoryStream' not disposed").SetName(
+            return new TestCaseData(code, "Static field 'MemoryStream' is not disposed.").SetName(
                 "static field from MethodInvocation");
         }
     }

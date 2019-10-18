@@ -193,7 +193,7 @@
     <value>Result of object creation is assigned to a field that is never disposed.</value>
   </data>
   <data name="AssignmendFromObjectCreationToFieldNotDisposedMessageFormat" xml:space="preserve">
-    <value>Field '{0}' not disposed.</value>
+    <value>Field '{0}' is not disposed.</value>
   </data>
   <data name="AssignmendFromObjectCreationToFieldNotDisposedTitle" xml:space="preserve">
     <value>Marks undisposed objects assinged to a field, originated in an object creation.</value>
@@ -208,7 +208,7 @@
     <value>Result of object creation is assigned to a field that is never disposed.</value>
   </data>
   <data name="AssignmendFromObjectCreationToStaticFieldNotDisposedMessageFormat" xml:space="preserve">
-    <value>Static field '{0}' not disposed.</value>
+    <value>Static field '{0}' is not disposed.</value>
   </data>
   <data name="AssignmendFromObjectCreationToStaticFieldNotDisposedTitle" xml:space="preserve">
     <value>Marks undisposed objects assinged to a field, originated in an object creation.</value>
@@ -220,7 +220,7 @@
     <value>Marks undisposed objects assinged to a property, originated in an object creation.</value>
   </data>
   <data name="AssignmendFromObjectCreationToStaticPropertyNotDisposedMessageFormat" xml:space="preserve">
-    <value>Static property '{0}' not disposed.</value>
+    <value>Static property '{0}' is not disposed.</value>
   </data>
   <data name="NotDisposedFactoryPropertyDescription" xml:space="preserve">
     <value>Marks factory property that creates an IDisposable without tracking it.</value>

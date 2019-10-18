@@ -42,30 +42,30 @@ namespace DisposableFixer.Utils
         }
 
 
-        public static void ReportNotDisposedField(this CustomAnalysisContext ctx, string variableName)
+        public static void ReportNotDisposedField(this CustomAnalysisContext ctx, string fieldName)
         {
             var location = ctx.OriginalNode.GetLocation();
             var properties = ImmutableDictionary.CreateBuilder<string, string>();
-            properties.Add(Constants.Variablename, variableName);
+            properties.Add(Constants.Variablename, fieldName);
             var descriptor = ctx.Source == DisposableSource.InvocationExpression
                 ? NotDisposed.Assignment.FromMethodInvocation.ToFieldNotDisposedDescriptor
                 : NotDisposed.Assignment.FromObjectCreation.ToFieldNotDisposedDescriptor;
             if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
 
-            ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable()));
+            ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), fieldName));
         }
 
-        public static void ReportNotDisposedStaticField(this CustomAnalysisContext ctx, string variableName)
+        public static void ReportNotDisposedStaticField(this CustomAnalysisContext ctx, string fieldName)
         {
             var location = ctx.OriginalNode.GetLocation();
             var properties = ImmutableDictionary.CreateBuilder<string, string>();
-            properties.Add(Constants.Variablename, variableName);
+            properties.Add(Constants.Variablename, fieldName);
             var descriptor = ctx.Source == DisposableSource.InvocationExpression
                 ? NotDisposed.Assignment.FromMethodInvocation.ToStaticFieldNotDisposedDescriptor
                 : NotDisposed.Assignment.FromObjectCreation.ToStaticFieldNotDisposedDescriptor;
             if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
 
-            ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable()));
+            ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), fieldName));
         }
 
         public static void ReportNotDisposedProperty(this CustomAnalysisContext ctx, string propertyName)
@@ -78,7 +78,7 @@ namespace DisposableFixer.Utils
                 : NotDisposed.Assignment.FromObjectCreation.ToPropertyNotDisposedDescriptor;
             if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
 
-            ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable()));
+            ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), propertyName));
         }
 
         public static void ReportNotDisposedStaticProperty(this CustomAnalysisContext ctx, string propertyName)
@@ -91,7 +91,7 @@ namespace DisposableFixer.Utils
                 : NotDisposed.Assignment.FromObjectCreation.ToStaticPropertyNotDisposedDescriptor;
             if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
 
-            ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable()));
+            ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), propertyName));
         }
 
         public static void ReportNotDisposedStaticPropertFactory(this CustomAnalysisContext ctx, string propertyName)
