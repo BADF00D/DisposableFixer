@@ -101,7 +101,7 @@ namespace DisposableFixer.Utils
             properties.Add(Constants.Variablename, propertyName);
             var descriptor = NotDisposed.StaticFactoryProperty.Descriptor;
 
-            ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor,location, properties.ToImmutable()));
+            ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor,location, properties.ToImmutable(), propertyName));
         }
 
         public static void ReportNotDisposedPropertyFactory(this CustomAnalysisContext ctx, string propertyName)
@@ -111,7 +111,7 @@ namespace DisposableFixer.Utils
             properties.Add(Constants.Variablename, propertyName);
             var descriptor = NotDisposed.FactoryProperty.Descriptor;
 
-            ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable()));
+            ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), propertyName));
         }
 
         public static void ReportHiddenDisposable(this CustomAnalysisContext ctx, string actualTypeName, string returnTypeName, string methodOrFuncName)
