@@ -118,14 +118,7 @@ namespace DisposableFixer
             if (!(node.Parent.Parent.Parent.Parent.Parent is PropertyDeclarationSyntax propertyDeclaration)) return; // should not happen => we cke this before
 
             if (node.IsDisposedInDisposingMethod(propertyDeclaration.Identifier.Text, Configuration, context.SemanticModel)) return;
-            if (propertyDeclaration.IsStatic())
-            {
-                context.ReportNotDisposedStaticPropertyFactory(propertyDeclaration.Identifier.Text);
-            }
-            else
-            {
-                context.ReportNotDisposedPropertyFactory(propertyDeclaration.Identifier.Text);
-            }
+            context.ReportNotDisposedPropertyFactory(propertyDeclaration.Identifier.Text, propertyDeclaration.IsStatic());
         }
 
         private static void AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(CustomAnalysisContext context)
@@ -136,25 +129,11 @@ namespace DisposableFixer
             if (node.IsDisposedInDisposingMethod(propertyDeclaration.Identifier.Text, Configuration, context.SemanticModel)) return;
             if (propertyDeclaration.ExpressionBody != null)
             {
-                if (propertyDeclaration.IsStatic())
-                {
-                    context.ReportNotDisposedStaticPropertyFactory(propertyDeclaration.Identifier.Text);
-                }
-                else
-                {
-                    context.ReportNotDisposedPropertyFactory(propertyDeclaration.Identifier.Text);
-                }
+                context.ReportNotDisposedPropertyFactory(propertyDeclaration.Identifier.Text, propertyDeclaration.IsStatic());
             }
             else
             {
-                if (propertyDeclaration.IsStatic())
-                {
-                    context.ReportNotDisposedStaticProperty(propertyDeclaration.Identifier.Text);
-                }
-                else
-                {
-                    context.ReportNotDisposedProperty(propertyDeclaration.Identifier.Text);
-                }
+                context.ReportNotDisposedProperty(propertyDeclaration.Identifier.Text, propertyDeclaration.IsStatic());
             }
         }
 
@@ -282,14 +261,7 @@ namespace DisposableFixer
             var containeringClass = context.Node.FindContainingClass();
             var fieldDeclaration = containeringClass?.FindFieldNamed(fieldName);
             if (fieldDeclaration == null) return;
-            if (fieldDeclaration.IsStatic())
-            {
-                context.ReportNotDisposedStaticField(fieldName);
-            }
-            else
-            {
-                context.ReportNotDisposedField(fieldName);
-            }
+            context.ReportNotDisposedField(fieldName, fieldDeclaration.IsStatic());
 
         }
 
@@ -361,27 +333,11 @@ namespace DisposableFixer
 
                     if (node.IsAssignmentToProperty(variableName, out var isStatic))
                     {
-                        if (isStatic)
-                        {
-                            context.ReportNotDisposedStaticProperty(variableName);
-                        }
-                        else
-                        {
-                            context.ReportNotDisposedProperty(variableName);
-                        }
+                        context.ReportNotDisposedProperty(variableName, isStatic);
                     }
                     else
                     {
-
-                        if (node.IsAssignmentToStaticField(variableName))
-                        {
-                            context.ReportNotDisposedStaticField(variableName);
-                        }
-                        else
-                        {
-                            context.ReportNotDisposedField(variableName);
-                        }
-
+                        context.ReportNotDisposedField(variableName, node.IsAssignmentToStaticField(variableName));
                     }
 
                 }
@@ -396,28 +352,13 @@ namespace DisposableFixer
             var fieldDeclarationSyntax = containingClass.FindFieldNamed(variableName);
             if (fieldDeclarationSyntax != null)
             {
-                if (fieldDeclarationSyntax.IsStatic())
-                {
-                    context.ReportNotDisposedStaticField(variableName);
-                }
-                else
-                {
-                    context.ReportNotDisposedField(variableName);
-                }
-
+                context.ReportNotDisposedField(variableName, fieldDeclarationSyntax.IsStatic());
             }
             else
             {
                 var prop = containingClass.FindPropertyNamed(variableName);
                 if (prop == null) return; //this should never happen
-                if (prop.IsStatic())
-                {
-                    context.ReportNotDisposedStaticProperty(variableName);
-                }
-                else
-                {
-                    context.ReportNotDisposedProperty(variableName);
-                }
+                context.ReportNotDisposedProperty(variableName, prop.IsStatic());
             }
         }
 
@@ -560,15 +501,7 @@ namespace DisposableFixer
                                 .Any(vds => vds.Identifier.Text == memberName));
                     if (fieldDeclarations != null)
                     {
-                        if (fieldDeclarations.IsStatic())
-                        {
-                            context.ReportNotDisposedStaticField(memberName);
-                        }
-                        else
-                        {
-                            context.ReportNotDisposedField(memberName);
-                        }
-
+                        context.ReportNotDisposedField(memberName, fieldDeclarations.IsStatic());
                         return;
                     }
 
@@ -577,15 +510,7 @@ namespace DisposableFixer
                         .FirstOrDefault(pds => pds.Identifier.Text == memberName);
                     if (propertyDeclaration != null)
                     {
-                        if (propertyDeclaration.IsStatic())
-                        {
-                            context.ReportNotDisposedStaticProperty(memberName);
-                        }
-                        else
-                        {
-                            context.ReportNotDisposedProperty(memberName);
-                        }
-
+                        context.ReportNotDisposedProperty(memberName, propertyDeclaration.IsStatic());
                         return;
                     }
                 }

@@ -42,7 +42,19 @@ namespace DisposableFixer.Utils
         }
 
 
-        public static void ReportNotDisposedField(this CustomAnalysisContext ctx, string fieldName)
+        public static void ReportNotDisposedField(this CustomAnalysisContext ctx, string fieldName, bool isStatic)
+        {
+            if (isStatic)
+            {
+                ReportNotDisposedStaticField(ctx, fieldName);
+            }
+            else
+            {
+                ReportNotDisposedNoneStaticField(ctx, fieldName);
+            }
+        }
+
+        private static void ReportNotDisposedNoneStaticField(CustomAnalysisContext ctx, string fieldName)
         {
             var location = ctx.OriginalNode.GetLocation();
             var properties = ImmutableDictionary.CreateBuilder<string, string>();
@@ -55,7 +67,7 @@ namespace DisposableFixer.Utils
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), fieldName));
         }
 
-        public static void ReportNotDisposedStaticField(this CustomAnalysisContext ctx, string fieldName)
+        private static void ReportNotDisposedStaticField(this CustomAnalysisContext ctx, string fieldName)
         {
             var location = ctx.OriginalNode.GetLocation();
             var properties = ImmutableDictionary.CreateBuilder<string, string>();
@@ -68,7 +80,19 @@ namespace DisposableFixer.Utils
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), fieldName));
         }
 
-        public static void ReportNotDisposedProperty(this CustomAnalysisContext ctx, string propertyName)
+        public static void ReportNotDisposedProperty(this CustomAnalysisContext ctx, string propertyName, bool isStatic)
+        {
+            if (isStatic)
+            {
+                ReportNotDisposedStaticProperty(ctx, propertyName);
+            }
+            else
+            {
+                ReportNotDisposedNoneStaticProperty(ctx, propertyName);
+            }
+        }
+
+        private static void ReportNotDisposedNoneStaticProperty(CustomAnalysisContext ctx, string propertyName)
         {
             var location = ctx.OriginalNode.GetLocation();
             var properties = ImmutableDictionary.CreateBuilder<string, string>();
@@ -81,7 +105,7 @@ namespace DisposableFixer.Utils
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), propertyName));
         }
 
-        public static void ReportNotDisposedStaticProperty(this CustomAnalysisContext ctx, string propertyName)
+        private static void ReportNotDisposedStaticProperty(this CustomAnalysisContext ctx, string propertyName)
         {
             var location = ctx.OriginalNode.GetLocation();
             var properties = ImmutableDictionary.CreateBuilder<string, string>();
@@ -94,7 +118,20 @@ namespace DisposableFixer.Utils
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), propertyName));
         }
 
-        public static void ReportNotDisposedStaticPropertyFactory(this CustomAnalysisContext ctx, string propertyName)
+        public static void ReportNotDisposedPropertyFactory(this CustomAnalysisContext ctx, string propertyName,
+            bool isStatic)
+        {
+            if (isStatic)
+            {
+                ReportNotDisposedStaticPropertyFactory(ctx, propertyName);
+            }
+            else
+            {
+                ReportNotDisposedNoneStaticPropertyFactory(ctx, propertyName);
+            }
+        }
+
+        private static void ReportNotDisposedStaticPropertyFactory(this CustomAnalysisContext ctx, string propertyName)
         {
             var location = ctx.OriginalNode.GetLocation();
             var properties = ImmutableDictionary.CreateBuilder<string, string>();
@@ -104,7 +141,7 @@ namespace DisposableFixer.Utils
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor,location, properties.ToImmutable(), propertyName));
         }
 
-        public static void ReportNotDisposedPropertyFactory(this CustomAnalysisContext ctx, string propertyName)
+        private static void ReportNotDisposedNoneStaticPropertyFactory(this CustomAnalysisContext ctx, string propertyName)
         {
             var location = ctx.OriginalNode.GetLocation();
             var properties = ImmutableDictionary.CreateBuilder<string, string>();
