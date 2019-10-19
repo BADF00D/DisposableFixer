@@ -56,7 +56,7 @@ namespace SomeNamespace
 ";
 
             return new TestCaseData(Code)
-                .Returns(new[] { NotDisposed.Assignment.FromMethodInvocation.ToFieldNotDisposedDescriptor.Id })
+                .Returns(new[] { NotDisposed.Assignment.FromMethodInvocation.ToField.OfSameTypeDescriptor.Id })
                 .SetName(nameof(AssignedToField));
         }
 
@@ -85,7 +85,7 @@ namespace SomeNamespace
 ";
 
             return new TestCaseData(Code)
-                .Returns(new[] { NotDisposed.Assignment.FromMethodInvocation.ToStaticFieldNotDisposedDescriptor.Id })
+                .Returns(new[] { NotDisposed.Assignment.FromMethodInvocation.ToStaticField.OfSameTypeDescriptor.Id })
                 .SetName(nameof(AssignedToStaticField));
         }
 
@@ -114,7 +114,7 @@ namespace SomeNamespace
 ";
 
             return new TestCaseData(Code)
-                .Returns(new[] { NotDisposed.Assignment.FromMethodInvocation.ToPropertyNotDisposedDescriptor.Id })
+                .Returns(new[] { NotDisposed.Assignment.FromMethodInvocation.ToProperty.OfSameTypeDescriptor.Id })
                 .SetName(nameof(AssignedToProperty));
         }
 
@@ -143,7 +143,7 @@ namespace SomeNamespace
 ";
 
             return new TestCaseData(Code)
-                .Returns(new[] { NotDisposed.Assignment.FromMethodInvocation.ToStaticPropertyNotDisposedDescriptor.Id })
+                .Returns(new[] { NotDisposed.Assignment.FromMethodInvocation.ToStaticProperty.OfSameTypeDescriptor.Id })
                 .SetName(nameof(AssignedToStaticProperty));
         }
 

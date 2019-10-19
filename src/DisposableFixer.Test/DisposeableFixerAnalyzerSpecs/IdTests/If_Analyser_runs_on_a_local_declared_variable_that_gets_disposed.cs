@@ -46,7 +46,7 @@ internal class SomeTestNamspace
     }
 }";
             return new TestCaseData(code)
-                .Returns(Id.ForAssignmentFromObjectCreationToStaticPropertyNotDisposed)
+                .Returns(Id.ForAssignment.FromObjectCreation.ToStaticProperty.OfSameType)
                 .SetName("Static property initialized directly via ObjectCreation");
         }
 
@@ -64,7 +64,7 @@ internal class SomeTestNamspace
     }
 }";
             return new TestCaseData(code)
-                .Returns(Id.ForAssignmentFromObjectCreationToPropertyNotDisposed)
+                .Returns(Id.ForAssignment.FromObjectCreation.ToProperty.OfSameType)
                 .SetName("None Static property initialized directly via ObjectCreation");
         }
 
@@ -82,7 +82,7 @@ internal class SomeTestNamspace
     }
 }";
             return new TestCaseData(code)
-                .Returns(Id.ForAssignmentFromObjectCreationToFieldNotDisposed)
+                .Returns(Id.ForAssignment.FromObjectCreation.ToField.OfSameType)
                 .SetName("None Static field initialized directly via ObjectCreation");
         }
 
@@ -100,7 +100,7 @@ internal class SomeTestNamspace
     }
 }";
             return new TestCaseData(code)
-                .Returns(Id.ForAssignmentFromObjectCreationToStaticFieldNotDisposed)
+                .Returns(Id.ForAssignment.FromObjectCreation.ToStaticField.OfSameType)
                 .SetName("Static field initialized directly via ObjectCreation");
         }
 
@@ -121,7 +121,7 @@ internal class SomeTestNamspace
     }
 }";
             return new TestCaseData(code)
-                .Returns(Id.ForAssignmentFromMethodInvocationToStaticPropertyNotDisposed)
+                .Returns(Id.ForAssignment.FromMethodInvocation.ToStaticProperty.OfSameType)
                 .SetName("Static property initialized directly via MethodeInvocation");
         }
 
@@ -140,7 +140,7 @@ internal class SomeTestNamspace
     }
 }";
             return new TestCaseData(code)
-                .Returns(Id.ForAssignmentFromMethodInvocationToPropertyNotDisposed)
+                .Returns(Id.ForAssignment.FromMethodInvocation.ToProperty.OfSameType)
                 .SetName("None Static property initialized directly via MethodeInvocation");
         }
 
@@ -159,7 +159,7 @@ internal class SomeTestNamspace
     }
 }";
             return new TestCaseData(code)
-                .Returns(Id.ForAssignmentFromMethodInvocationToFieldNotDisposed)
+                .Returns(Id.ForAssignment.FromMethodInvocation.ToField.OfSameType)
                 .SetName("None Static field initialized directly via MethodeInvocation");
         }
 
@@ -178,7 +178,7 @@ internal class SomeTestNamspace
     }
 }";
             return new TestCaseData(code)
-                .Returns(Id.ForAssignmentFromMethodInvocationToStaticFieldNotDisposed)
+                .Returns(Id.ForAssignment.FromMethodInvocation.ToStaticField.OfSameType)
                 .SetName("Static field initialized directly via MethodInvocation");
         }
 

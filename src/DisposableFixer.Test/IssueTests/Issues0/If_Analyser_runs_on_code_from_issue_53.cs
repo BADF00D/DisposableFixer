@@ -29,7 +29,7 @@ namespace SomeNamespace
 
             var diagnostic = _diagnostics.First();
             diagnostic.Descriptor.Should()
-                 .Be(NotDisposed.Assignment.FromObjectCreation.ToPropertyNotDisposedDescriptor);
+                 .Be(NotDisposed.Assignment.FromObjectCreation.ToProperty.OfSameTypeDescriptor);
         }
     }
 }

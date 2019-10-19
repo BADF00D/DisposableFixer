@@ -43,7 +43,7 @@ namespace MyNamespace
             PrintCodeToAnalyze(Code);
             var diagnostics = MyHelper.RunAnalyser(Code, new DisposableFixerAnalyzer());
             diagnostics.Should().HaveCount(1);
-            diagnostics[0].GetMessage().Should().Be("Local variable 'mem' is not disposed");
+            diagnostics[0].Descriptor.Should().Be(NotDisposed.Assignment.FromObjectCreation.ToProperty.OfAnotherTypeDescriptor);
         }
     }
 }

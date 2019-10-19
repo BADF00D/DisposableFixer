@@ -60,8 +60,8 @@ namespace DisposableFixer.Utils
             var properties = ImmutableDictionary.CreateBuilder<string, string>();
             properties.Add(Constants.Variablename, fieldName);
             var descriptor = ctx.Source == DisposableSource.InvocationExpression
-                ? NotDisposed.Assignment.FromMethodInvocation.ToFieldNotDisposedDescriptor
-                : NotDisposed.Assignment.FromObjectCreation.ToFieldNotDisposedDescriptor;
+                ? NotDisposed.Assignment.FromMethodInvocation.ToField.OfSameTypeDescriptor
+                : NotDisposed.Assignment.FromObjectCreation.ToField.OfSameTypeDescriptor;
             if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
 
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), fieldName));
@@ -73,8 +73,8 @@ namespace DisposableFixer.Utils
             var properties = ImmutableDictionary.CreateBuilder<string, string>();
             properties.Add(Constants.Variablename, fieldName);
             var descriptor = ctx.Source == DisposableSource.InvocationExpression
-                ? NotDisposed.Assignment.FromMethodInvocation.ToStaticFieldNotDisposedDescriptor
-                : NotDisposed.Assignment.FromObjectCreation.ToStaticFieldNotDisposedDescriptor;
+                ? NotDisposed.Assignment.FromMethodInvocation.ToStaticField.OfSameTypeDescriptor
+                : NotDisposed.Assignment.FromObjectCreation.ToStaticField.OfSameTypeDescriptor;
             if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
 
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), fieldName));
@@ -98,8 +98,8 @@ namespace DisposableFixer.Utils
             var properties = ImmutableDictionary.CreateBuilder<string, string>();
             properties.Add(Constants.Variablename, propertyName);
             var descriptor = ctx.Source == DisposableSource.InvocationExpression
-                ? NotDisposed.Assignment.FromMethodInvocation.ToPropertyNotDisposedDescriptor
-                : NotDisposed.Assignment.FromObjectCreation.ToPropertyNotDisposedDescriptor;
+                ? NotDisposed.Assignment.FromMethodInvocation.ToProperty.OfSameTypeDescriptor
+                : NotDisposed.Assignment.FromObjectCreation.ToProperty.OfSameTypeDescriptor;
             if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
 
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), propertyName));
@@ -111,8 +111,8 @@ namespace DisposableFixer.Utils
             var properties = ImmutableDictionary.CreateBuilder<string, string>();
             properties.Add(Constants.Variablename, propertyName);
             var descriptor = ctx.Source == DisposableSource.InvocationExpression
-                ? NotDisposed.Assignment.FromMethodInvocation.ToStaticPropertyNotDisposedDescriptor
-                : NotDisposed.Assignment.FromObjectCreation.ToStaticPropertyNotDisposedDescriptor;
+                ? NotDisposed.Assignment.FromMethodInvocation.ToStaticProperty.OfSameTypeDescriptor
+                : NotDisposed.Assignment.FromObjectCreation.ToStaticProperty.OfSameTypeDescriptor;
             if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
 
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), propertyName));
