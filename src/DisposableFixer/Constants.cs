@@ -32,6 +32,7 @@ namespace DisposableFixer
         public const string ForAnonymousObjectFromObjectCreation = "DF0000";
         public const string ForAnonymousObjectFromMethodInvocation = "DF0001";
         public const string ForNotDisposedLocalVariable = "DF0010";
+
         public const string ForAssignmentFromObjectCreationToFieldNotDisposed = "DF0020";
         public const string ForAssignmentFromMethodInvocationToFieldNotDisposed = "DF0021";
         public const string ForAssignmentFromObjectCreationToPropertyNotDisposed = "DF0022";
@@ -40,6 +41,16 @@ namespace DisposableFixer
         public const string ForAssignmentFromMethodInvocationToStaticFieldNotDisposed = "DF0025";
         public const string ForAssignmentFromObjectCreationToStaticPropertyNotDisposed = "DF0026";
         public const string ForAssignmentFromMethodInvocationToStaticPropertyNotDisposed = "DF0027";
+
+        public const string ForAssignmentFromObjectCreationToFieldOfOtherClassNotDisposed = "DF0030";
+        public const string ForAssignmentFromMethodInvocationToFieldOfOtherClassNotDisposed = "DF0031";
+        public const string ForAssignmentFromObjectCreationToPropertyOfOtherClassNotDisposed = "DF0032";
+        public const string ForAssignmentFromMethodInvocationToPropertyOfOtherClassNotDisposed = "DF0033";
+        public const string ForAssignmentFromObjectCreationToStaticFieldOfOtherClassNotDisposed = "DF0034";
+        public const string ForAssignmentFromMethodInvocationToStaticFieldOfOtherClassNotDisposed = "DF0035";
+        public const string ForAssignmentFromObjectCreationToStaticPropertyOfOtherClassNotDisposed = "DF0036";
+        public const string ForAssignmentFromMethodInvocationToStaticPropertyOfOtherClassNotDisposed = "DF0037";
+
         public const string ForNotDisposedFactoryProperty = "DF0028";
         public const string ForNotDisposedStaticFactoryProperty = "DF0029";
 
