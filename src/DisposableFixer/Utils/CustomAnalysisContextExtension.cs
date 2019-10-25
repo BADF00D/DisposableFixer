@@ -1,4 +1,6 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using DisposableFixer.Extensions;
 using Microsoft.CodeAnalysis;
 
@@ -78,6 +80,41 @@ namespace DisposableFixer.Utils
             if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
 
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), fieldName));
+        }
+
+        public static void ReportNotDisposedPropertyOfAnotherType(this CustomAnalysisContext ctx, 
+            string propertyName, string memberName, bool isStatic)
+        {
+            var location = ctx.OriginalNode.GetLocation();
+            var properties = ImmutableDictionary.CreateBuilder<string, string>();
+            properties.Add(Constants.Variablename, propertyName);
+            var descriptor = ctx.Source == DisposableSource.InvocationExpression
+                ? isStatic 
+                    ? NotDisposed.Assignment.FromMethodInvocation.ToStaticProperty.OfAnotherTypeDescriptor 
+                    : NotDisposed.Assignment.FromMethodInvocation.ToProperty.OfAnotherTypeDescriptor
+                : isStatic 
+                    ? NotDisposed.Assignment.FromObjectCreation.ToStaticProperty.OfAnotherTypeDescriptor
+                    : NotDisposed.Assignment.FromObjectCreation.ToProperty.OfAnotherTypeDescriptor;
+            if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
+
+            ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), memberName, propertyName));
+        }
+        public static void ReportNotDisposedFieldOfAnotherType(this CustomAnalysisContext ctx,
+            string fieldName, string memberName, bool isStatic)
+        {
+            var location = ctx.OriginalNode.GetLocation();
+            var properties = ImmutableDictionary.CreateBuilder<string, string>();
+            properties.Add(Constants.Variablename, fieldName);
+            var descriptor = ctx.Source == DisposableSource.InvocationExpression
+                ? isStatic
+                    ? NotDisposed.Assignment.FromMethodInvocation.ToStaticField.OfAnotherTypeDescriptor
+                    : NotDisposed.Assignment.FromMethodInvocation.ToField.OfAnotherTypeDescriptor
+                : isStatic
+                    ? NotDisposed.Assignment.FromObjectCreation.ToStaticField.OfAnotherTypeDescriptor
+                    : NotDisposed.Assignment.FromObjectCreation.ToField.OfAnotherTypeDescriptor;
+            if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
+
+            ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), memberName, fieldName));
         }
 
         public static void ReportNotDisposedProperty(this CustomAnalysisContext ctx, string propertyName, bool isStatic)

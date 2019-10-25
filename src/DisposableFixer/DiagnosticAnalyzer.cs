@@ -38,6 +38,15 @@ namespace DisposableFixer
                 NotDisposed.Assignment.FromMethodInvocation.ToStaticField.OfSameTypeDescriptor,
                 NotDisposed.Assignment.FromMethodInvocation.ToStaticProperty.OfSameTypeDescriptor,
 
+                NotDisposed.Assignment.FromObjectCreation.ToField.OfAnotherTypeDescriptor,
+                NotDisposed.Assignment.FromObjectCreation.ToProperty.OfAnotherTypeDescriptor,
+                NotDisposed.Assignment.FromMethodInvocation.ToField.OfAnotherTypeDescriptor,
+                NotDisposed.Assignment.FromMethodInvocation.ToProperty.OfAnotherTypeDescriptor,
+                NotDisposed.Assignment.FromObjectCreation.ToStaticField.OfAnotherTypeDescriptor,
+                NotDisposed.Assignment.FromObjectCreation.ToStaticProperty.OfAnotherTypeDescriptor,
+                NotDisposed.Assignment.FromMethodInvocation.ToStaticField.OfAnotherTypeDescriptor,
+                NotDisposed.Assignment.FromMethodInvocation.ToStaticProperty.OfAnotherTypeDescriptor,
+
                 NotDisposed.FactoryProperty.Descriptor,
                 NotDisposed.StaticFactoryProperty.Descriptor,
 
@@ -267,6 +276,27 @@ namespace DisposableFixer
 
         private static void AnalyzeNodeInAssignmentExpression(CustomAnalysisContext context)
         {
+            void AnalyzeMemberAccessInAssignmentExpression(MemberAccessExpressionSyntax maes, IdentifierNameSyntax otherInstance)
+            {
+                var memberName = maes.Name.Identifier.Text;
+                var typeInfo = context.SemanticModel.GetTypeInfo(maes.Expression);
+                var type = typeInfo.Type;
+                var member = type?.GetMembers(maes.Name.Identifier.Text).FirstOrDefault();
+                if (member == null) return;
+
+                var isProperty = member is IPropertySymbol;
+                var isField = member is IFieldSymbol;
+                var isStatic = member.IsStatic;
+                if (isProperty)
+                {
+                    context.ReportNotDisposedPropertyOfAnotherType(memberName, otherInstance.Identifier.Text, isStatic);
+                }
+                else if (isField)
+                {
+                    context.ReportNotDisposedFieldOfAnotherType(memberName, otherInstance.Identifier.Text, isStatic);
+                }
+            }
+
             var node = context.Node;
             //is local or global variable
             var assignmentExpressionSyntax = node.Parent as AssignmentExpressionSyntax;
@@ -299,6 +329,13 @@ namespace DisposableFixer
                     return;
                 }
 
+                if (assignmentExpressionSyntax?.Left is MemberAccessExpressionSyntax maes &&
+                    maes.Expression is IdentifierNameSyntax otherInstance)
+                {
+                    AnalyzeMemberAccessInAssignmentExpression(maes, otherInstance);
+                    return;
+                }
+
                 if (node.IsTrackedViaTrackingMethod(context, containingMethod, variableName))
                 {
                     return;
@@ -325,7 +362,11 @@ namespace DisposableFixer
                     if (ctor.ContainsDisposeCallFor(variableName, context.SemanticModel, Configuration)) return;
                     context.ReportNotDisposedLocalVariable(variableName);
                 }
-                else //field or property
+                else if (assignmentExpressionSyntax?.Left is MemberAccessExpressionSyntax maes && maes.Expression is IdentifierNameSyntax otherInstance) 
+                {
+                    AnalyzeMemberAccessInAssignmentExpression(maes, otherInstance);
+                }
+                else //field or property //assignmentExpressionSyntax?.Left is a IdentifierExpression
                 {
                     if (node.IsDisposedInDisposingMethod(variableName, Configuration, context.SemanticModel)) return;
                     if (node.IsTrackedViaTrackingMethod(context, ctor, variableName)) return;

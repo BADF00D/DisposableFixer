@@ -16,11 +16,11 @@ namespace MyNamespace
     class ClassWithPublicSetableProperty : IDisposable
     {
 
-        public IDisposable MemoryStream { get; set; }
+        public IDisposable Property { get; set; }
 
         public void Dispose()
         {
-            MemoryStream?.Dispose();
+            Property?.Dispose();
         }
     }
 
@@ -30,7 +30,7 @@ namespace MyNamespace
         {
             using (var instance = new ClassWithPublicSetableProperty())
             {
-                instance.MemoryStream = new MemoryStream();//should generate a warning about not disposed property of other object
+                instance.Property = new MemoryStream();//should generate a warning about not disposed property of other object
             }
         }
     }
