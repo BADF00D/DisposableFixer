@@ -282,6 +282,7 @@ namespace DisposableFixer
                 var typeInfo = context.SemanticModel.GetTypeInfo(maes.Expression);
                 var type = typeInfo.Type;
                 var member = type?.GetMembers(maes.Name.Identifier.Text).FirstOrDefault();
+                
                 if (member == null) return;
 
                 var isProperty = member is IPropertySymbol;
@@ -289,6 +290,8 @@ namespace DisposableFixer
                 var isStatic = member.IsStatic;
                 if (isProperty)
                 {
+                    var fullName = $"{type.GetFullNamespace()}.{memberName}";
+                    if (Detector.IsTrackedSetter(fullName)) return;
                     context.ReportNotDisposedPropertyOfAnotherType(memberName, otherInstance.Identifier.Text, isStatic);
                 }
                 else if (isField)

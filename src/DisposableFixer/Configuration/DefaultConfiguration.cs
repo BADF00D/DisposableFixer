@@ -15,14 +15,21 @@ namespace DisposableFixer.Configuration {
 				"System.Resources.ResourceReader",
 				"System.Resources.ResourceSet",
 				"System.Resources.ResourceWriter",
+
+                //Newtonsoft
                 "Newtonsoft.Json.JsonTextWriter",
                 "Newtonsoft.Json.JsonTextReader",
                 "Newtonsoft.Json.Bson.BsonWriter",
                 "Newtonsoft.Json.Bson.BsonReader",
-                "System.Reactive.Disposables.CompositeDisposable",
                 "LumenWorks.Framework.IO.Csv.CsvReader",
                 "System.Xml.XmlTextReader",
                 "System.Xml.XmlTextWriter",
+
+                //Rx
+                "System.Reactive.Disposables.CompositeDisposable",
+                "System.Reactive.Disposables.ContextDisposable",
+                "System.Reactive.Disposables.RefCountDisposable",
+                "System.Reactive.Disposables.ScheduledDisposable"
             };
 			IgnoredInterfaces = new HashSet<string> {
 				"System.Collections.Generic.IEnumerator",
@@ -166,6 +173,14 @@ namespace DisposableFixer.Configuration {
                     new MethodCall("Close", Empty.Array<string>(), false)
                 }
             };
+
+            TrackedSet = new HashSet<string>
+            {
+                //RX
+                "System.Reactive.Disposables.MultipleAssignmentDisposable.Disposable",
+                "System.Reactive.Disposables.SerialDisposable.Disposable",
+                "System.Reactive.Disposables.SingleAssignmentDisposable.Disposable",
+            };
 		}
         public HashSet<string> IgnoredTypes { get; }
 		public HashSet<string> IgnoredInterfaces { get; }
@@ -180,5 +195,6 @@ namespace DisposableFixer.Configuration {
 	    public Dictionary<string,IReadOnlyCollection<CtorCall>> IgnoredTrackingTypeCtorCalls { get; }
 	    public Dictionary<string, IReadOnlyCollection<MethodCall>> TrackingMethods { get; }
 	    public Dictionary<string, IReadOnlyCollection<MethodCall>> TrackingFactoryMethods { get; }
-	}
+        public HashSet<string> TrackedSet { get; }
+    }
 }

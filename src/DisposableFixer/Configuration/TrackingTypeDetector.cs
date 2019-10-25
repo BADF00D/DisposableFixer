@@ -101,6 +101,11 @@ namespace DisposableFixer.Configuration
             return false;
         }
 
+        public bool IsTrackedSetter(string fullQualifiedPropertyName)
+        {
+            return _configuration.TrackedSet.Contains(fullQualifiedPropertyName);
+        }
+
         private IEnumerable<ITypeSymbol> GetTypeAndInterfaces(ITypeSymbol type)
         {
             yield return type;

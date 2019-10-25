@@ -47,5 +47,10 @@ namespace DisposableFixer.Configuration {
         /// IDisposables delivered by on of these methods can be ignored.
         /// </summary>
         Dictionary<string, IReadOnlyCollection<MethodCall>> TrackingFactoryMethods { get; } 
+
+        /// <summary>
+        /// Defines that a setter of a property tracks given IDisposable
+        /// </summary>
+        HashSet<string> TrackedSet { get; }
 	}
 }
