@@ -1,4 +1,8 @@
-﻿Release 2.2.0
+﻿Release 2.3.0
+* Issue 134: Assigning an IDisposable to anothers class property/field should yield some warnings.
+* Issue 137: Added support for System.Reactive.Disposables.
+
+Release 2.2.0
 * Issue 136: Warning of undisposed static and none static members contain the member name.
 * Issue 135: ReactiveProperty.SetValidateNotifyError is now supported.
 * Issue 133: Warning of undisposed local variable contains varibale name.
