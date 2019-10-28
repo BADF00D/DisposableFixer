@@ -28,7 +28,8 @@ namespace DisposableFixer.CodeFix
                 || id == Id.ForAssignment.FromMethodInvocation.ToField.OfSameType)
             {
                 context.RegisterCodeFix(
-                    CodeAction.Create(ActionTitle.DisposeFieldInDisposeMethod, c => CreateDisposeCallInParameterlessDisposeMethod(context, c)),
+                    CodeAction.Create(ActionTitle.DisposeFieldInDisposeMethod, c => CreateDisposeCallInParameterlessDisposeMethod(context, c), 
+                        Guid.NewGuid().ToString()),
                     context.Diagnostics);
             }
             return Task.FromResult(1);

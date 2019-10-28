@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
@@ -22,7 +23,10 @@ namespace DisposableFixer.CodeFix
             var id = context.Diagnostics.First().Id;
             if (id == Id.ForNotDisposedLocalVariable)
                 context.RegisterCodeFix(
-                    CodeAction.Create(ActionTitle.WrapInUsing, c => WrapLocalVariableInUsing(context, c)),
+                    CodeAction.Create(
+                        ActionTitle.WrapInUsing, 
+                        c => WrapLocalVariableInUsing(context, c),
+                        Guid.NewGuid().ToString()),
                     context.Diagnostics);
             
             return Task.CompletedTask;

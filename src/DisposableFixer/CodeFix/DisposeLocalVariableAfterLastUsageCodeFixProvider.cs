@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
@@ -26,7 +27,11 @@ namespace DisposableFixer.CodeFix
 
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            context.RegisterCodeFix(CodeAction.Create(ActionTitle.DisposeAfterLastUsage, cancel => Apply(context, cancel)),
+            context.RegisterCodeFix(
+                CodeAction.Create(
+                    ActionTitle.DisposeAfterLastUsage, 
+                    cancel => Apply(context, cancel),
+                    Guid.NewGuid().ToString()),
                 context.Diagnostics);
 
             return Task.CompletedTask;

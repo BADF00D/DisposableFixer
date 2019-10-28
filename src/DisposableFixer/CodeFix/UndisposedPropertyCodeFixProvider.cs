@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
@@ -27,7 +28,10 @@ namespace DisposableFixer.CodeFix
                 || id == Id.ForAssignment.FromMethodInvocation.ToProperty.OfSameType)
             {
                 context.RegisterCodeFix(
-                    CodeAction.Create(ActionTitle.DisposePropertyInDisposeMethod, c => CreateDisposeCallInParameterlessDisposeMethod(context, c)),
+                    CodeAction.Create(
+                        ActionTitle.DisposePropertyInDisposeMethod, 
+                        c => CreateDisposeCallInParameterlessDisposeMethod(context, c),
+                        Guid.NewGuid().ToString()),
                     context.Diagnostics);
             }
 

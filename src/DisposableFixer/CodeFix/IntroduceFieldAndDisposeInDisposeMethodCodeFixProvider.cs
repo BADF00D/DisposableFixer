@@ -26,6 +26,8 @@ namespace DisposableFixer.CodeFix
             Id.ForNotDisposedLocalVariable
         );
 
+        public override FixAllProvider GetFixAllProvider() => null;
+
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.FirstOrDefault();
