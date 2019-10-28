@@ -85,8 +85,7 @@ namespace DisposableFixer.Extensions
 
         public static bool IsCallToDispose(this InvocationExpressionSyntax node)
         {
-            var syntax = node.Parent as ConditionalAccessExpressionSyntax;
-            if (syntax != null)
+            if (node.Parent is ConditionalAccessExpressionSyntax)
             {
                 var mbe = node.Expression as MemberBindingExpressionSyntax;
                 return mbe?.Name.Identifier.Text == "Dispose";
@@ -98,15 +97,6 @@ namespace DisposableFixer.Extensions
             if (identifierSyntax == null) return false;
 
             return expression.Name.Identifier.Text == "Dispose";
-        }
-
-        [Obsolete("Use ArgumentList.HasArgumentWithName instead")]
-        public static bool UsesVariableInArguments(this InvocationExpressionSyntax invocationExpression,
-            string variable)
-        {
-            return invocationExpression.ArgumentList.Arguments
-                .Select(arg => arg.Expression as IdentifierNameSyntax)
-                .Any(identifier => identifier?.Identifier.Text == variable);
         }
 
         internal static bool IsMaybePartOfMethodChainUsingTrackingExtensionMethod(

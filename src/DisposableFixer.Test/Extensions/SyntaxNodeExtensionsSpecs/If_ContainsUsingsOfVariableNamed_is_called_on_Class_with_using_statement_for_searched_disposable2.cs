@@ -31,7 +31,7 @@ namespace DisFixerTest.UsingBlock {
                 .OfType<ClassDeclarationSyntax>()
                 .LastOrDefault();
 
-            _containsUsing = fieldDeclarationSyntax.ContainsUsingsOfVariableNamed("memstream");
+            _containsUsing = fieldDeclarationSyntax.ContainsUsingOfVariableNamed("memstream");
         }
 
         [Test]

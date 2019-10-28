@@ -309,7 +309,7 @@ namespace DisposableFixer
             {
                 if (containingMethod.ContainsDisposeCallFor(variableName, context.SemanticModel, Configuration)) return;
 
-                if (containingMethod.HasDecendentVariableDeclaratorFor(variableName))
+                if (containingMethod.HasDescendentVariableDeclaratorFor(variableName))
                 {
                     //local declaration in method
                     if (containingMethod.Returns(variableName)) return;
@@ -352,7 +352,7 @@ namespace DisposableFixer
 
             if (node.TryFindContainingCtor(out var ctor))
             {
-                if (ctor.HasDecendentVariableDeclaratorFor(variableName))
+                if (ctor.HasDescendentVariableDeclaratorFor(variableName))
                 {
                     //local variable in ctor
                     if (ctor.HasInterlockedExchangeWith(variableName)) return;

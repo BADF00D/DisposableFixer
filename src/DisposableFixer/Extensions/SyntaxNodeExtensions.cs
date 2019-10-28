@@ -23,7 +23,7 @@ namespace DisposableFixer.Extensions
             }
         }
 
-        public static bool ContainsUsingsOfVariableNamed(this SyntaxNode node, string variableName)
+        public static bool ContainsUsingOfVariableNamed(this SyntaxNode node, string variableName)
         {
             return node.DescendantNodes()
                 .OfType<UsingStatementSyntax>()
@@ -185,7 +185,7 @@ namespace DisposableFixer.Extensions
 
         public static bool TryGetParentVariableDeclaratorInScope(this SyntaxNode node, out VariableDeclaratorSyntax variableDeclarator)
         {
-            variableDeclarator = node.FindParentinScopeOfType<VariableDeclaratorSyntax>();
+            variableDeclarator = node.FindParentInScopeOfType<VariableDeclaratorSyntax>();
             return variableDeclarator != null;
         }
 
@@ -232,15 +232,6 @@ namespace DisposableFixer.Extensions
         {
             return node?.Parent is ArrowExpressionClauseSyntax
                    && node.Parent?.Parent is MethodDeclarationSyntax;
-        }
-
-        public static bool IsReturnDirectlyOrLater(this SyntaxNode node)
-        {
-            return node.IsReturnValueInLambdaExpression()
-                   || node.IsReturnedLaterWithinParenthesizedLambdaExpression()
-                   || node.IsReturnedLaterWithinMethod()
-                   || node.IsReturnedInProperty()
-                   || node.IsPartOfReturnStatementInMethod();
         }
 
         public static bool IsPartOfAwaitExpression(this SyntaxNode node)
@@ -475,7 +466,7 @@ namespace DisposableFixer.Extensions
             return ctor != null;
         }
 
-        public static bool HasDecendentVariableDeclaratorFor(this SyntaxNode node, string name)
+        public static bool HasDescendentVariableDeclaratorFor(this SyntaxNode node, string name)
         {
             return node.DescendantNodes<VariableDeclaratorSyntax>()
                 .Select(vds => vds.Identifier.Value as string)
@@ -579,14 +570,16 @@ namespace DisposableFixer.Extensions
             return false;
         }
 
-        public static bool TryFindContainingConstructorOrMethod(this SyntaxNode node, out SyntaxNode ctorOrMethod)
+        public static bool TryFindContainingConstructorOrMethod(this SyntaxNode node, out BaseMethodDeclarationSyntax ctorOrMethod)
         {
-            ctorOrMethod = node;
-            while (ctorOrMethod != null &&
-                   !(ctorOrMethod is MethodDeclarationSyntax || ctorOrMethod is ConstructorDeclarationSyntax))
+            var currentNode = node;
+            ctorOrMethod = null;
+            while (currentNode != null && !(currentNode is MethodDeclarationSyntax || currentNode is ConstructorDeclarationSyntax))
             {
-                ctorOrMethod = ctorOrMethod.Parent;
+                currentNode = currentNode.Parent;
             }
+
+            ctorOrMethod = currentNode as BaseMethodDeclarationSyntax;
             return ctorOrMethod != null;
         }
 
@@ -621,7 +614,7 @@ namespace DisposableFixer.Extensions
             }
         }
 
-        private static TOut FindParentinScopeOfType<TOut>(this SyntaxNode node) where TOut : SyntaxNode
+        private static TOut FindParentInScopeOfType<TOut>(this SyntaxNode node) where TOut : SyntaxNode
         {
             var temp = node;
             while (true)

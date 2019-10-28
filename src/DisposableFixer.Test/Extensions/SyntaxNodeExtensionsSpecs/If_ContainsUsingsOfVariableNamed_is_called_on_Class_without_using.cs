@@ -29,7 +29,7 @@ namespace DisFixerTest.Misc
                 .OfType<ClassDeclarationSyntax>()
                 .LastOrDefault();
 
-            _containsUsing = fieldDeclarationSyntax.ContainsUsingsOfVariableNamed("test");
+            _containsUsing = fieldDeclarationSyntax.ContainsUsingOfVariableNamed("test");
         }
 
         [Test]
