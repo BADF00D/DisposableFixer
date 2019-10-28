@@ -236,7 +236,7 @@ namespace DisposableFixer
 
         private static bool IsArgumentInTrackingMethod(CustomAnalysisContext context, string localVariableName, IEnumerable<InvocationExpressionSyntax> invocationExpressions)
         {
-            return invocationExpressions.Any(ie => ie.UsesVariableInArguments(localVariableName) && Detector.IsTrackingMethodCall(ie, context.SemanticModel));
+            return invocationExpressions.Any(ie => ie.ArgumentList.HasArgumentWithName(localVariableName) && Detector.IsTrackingMethodCall(ie, context.SemanticModel));
         }
 
         private static bool IsArgumentInConstructorOfTrackingType(CustomAnalysisContext context,

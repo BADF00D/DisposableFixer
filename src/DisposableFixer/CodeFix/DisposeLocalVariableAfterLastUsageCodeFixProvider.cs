@@ -22,6 +22,8 @@ namespace DisposableFixer.CodeFix
         public override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(Id.ForNotDisposedLocalVariable);
 
+        public override FixAllProvider GetFixAllProvider() => null;
+
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             context.RegisterCodeFix(CodeAction.Create(ActionTitle.DisposeAfterLastUsage, cancel => Apply(context, cancel)),

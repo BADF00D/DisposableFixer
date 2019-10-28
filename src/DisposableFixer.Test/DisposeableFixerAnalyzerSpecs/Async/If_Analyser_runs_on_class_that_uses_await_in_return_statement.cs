@@ -8,8 +8,6 @@ namespace DisposableFixer.Test.DisposeableFixerAnalyzerSpecs.Async
     [TestFixture]
     internal class If_Analyser_runs_on_a_async_MethodInvocation_assigned_to_member
     {
-        private Diagnostic[] _diagnostics;
-
         [TestCaseSource(nameof(TestCases))]
         public string[] Should_be_correct(string code)
         {

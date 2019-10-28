@@ -13,6 +13,8 @@ namespace DisposableFixer.CodeFix
 {
     public abstract class UndisposedMemberCodeFixProvider : CodeFixProvider
     {
+        public override FixAllProvider GetFixAllProvider() => null;
+
         protected async Task<Document> CreateDisposeCallInParameterlessDisposeMethod(CodeFixContext context, CancellationToken cancel)
         {
             var oldRoot = await context.Document.GetSyntaxRootAsync(cancel);

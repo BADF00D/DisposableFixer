@@ -28,6 +28,8 @@ namespace DisposableFixer.CodeFix
             return Task.CompletedTask;
         }
 
+        public override FixAllProvider GetFixAllProvider() => null;
+
         private static async Task<Document> WrapLocalVariableInUsing(CodeFixContext context, CancellationToken cancel)
         {
             var oldRoot = await context.Document.GetSyntaxRootAsync(cancel);

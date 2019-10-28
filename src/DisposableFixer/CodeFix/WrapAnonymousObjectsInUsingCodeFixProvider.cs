@@ -24,6 +24,8 @@ namespace DisposableFixer.CodeFix
                 Id.ForAnonymousObjectFromMethodInvocation
             );
 
+        public override FixAllProvider GetFixAllProvider() => null;
+
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var id = context.Diagnostics.First().Id;
