@@ -30,4 +30,10 @@ namespace DisposableFixer.Test.Attributes
     {
 
     }
+
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+    public class HiddenDisposableAttribute : Attribute
+    {
+
+    }
 }
