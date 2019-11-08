@@ -12,4 +12,22 @@ namespace DisposableFixer.Test.Attributes
     public class CategoryReactiveExtensionAttribute : Category3rdPartyAttribute
     {
     }
+
+    public abstract class UsingSyntaxAttribute : CategoryAttribute
+    {
+
+    }
+
+
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+    public class UsingStatementAttribute : UsingSyntaxAttribute
+    {
+        
+    }
+
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+    public class UsingDeclarationStatementAttribute : UsingSyntaxAttribute
+    {
+
+    }
 }
