@@ -9,6 +9,7 @@ namespace DisposableFixer
         public const string SystemIDisposable = "System.IDisposable";
         public const string System = "System";
         public const string IDisposable = "IDisposable";
+        public const string Task = "Task";
         public const string Interlocked = "Interlocked";
         public const string Exchange = "Exchange";
         public const string Var = "var";

@@ -15,6 +15,11 @@ namespace DisposableFixer.Extensions
             return typeSymbol.Name == Constants.IDisposable;
         }
 
+        public static bool IsTask(this INamedTypeSymbol namedTypeSymbol)
+        {
+            return namedTypeSymbol.Name == Constants.Task && namedTypeSymbol.IsGenericType;
+        }
+
         private static bool ImplementsIDisposable(this ITypeSymbol typeSymbol)
         {
             return typeSymbol.AllInterfaces.Any(i => i.Name == Constants.IDisposable);

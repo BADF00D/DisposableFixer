@@ -471,29 +471,33 @@ namespace DisposableFixer
             else ctx.ReportNotDisposedAnonymousObject(); //call to Create(): MemeoryStream
         }
 
-        private static void AnalyzeForHiddenDisposables(SyntaxNode invocationExpressionSyntax,
-            CustomAnalysisContext ctx)
+        private static void AnalyzeForHiddenDisposables(SyntaxNode invocationExpressionSyntax, CustomAnalysisContext ctx)
         {
-            if (invocationExpressionSyntax.TryFindContainingBlock(out var block))
+            if (!invocationExpressionSyntax.TryFindContainingBlock(out var block)) return;
+            switch (block.Parent)
             {
-                if (block.Parent is MethodDeclarationSyntax mds)
-                {
-                    var returnTypeSyntax = mds.ReturnType;
-                    var returnTypeInfo = ctx.SemanticModel.GetSymbolInfo(returnTypeSyntax);
-                    if (!(returnTypeInfo.Symbol is INamedTypeSymbol nts)) return;
-                    if (nts.IsDisposableOrImplementsDisposable()) return;
+                case MethodDeclarationSyntax mds:
+                    AnalyzeReturnType(mds.ReturnType, mds.Identifier);
+                    break;
+                case LocalFunctionStatementSyntax lfds:
+                    AnalyzeReturnType(lfds.ReturnType, lfds.Identifier);
+                    break;
+            }
 
-                    ctx.ReportHiddenDisposable(ctx.Type.Name, nts.Name, mds.Identifier.Text);
-                }
-                else if (block.Parent is LocalFunctionStatementSyntax lfds)
+            void AnalyzeReturnType(ExpressionSyntax returnTypeSyntax, SyntaxToken methodOrFuncIdentifier)
+            {
+                var returnTypeInfo = ctx.SemanticModel.GetSymbolInfo(returnTypeSyntax);
+                if (!(returnTypeInfo.Symbol is INamedTypeSymbol nts)) return;
+                if (nts.IsTask())
                 {
-                    var returnTypeSyntax = lfds.ReturnType;
-                    var returnTypeInfo = ctx.SemanticModel.GetSymbolInfo(returnTypeSyntax);
-                    if (!(returnTypeInfo.Symbol is INamedTypeSymbol nts)) return;
-                    if (nts.IsDisposableOrImplementsDisposable()) return;
-
-                    ctx.ReportHiddenDisposable(ctx.Type.Name, nts.Name, lfds.Identifier.Text);
+                    if (nts.TypeArguments.Any(ts => ts.IsDisposableOrImplementsDisposable()))
+                    {
+                        return;
+                    }
+                    ctx.ReportHiddenDisposable(ctx.Type.Name, nts.Name, methodOrFuncIdentifier.Text);
                 }
+                if (nts.IsDisposableOrImplementsDisposable()) return;
+                ctx.ReportHiddenDisposable(ctx.Type.Name, nts.Name, methodOrFuncIdentifier.Text);
             }
         }
 
