@@ -1,4 +1,8 @@
-﻿Release 2.3.0
+﻿Release 2.3.1
+Renamed Extension to DisposeableFixer 2017
+
+
+Release 2.3.0
 * Issue 134: Assigning an IDisposable to anothers class property/field should yield some warnings.
 * Issue 137: Added support for System.Reactive.Disposables.
 
