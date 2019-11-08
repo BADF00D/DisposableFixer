@@ -12,4 +12,10 @@ namespace DisposableFixer.Test.Attributes
     public class CategoryReactiveExtensionAttribute : Category3rdPartyAttribute
     {
     }
+
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+    public class HiddenDisposableAttribute : Attribute
+    {
+
+    }
 }
