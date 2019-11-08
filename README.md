@@ -1,7 +1,11 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/8mk3us0d5stlkq47?svg=true)](https://ci.appveyor.com/project/badf00d/disposablefixer)
-![](https://img.shields.io/appveyor/tests/badf00d/DisposableFixer.svg?style=flat)
-![](https://img.shields.io/nuget/v/DisposableFixer.svg?style=flat)
-![](https://img.shields.io/visual-studio-marketplace/v/DavidStormer.DisposableFixer.svg?style=flat&label=Visual%20Studio%20Markedplace)
+|                                                                                           | Visual Studio 2017 / Roslyn 2.x                                                                                                                   |                                                               Visual Studio 2019 / Roslyn 3.x                                                                |
+|-------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| Build                                                                                     | [![Build status](https://ci.appveyor.com/api/projects/status/8mk3us0d5stlkq47?svg=true)](https://ci.appveyor.com/project/badf00d/disposablefixer) | [![Build status](https://ci.appveyor.com/api/projects/status/th9y67llqgr86f71?svg=true)](https://ci.appveyor.com/project/BADF00D74777/disposablefixer-9htlt) |
+| Tests                                                                                     | ![AppVeyor tests (compact)](https://img.shields.io/appveyor/tests/BADF00D74777/disposablefixer)                                                   |                            ![AppVeyor tests (compact)](https://img.shields.io/appveyor/tests/BADF00D74777/disposablefixer-9htlt)                             |
+| [NuGet.org](https://www.nuget.org/profiles/Badf00d)                                       |                                                                                                                                                   |                                              ![](https://img.shields.io/nuget/v/DisposableFixer.svg?style=flat)                                              |
+| [Visual Studio Markedplace](https://marketplace.visualstudio.com/publishers/DavidStormer) | ![](https://img.shields.io/visual-studio-marketplace/v/DavidStormer.DisposableFixer.svg?style=flat&label=DisposableFixer%202017)                  |             ![](https://img.shields.io/visual-studio-marketplace/v/DavidStormer.DisposableFixer2019.svg?style=flat&label=DisposableFixer%202019)             |
+
+
 
 # DisposableFixer
 This is a small Visual Studio Extension that should identify and fix problems as memleaks while using IDispoables. You can download it via [Visual Studio Gallery](https://marketplace.visualstudio.com/items?itemName=DavidStormer.DisposableFixer) or using Visual Studio Extension Manager.
