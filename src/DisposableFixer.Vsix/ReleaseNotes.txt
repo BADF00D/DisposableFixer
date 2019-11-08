@@ -1,4 +1,7 @@
-﻿Release 2.3.0
+﻿Release 3.0.0
+Upgrade to .net standard 2.0 and Roslyn 3.0
+
+Release 2.3.0
 * Issue 134: Assigning an IDisposable to anothers class property/field should yield some warnings.
 * Issue 137: Added support for System.Reactive.Disposables.
 
