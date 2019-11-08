@@ -108,7 +108,14 @@ namespace DisposableFixer.Extensions
                        node.Parent?.Parent?.Parent?.Parent is VariableDeclarationSyntax &&
                        node.Parent?.Parent?.Parent?.Parent?.Parent is UsingStatementSyntax
                    ) //using(var x = flag ? new MemotyStream() : new MemoryStream())
+                   || node.IsDisposedByUsingDeclaration()
                 ;
+        }
+
+        private static bool IsDisposedByUsingDeclaration<T>(this T node) where T : SyntaxNode
+        {
+            var localDeclarationStatementSyntax = node.FindParent<LocalDeclarationStatementSyntax, BlockSyntax>();
+            return localDeclarationStatementSyntax?.UsingKeyword.Kind() == SyntaxKind.UsingKeyword;
         }
 
         public static bool IsPartOfVariableDeclaratorInsideAUsingDeclaration<T>(this T node) where T : SyntaxNode
