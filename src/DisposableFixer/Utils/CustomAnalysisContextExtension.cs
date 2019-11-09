@@ -83,7 +83,7 @@ namespace DisposableFixer.Utils
         }
 
         public static void ReportNotDisposedPropertyOfAnotherType(this CustomAnalysisContext ctx, 
-            string propertyName, string memberName, bool isStatic)
+            string propertyName, string typeOrInstanceName = null, bool isStatic = false)
         {
             var location = ctx.OriginalNode.GetLocation();
             var properties = ImmutableDictionary.CreateBuilder<string, string>();
@@ -96,8 +96,9 @@ namespace DisposableFixer.Utils
                     ? NotDisposed.Assignment.FromObjectCreation.ToStaticProperty.OfAnotherTypeDescriptor
                     : NotDisposed.Assignment.FromObjectCreation.ToProperty.OfAnotherTypeDescriptor;
             if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
+            var propertyPath = typeOrInstanceName != null ? $"{typeOrInstanceName}.{propertyName}" : propertyName;
 
-            ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), memberName, propertyName));
+            ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), propertyPath));
         }
         public static void ReportNotDisposedFieldOfAnotherType(this CustomAnalysisContext ctx,
             string fieldName, string memberName, bool isStatic)

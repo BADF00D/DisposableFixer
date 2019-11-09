@@ -169,8 +169,6 @@ namespace SomeNamespace
         public IDisposable SomeProperty { get; set; }
     }
 }
-
-
 ";
         [Test]
         public void Then_there_should_be_no()

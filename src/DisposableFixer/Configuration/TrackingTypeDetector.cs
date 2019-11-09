@@ -74,8 +74,8 @@ namespace DisposableFixer.Configuration
             var method = symbolInfo.Symbol as IMethodSymbol;
 
             return method.IsExtensionMethod
-                ? AnalyseExtensionMethodCall(method)
-                : AnalyseNonExtensionMethodCall(method);
+                ? AnalyzeExtensionMethodCall(method)
+                : AnalyzeNonExtensionMethodCall(method);
         }
 
         public bool IsIgnoredFactoryMethod(InvocationExpressionSyntax methodInvocation, SemanticModel semanticModel)
@@ -101,10 +101,9 @@ namespace DisposableFixer.Configuration
             return false;
         }
 
-        public bool IsTrackedSetter(string fullQualifiedPropertyName)
-        {
-            return _configuration.TrackedSet.Contains(fullQualifiedPropertyName);
-        }
+        public bool IsTrackedSetter(string fullQualifiedPropertyName, TrackingMode? trackingMode = null) =>
+            _configuration.TrackedSet.TryGetValue(fullQualifiedPropertyName, out var mode)
+            && (!trackingMode.HasValue || mode == trackingMode);
 
         private IEnumerable<ITypeSymbol> GetTypeAndInterfaces(ITypeSymbol type)
         {
@@ -115,9 +114,9 @@ namespace DisposableFixer.Configuration
             }
         }
 
-        private bool AnalyseNonExtensionMethodCall(IMethodSymbol method)
+        private bool AnalyzeNonExtensionMethodCall(IMethodSymbol method)
         {
-            //todo merge with AnalyseExtensionMethodCall
+            //todo merge with AnalyzeExtensionMethodCall
             var originalDefinition = method.OriginalDefinition;
             var methodName = method.Name;
             var @namespace = originalDefinition.ContainingType.GetFullNamespace();
@@ -128,7 +127,7 @@ namespace DisposableFixer.Configuration
                 .Any(tm => tm.Any(mc => mc.Name == methodName));
         }
 
-        private bool AnalyseExtensionMethodCall(IMethodSymbol method)
+        private bool AnalyzeExtensionMethodCall(IMethodSymbol method)
         {
             var originalDefinition = method.OriginalDefinition;
             var methodName = method.Name;

@@ -174,12 +174,13 @@ namespace DisposableFixer.Configuration {
                 }
             };
 
-            TrackedSet = new HashSet<string>
+            TrackedSet = new Dictionary<string, TrackingMode>
             {
-                //RX
-                "System.Reactive.Disposables.MultipleAssignmentDisposable.Disposable",
-                "System.Reactive.Disposables.SerialDisposable.Disposable",
-                "System.Reactive.Disposables.SingleAssignmentDisposable.Disposable",
+                ["System.Net.Http.HttpResponseMessage.Content"] = TrackingMode.Once,
+
+                ["System.Reactive.Disposables.MultipleAssignmentDisposable.Disposable"] = TrackingMode.Always,
+                ["System.Reactive.Disposables.SerialDisposable.Disposable"] = TrackingMode.Always,
+                ["System.Reactive.Disposables.SingleAssignmentDisposable.Disposable"] =TrackingMode.Always,
             };
 		}
         public HashSet<string> IgnoredTypes { get; }
@@ -195,6 +196,6 @@ namespace DisposableFixer.Configuration {
 	    public Dictionary<string,IReadOnlyCollection<CtorCall>> IgnoredTrackingTypeCtorCalls { get; }
 	    public Dictionary<string, IReadOnlyCollection<MethodCall>> TrackingMethods { get; }
 	    public Dictionary<string, IReadOnlyCollection<MethodCall>> TrackingFactoryMethods { get; }
-        public HashSet<string> TrackedSet { get; }
+        public Dictionary<string, TrackingMode> TrackedSet { get; }
     }
 }
