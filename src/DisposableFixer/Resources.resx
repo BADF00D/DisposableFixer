@@ -271,7 +271,7 @@
     <value>Result of method invocation is assigned to a property that is never disposed.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToPropertyOfAnotherTypeNotDisposedMessageFormat" xml:space="preserve">
-    <value>Previous value of property '{0}.{1}' might no be disposed.</value>
+    <value>Previous value of property '{0}' might no be disposed.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToPropertyOfAnotherTypeNotDisposedTitle" xml:space="preserve">
     <value>Marks undisposed objects assinged to a property, originated from a method invocation.</value>
@@ -289,7 +289,7 @@
     <value>Result of method invocation is assigned to a property that is never disposed.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToStaticPropertyOfAnotherTypeNotDisposedMessageFormat" xml:space="preserve">
-    <value>Previous value of static property '{0}.{1}' might no be disposed.</value>
+    <value>Previous value of static property '{0}' might no be disposed.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToStaticPropertyOfAnotherTypeNotDisposedTitle" xml:space="preserve">
     <value>Marks undisposed objects assinged to a property, originated from a method invocation.</value>
@@ -307,7 +307,7 @@
     <value>Result of object creation is assigned to a property that is never disposed.</value>
   </data>
   <data name="AssignmendFromObjectCreationToPropertyOfAnotherTypeNotDisposedMessageFormat" xml:space="preserve">
-    <value>Previous value of property '{0}.{1}' might no be disposed.</value>
+    <value>Previous value of property '{0}' might no be disposed.</value>
   </data>
   <data name="AssignmendFromObjectCreationToPropertyOfAnotherTypeNotDisposedTitle" xml:space="preserve">
     <value>Marks undisposed objects assinged to a property, originated in an object creation.</value>
@@ -325,7 +325,7 @@
     <value>Result of object creation is assigned to a property that is never disposed.</value>
   </data>
   <data name="AssignmendFromObjectCreationToStaticPropertyOfAnotherTypeNotDisposedMessageFormat" xml:space="preserve">
-    <value>Previous value of static property '{0}.{1}' might no be disposed.</value>
+    <value>Previous value of static property '{0}' might no be disposed.</value>
   </data>
   <data name="AssignmendFromObjectCreationToStaticPropertyOfAnotherTypeNotDisposedTitle" xml:space="preserve">
     <value>Marks undisposed objects assinged to a property, originated in an object creation.</value>

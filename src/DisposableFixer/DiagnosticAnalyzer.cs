@@ -294,7 +294,7 @@ namespace DisposableFixer
                 if (isProperty)
                 {
                     var fullName = $"{type.GetFullNamespace()}.{memberName}";
-                    if (Detector.IsTrackedSetter(fullName)) return;
+                    if (Detector.IsTrackedSetter(fullName, TrackingMode.Always)) return;
                     context.ReportNotDisposedPropertyOfAnotherType(memberName, otherInstance.Identifier.Text, isStatic);
                 }
                 else if (isField)
@@ -307,6 +307,19 @@ namespace DisposableFixer
             //is local or global variable
             var assignmentExpressionSyntax = node.Parent as AssignmentExpressionSyntax;
             var variableName = (assignmentExpressionSyntax?.Left as IdentifierNameSyntax)?.Identifier.Text;
+            if (assignmentExpressionSyntax?.Parent is InitializerExpressionSyntax initializerExpression &&
+                assignmentExpressionSyntax.Parent?.Parent is ObjectCreationExpressionSyntax objectCreationExpression)
+            {
+                var typeInfo = context.SemanticModel.GetTypeInfo(objectCreationExpression);
+                if (typeInfo.Type == null) return;
+                var typeName = typeInfo.Type.GetFullNamespace();
+                if (context.Detector.IsTrackedSetter($"{typeName}.{variableName}"))
+                {
+                    return;
+                }
+                context.ReportNotDisposedPropertyOfAnotherType(variableName);
+                return;
+            }
 
             if (node.TryFindContainingMethod(out var containingMethod))
             {

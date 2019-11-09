@@ -51,6 +51,6 @@ namespace DisposableFixer.Configuration {
         /// <summary>
         /// Defines that a setter of a property tracks given IDisposable
         /// </summary>
-        HashSet<string> TrackedSet { get; }
+        Dictionary<string, TrackingMode> TrackedSet { get; }
 	}
 }
