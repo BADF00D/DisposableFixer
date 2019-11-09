@@ -290,8 +290,7 @@ namespace DisposableFixer
                 var isStatic = member.IsStatic;
                 if (isProperty)
                 {
-                    var fullName = $"{type.GetFullNamespace()}.{memberName}";
-                    if (Detector.IsTrackedSetter(fullName, TrackingMode.Always)) return;
+                    if (Detector.IsTrackedSetter(type, memberName, TrackingMode.Always)) return;
                     context.ReportNotDisposedPropertyOfAnotherType(memberName, otherInstance.Identifier.Text, isStatic);
                 }
                 else if (isField)
@@ -309,11 +308,7 @@ namespace DisposableFixer
             {
                 var typeInfo = context.SemanticModel.GetTypeInfo(objectCreationExpression);
                 if (typeInfo.Type == null) return;
-                var typeName = typeInfo.Type.GetFullNamespace();
-                if (context.Detector.IsTrackedSetter($"{typeName}.{variableName}"))
-                {
-                    return;
-                }
+                if (context.Detector.IsTrackedSetter(typeInfo.Type, variableName)) return;
                 context.ReportNotDisposedPropertyOfAnotherType(variableName);
                 return;
             }
