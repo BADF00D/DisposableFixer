@@ -101,9 +101,19 @@ namespace DisposableFixer.Configuration
             return false;
         }
 
-        public bool IsTrackedSetter(string fullQualifiedPropertyName, TrackingMode? trackingMode = null) =>
-            _configuration.TrackedSet.TryGetValue(fullQualifiedPropertyName, out var mode)
-            && (!trackingMode.HasValue || mode == trackingMode);
+        public bool IsTrackedSetter(ITypeSymbol type, string propertyName, TrackingMode? trackingMode = null)
+        {
+            while (true)
+            {
+                var name = type.GetFullNamespace();
+                var propertyPath = $"{name}.{propertyName}";
+                if (_configuration.TrackedSet.TryGetValue(propertyPath, out var mode))
+                    return !trackingMode.HasValue || trackingMode == mode;
+                if (type.BaseType == null || type.BaseType.GetMembers(propertyName) == null) return false;
+                    
+                type = type.BaseType;
+            }
+        }
 
         private IEnumerable<ITypeSymbol> GetTypeAndInterfaces(ITypeSymbol type)
         {

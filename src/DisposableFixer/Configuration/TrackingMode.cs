@@ -6,6 +6,11 @@
     public enum TrackingMode
     {
         /// <summary>
+        /// Assignment are never tracked.
+        /// </summary>
+        /// <remarks>This is the default assumption. So there is no need to mark the property at all.</remarks>
+        Never,
+        /// <summary>
         /// Each new assignment disposes the already existing value, if any.
         /// </summary>
         Always,

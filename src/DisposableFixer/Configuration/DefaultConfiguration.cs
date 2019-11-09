@@ -171,12 +171,23 @@ namespace DisposableFixer.Configuration {
                 ["System.Data.SqlClient.SqlDataReaderSmi"] = new[]
                 {
                     new MethodCall("Close", Empty.Array<string>(), false)
+                },
+                ["System.Threading.WaitHandle"] = new []
+                {
+                    new MethodCall("Close", Empty.Array<string>(), false), 
                 }
             };
 
             TrackedSet = new Dictionary<string, TrackingMode>
             {
+                // mscorlib
+                ["System.Threading.WaitHandle.SafeWaitHandle"] = TrackingMode.Once,
+                
+                // Assembly System.Net.Http
                 ["System.Net.Http.HttpResponseMessage.Content"] = TrackingMode.Once,
+                ["System.Net.Http.HttpResponseMessage.RequestMessage"] = TrackingMode.Once,
+                ["System.Net.Http.HttpRequestMessage.Content"] = TrackingMode.Once,
+                ["System.Net.Http.DelegatingHandler.InnerHandler"] = TrackingMode.Once,
 
                 ["System.Reactive.Disposables.MultipleAssignmentDisposable.Disposable"] = TrackingMode.Always,
                 ["System.Reactive.Disposables.SerialDisposable.Disposable"] = TrackingMode.Always,
