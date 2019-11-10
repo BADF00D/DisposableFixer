@@ -1,4 +1,7 @@
-﻿Release 3.1.0
+﻿Release 3.2.0
+* Issue 105: Public properties that receive an IDisposable from System.Net.Http and mscorlib can now be evaluated correctly
+
+Release 3.1.0
 * Issue 114: Added ability to detect using declaration statements
 
 Release 3.0.0

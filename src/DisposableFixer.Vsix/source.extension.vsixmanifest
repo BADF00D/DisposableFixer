@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="DisposableFixer2019.B86F8FB8-FCEC-424A-9CBF-8613D3AA71A8" Version="3.1.0" Language="en-US" Publisher="David Störmer"/>
+        <Identity Id="DisposableFixer2019.B86F8FB8-FCEC-424A-9CBF-8613D3AA71A8" Version="3.2.0" Language="en-US" Publisher="David Störmer"/>
         <DisplayName>DisposableFixer 2019</DisplayName>
         <Description xml:space="preserve">Identifies IDisposable instances that are not disposed and disposes them</Description>
         <MoreInfo>https://github.com/BADF00D/DisposableFixer</MoreInfo>
