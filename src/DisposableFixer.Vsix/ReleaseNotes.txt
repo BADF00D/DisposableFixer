@@ -1,4 +1,7 @@
-﻿Release 2.4.0
+﻿Release 2.4.1
+* Issue 140: IDisposables in expression bodies that return void are detected correctly now
+
+Release 2.4.0
 * Issue 105: Public properties that receive an IDisposable from System.Net.Http and mscorlib can now be evaluated correctly
 
 Release 2.3.1
