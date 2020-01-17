@@ -234,6 +234,12 @@ namespace DisposableFixer.Extensions
                    && node.Parent?.Parent is MethodDeclarationSyntax;
         }
 
+        public static bool IsArrowExpressionClauseOfLocalFunction(this SyntaxNode node)
+        {
+            return node?.Parent is ArrowExpressionClauseSyntax
+                   && node.Parent?.Parent is LocalFunctionStatementSyntax;
+        }
+
         public static bool IsPartOfAwaitExpression(this SyntaxNode node)
         {
             return node.Parent is AwaitExpressionSyntax;

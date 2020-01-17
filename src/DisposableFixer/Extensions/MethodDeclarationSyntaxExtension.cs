@@ -49,5 +49,10 @@ namespace DisposableFixer.Extensions
             return method.DescendantNodes<ReturnStatementSyntax>()
                 .Any(rss => (rss.Expression is IdentifierNameSyntax ins && ins.Identifier.Text == name));
         }
+
+        public static bool ReturnsVoid(this MethodDeclarationSyntax mds)
+        {
+            return mds?.ReturnType.IsVoid() ?? false;
+        }
     }
 }

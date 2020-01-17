@@ -55,6 +55,10 @@ namespace DisposableFixer
 
         public override void Initialize(AnalysisContext context)
         {
+            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+#if !DEBUG
+            context.EnableConcurrentExecution();
+#endif
             context.RegisterSyntaxNodeAction(
                 AnalyzeInvocationExpressionStatement, 
                 SyntaxKind.InvocationExpression);
@@ -80,13 +84,21 @@ namespace DisposableFixer
             {
                 AnalyzeForHiddenDisposables(node, ctx);
             } // return new MemoryStream() or return Task.FromResult(new MemoryStream())
+            else if (node.IsArrowExpressionClauseOfMethod())// void/IDisposable/object Create()=>CreateMemoryStream()
+            {
+                AnalyzeArrowExpressionOfMethod(ctx);
+            }
+            else if (node.IsArrowExpressionClauseOfLocalFunction())
+            {
+                AnalyzeArrowExpressionOfLocalFunction(ctx);
+            }
             else if (node.IsPartOfLocalFunction(out var localFunctionStatement) && node.IsReturnedValue())
             {
                 var returnTypeSyntax = localFunctionStatement.ReturnType;
                 var returnType = ctx.SemanticModel.GetSymbolInfo(returnTypeSyntax);
             }
             else if (node.IsPartOfYieldReturnStatementInBlock()) { } //yield return new MemoryStream()
-            else if (node.IsArrowExpressionClauseOfMethod()) { } // void Create()=>CreateMemoryStream()
+            
             else if (node.IsReturnValueInLambdaExpression()) { }
             else if (node.IsReturnedLaterWithinMethod())
             {
@@ -110,6 +122,24 @@ namespace DisposableFixer
             else if (node.IsPartOfPropertyExpressionBody())  AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(ctx);
             else if (node.IsPartOfAutoProperty()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(ctx);
             else ctx.ReportNotDisposedAnonymousObject(); //new MemoryStream();
+        }
+
+        private static void AnalyzeArrowExpressionOfLocalFunction(CustomAnalysisContext context)
+        {
+            var localFunction = context.Node.Parent.Parent as LocalFunctionStatementSyntax;
+            if (localFunction.ReturnsVoid())
+            {
+                context.ReportNotDisposedAnonymousObject();
+            }
+        }
+
+        private static void AnalyzeArrowExpressionOfMethod(CustomAnalysisContext context)
+        {
+            var method = context.Node.Parent.Parent as MethodDeclarationSyntax;
+            if (method.ReturnsVoid())
+            {
+                context.ReportNotDisposedAnonymousObject();
+            }
         }
 
         private static void CheckIfObjectCreationTracksNode(CustomAnalysisContext context, ObjectCreationExpressionSyntax objectCreation)
@@ -450,13 +480,20 @@ namespace DisposableFixer
             {
                 AnalyzeForHiddenDisposables(node, ctx);
             } // return new MemoryStream() or return Task.FromResult(new MemoryStream())
+            else if (node.IsArrowExpressionClauseOfMethod())// void/IDisposable/object Create()=>CreateMemoryStream()
+            {
+                AnalyzeArrowExpressionOfMethod(ctx);
+            }
+            else if (node.IsArrowExpressionClauseOfLocalFunction())
+            {
+                AnalyzeArrowExpressionOfLocalFunction(ctx);
+            }
             else if (node.IsPartOfLocalFunction(out var localFunctionStatement) && node.IsReturnedValue())
             {
                 var returnTypeSyntax = localFunctionStatement.ReturnType;
                 var returnType = ctx.SemanticModel.GetSymbolInfo(returnTypeSyntax);
             }
             else if (node.IsPartOfYieldReturnStatementInBlock()) { } //yield return CreateMemoryStream()
-            else if (node.IsArrowExpressionClauseOfMethod()) { } // void Create()=>new MemoryStream()
             else if (node.IsReturnValueInLambdaExpression()) { } //e.g. ()=> new MemoryStream
             else if (node.IsReturnedLaterWithinMethod())
             {
