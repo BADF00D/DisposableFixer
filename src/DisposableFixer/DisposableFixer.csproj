@@ -11,7 +11,7 @@
   
   <PropertyGroup>
     <PackageId>DisposableFixer</PackageId>
-    <PackageVersion>3.2.1.0</PackageVersion>
+    <PackageVersion>3.2.2.0</PackageVersion>
     <Authors>David Störmer</Authors>
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/BADF00D/DisposableFixer</PackageProjectUrl>
@@ -19,7 +19,9 @@
     <RepositoryUrl>https://github.com/BADF00D/DisposableFixer</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Description>DisposableFixer</Description>
-    <PackageReleaseNotes>Issue 129: "Create field and dispose in Dispose method" code fix works as expected.</PackageReleaseNotes>
+    <PackageReleaseNotes>﻿Release 2.4.2
+* Issue 142: System.Reactive.Linq.Observable.Multicast get detected as tracking method.
+* Issue 144: When calling Dispose by passing the call as delegate, this is detected correctly.</PackageReleaseNotes>
     <Copyright>Copyright</Copyright>
     <PackageTags>DisposableFixer, analyzers</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
