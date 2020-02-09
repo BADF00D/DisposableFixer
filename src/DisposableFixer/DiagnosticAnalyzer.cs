@@ -218,9 +218,24 @@ namespace DisposableFixer
             if (IsArgumentInTrackingMethod(context, localVariableName, invocationExpressions)) return;
             if (IsArgumentInConstructorOfTrackingType(context, localVariableName, parentScope)) return;
             if (IsCallToMethodThatIsConsideredAsDisposeCall(invocationExpressions, context)) return;
+            if (IsDisposeDelegated(parentScope, localVariableName)) return;
 
             context.ReportNotDisposedLocalVariable(localVariableName);
         }
+
+        /// <summary>
+        /// Checks if Dispose call if don't via referenced via a Delegate. E.g. Observable.Do(variable.Dispose)
+        /// </summary>
+        /// <param name="parentScope">The scope that should contain the call.</param>
+        /// <param name="localVariableName">The local variable that should be part of the MemberAccessExpression</param>
+        /// <returns></returns>
+        private static bool IsDisposeDelegated(SyntaxNode parentScope, string localVariableName) => parentScope
+            .DescendantNodes<ArgumentSyntax>()
+            .Any(argument => argument.Expression is MemberAccessExpressionSyntax maes
+                             && maes.Expression is IdentifierNameSyntax variable
+                             && variable.Identifier.Text == localVariableName
+                             && maes.Name is IdentifierNameSyntax member
+                             && member.Identifier.Text == Constants.Dispose);
 
         private static bool IsCallToMethodThatIsConsideredAsDisposeCall(IEnumerable<InvocationExpressionSyntax> invocations,
             CustomAnalysisContext context)

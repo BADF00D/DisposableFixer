@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace DisposableFixer.Test.IssueTests.Issues100
 {
     [TestFixture]
-    internal class Issue_144 : IssueSpec
+    internal class Issue_144_Dispose_as_delegate : IssueSpec
     {
 
         private const string Code = @"
@@ -32,7 +32,7 @@ namespace SomeNamespace
 }
 ";
         [Test]
-        public void Then_there_should_be_no()
+        public void Then_there_should_be_no_diagnostic()
         {
             PrintCodeToAnalyze(Code);
             var diagnostics = MyHelper.RunAnalyser(Code, new DisposableFixerAnalyzer());
