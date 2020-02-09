@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace DisposableFixer.Test.IssueTests.Issues100
 {
     [TestFixture]
-    internal class Issue_144_Dispose_as_delegate : IssueSpec
+    internal class Issue144_Dispose_as_delegate : IssueSpec
     {
 
         private const string Code = @"
