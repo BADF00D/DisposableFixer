@@ -1,5 +1,10 @@
-﻿Release 2.4.1
+﻿Release 2.4.2
+* Issue 142: System.Reactive.Linq.Observable.Multicast get detected as tracking method.
+* Issue 144: When calling Dispose by passing the call as delegate, this is detected correctly.
+
+Release 2.4.1
 * Issue 140: IDisposables in expression bodies that return void are detected correctly now
+
 
 Release 2.4.0
 * Issue 105: Public properties that receive an IDisposable from System.Net.Http and mscorlib can now be evaluated correctly
