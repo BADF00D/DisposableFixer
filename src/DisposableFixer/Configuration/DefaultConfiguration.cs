@@ -74,10 +74,13 @@ namespace DisposableFixer.Configuration {
                 {
                     new MethodCall("GetCurrentProcess", new string[0] , true)
                 },
-                //["System.Threading.Interlocked"] = new List<MethodCall>
-                //{
-                //    new MethodCall("Exchange", new [] {"T", "System.IDisposable"}, true)
-                //},
+                ["System.Reactive.Linq.Observable"] = new List<MethodCall>
+                {
+                    new MethodCall("Multicast", new []
+                    {
+                        "System.IObservable<T>", "System.Reactive.Subjects.ISubject<TSource, TResult>"
+                    } , true)
+                },
                 ["FakeItEasy.ArgumentConstraintManagerExtensions"] = new List<MethodCall>()
                 {
                     new MethodCall("Matches", new [] {"FakeItEasy.IArgumentConstraintManager<T>", "System.Linq.Expressions.Expression<System.Func<T, bool>>"}, true),
