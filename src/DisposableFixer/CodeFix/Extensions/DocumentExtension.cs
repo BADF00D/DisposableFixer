@@ -71,7 +71,7 @@ namespace DisposableFixer.CodeFix.Extensions
             editor.ReplaceNode(oldDisposeMethod, newDisposeMethod);
         }
 
-        private static ExpressionStatementSyntax CreateDisposeCall(string memberName, bool castToIDisposable)
+        public static ExpressionStatementSyntax CreateDisposeCall(string memberName, bool castToIDisposable)
         {
             if (castToIDisposable)
                 return SyntaxFactory.ExpressionStatement(
@@ -109,20 +109,46 @@ namespace DisposableFixer.CodeFix.Extensions
         public static void AddDisposeMethodAndDisposeCallToMember(this DocumentEditor editor,
             ClassDeclarationSyntax oldClass, string memberName, bool castToDisposable)
         {
-            var disposeMethod = SyntaxFactory
-                .MethodDeclaration(
-                    SyntaxFactory.PredefinedType(
-                        SyntaxFactory.Token(SyntaxKind.VoidKeyword)),
-                    SyntaxFactory.Identifier(Constants.Dispose))
+            editor.AddOverrideMethod(
+                oldClass: oldClass,
+                methodName: Constants.Dispose,
+                leadingStatement: CreateDisposeCall(memberName, castToDisposable)
+            );
+        }
+
+        public static void AddOverrideMethod(this DocumentEditor editor,
+            ClassDeclarationSyntax oldClass, string methodName, ExpressionStatementSyntax leadingStatement)
+        {
+            var baseCall = ExpressionStatement(
+                InvocationExpression(
+                    MemberAccessExpression(
+                        SyntaxKind.SimpleMemberAccessExpression,
+                        BaseExpression(),
+                        IdentifierName(methodName))));
+
+            var method = MethodDeclaration(
+                    PredefinedType(
+                        Token(SyntaxKind.VoidKeyword)),
+                    Identifier(methodName))
                 .WithModifiers(
-                    SyntaxFactory.TokenList(
-                        SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
+                    TokenList(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.OverrideKeyword)))
+                .WithBody(Block(leadingStatement,baseCall));
+            editor.AddMember(oldClass, method);
+        }
+
+        public static void AddMethod(this DocumentEditor editor,
+            ClassDeclarationSyntax oldClass, string methodName, StatementSyntax additionalStatement)
+        {
+            var method = MethodDeclaration(
+                    PredefinedType(
+                        Token(SyntaxKind.VoidKeyword)),
+                    Identifier(methodName))
+                .WithModifiers(
+                    TokenList(
+                        Token(SyntaxKind.PublicKeyword)))
                 .WithBody(
-                    SyntaxFactory.Block(
-                        SyntaxFactory.SingletonList<StatementSyntax>(
-                            CreateDisposeCall(memberName, castToDisposable))))
-                .WithoutAnnotations(Formatter.Annotation);
-            editor.AddMember(oldClass, disposeMethod);
+                    Block(SingletonList(additionalStatement)));
+            editor.AddMember(oldClass, method);
         }
 
         public static void AddUninitializedFieldNamed(this DocumentEditor editor, ClassDeclarationSyntax oldClass, string name, string typeName)

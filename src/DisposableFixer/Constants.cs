@@ -24,6 +24,7 @@ namespace DisposableFixer
         public const string WrapInUsing = "Wrap in using";
         public const string DisposePropertyInDisposeMethod = "Dispose property in Dispose() method";
         public const string DisposeFieldInDisposeMethod = "Dispose field in Dispose() method";
+        public const string DisposeFieldInXMethod = "Dispose field in {0}({1}) method";
         public const string CreateFieldAndDisposeInDisposeMethod = "Create field and dispose in Dispose() method.";
         public const string DisposeAfterLastUsage = "Dispose after last usage";
     }
