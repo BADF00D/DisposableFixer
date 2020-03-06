@@ -6,6 +6,7 @@ namespace DisposableFixer
     {
         public const string Variablename = "variable";
         public const string Dispose = "Dispose";
+        public const string Disposable = "disposable";
         public const string SystemIDisposable = "System.IDisposable";
         public const string System = "System";
         public const string IDisposable = "IDisposable";
@@ -23,6 +24,7 @@ namespace DisposableFixer
     {
         public const string WrapInUsing = "Wrap in using";
         public const string UseUsingDeclaration = "Use using declaration";
+        public const string DeclareLocalVariableAndUseUsingDeclaration = "Declare local varibable and use using declaration";
         public const string DisposePropertyInDisposeMethod = "Dispose property in Dispose() method";
         public const string DisposeFieldInDisposeMethod = "Dispose field in Dispose() method";
         public const string CreateFieldAndDisposeInDisposeMethod = "Create field and dispose in Dispose() method.";

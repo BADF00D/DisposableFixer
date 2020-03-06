@@ -117,7 +117,7 @@ namespace DisposableFixer.CodeFix
                             .Skip(1);
 
                         var nodeToReplace = ies;
-                        var returnType = ies.GetReturnType(await context.Document.GetSemanticModelAsync(context.CancellationToken));
+                        var returnType = (await context.Document.GetSemanticModelAsync(context.CancellationToken)).GetReturnTypeOf(ies);
                         var typeName = returnType.MetadataName;
                         var variableName = returnType.GetVariableName();
                         var argumentList = nodeToReplace.DescendantNodes<ArgumentListSyntax>().FirstOrDefault();

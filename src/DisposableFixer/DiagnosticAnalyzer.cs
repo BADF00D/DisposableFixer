@@ -526,7 +526,7 @@ namespace DisposableFixer
             else if (node.IsPartOfAssignmentExpression()) AnalyzeNodeInAssignmentExpression(ctx);
             else if (node.IsPartOfAutoProperty()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(ctx);
             else if (node.IsPartOfPropertyExpressionBody()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(ctx);
-            else ctx.ReportNotDisposedAnonymousObject(); //call to Create(): MemeoryStream
+            else ctx.ReportNotDisposedAnonymousObject(); //call to Create(): MemoryStream
         }
 
         private static void AnalyzeForHiddenDisposables(SyntaxNode invocationExpressionSyntax, CustomAnalysisContext ctx)

@@ -17,5 +17,26 @@ namespace DisposableFixer.Extensions
             var si = model.GetSymbolInfo(objectCreation);
             return (si.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
         }
+
+        public static INamedTypeSymbol GetReturnTypeOf(this SemanticModel model,
+            InvocationExpressionSyntax invocationExpression)
+        {
+            var symbolInfo = model.GetSymbolInfo(invocationExpression);
+            var symbol = symbolInfo.Symbol as IMethodSymbol;
+            return symbol?.ReturnType as INamedTypeSymbol;
+        }
+
+        public static INamedTypeSymbol GetReturnTypeOrDefaultOf(this SemanticModel model,
+            ExpressionStatementSyntax expressionStatement)
+        {
+            switch (expressionStatement.Expression)
+            {
+                case InvocationExpressionSyntax invocationExpressionSyntax:
+                    return model.GetReturnTypeOf(invocationExpressionSyntax);
+                case ObjectCreationExpressionSyntax objectCreationExpressionSyntax:
+                    return model.GetReturnTypeOf(objectCreationExpressionSyntax);
+                default: return null;
+            }
+        }
     }
 }

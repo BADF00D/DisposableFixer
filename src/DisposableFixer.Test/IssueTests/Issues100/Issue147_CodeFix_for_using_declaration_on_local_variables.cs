@@ -55,8 +55,11 @@ namespace SomeNamespace
 {
     internal class TestClass
     {
+        int y = 2;
+        int z {get;}
         public void SomeMethod()
         {
+            var memoryStream = 1;
             new MemoryStream();
         }
     }
@@ -64,7 +67,7 @@ namespace SomeNamespace
 ";
         protected override CodeFixProvider GetCSharpCodeFixProvider()
         {
-            return new WrapLocalVariableInUsingDeclarationCodeFix();
+            return new IntroduceLocalVariableAndUseUsingDeclaration();
         }
 
         [Test]
@@ -94,9 +97,12 @@ namespace SomeNamespace
 {
     internal class TestClass
     {
+        int y = 2;
+        int z {get;}
         public void SomeMethod()
         {
-            IDisposable Create () =>new MemoryStream();
+            var stream = 1;
+            Stream Create () =>new MemoryStream();
             Create();
         }
     }
@@ -104,7 +110,7 @@ namespace SomeNamespace
 ";
         protected override CodeFixProvider GetCSharpCodeFixProvider()
         {
-            return new WrapLocalVariableInUsingDeclarationCodeFix();
+            return new IntroduceLocalVariableAndUseUsingDeclaration();
         }
 
         [Test]
