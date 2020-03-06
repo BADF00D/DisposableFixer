@@ -4,6 +4,7 @@ using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DisposableFixer.CodeFix.Extensions;
 using DisposableFixer.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -21,6 +22,8 @@ namespace DisposableFixer.CodeFix
     {
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
+            if (!context.IsLanguageVersionAtLeast(LanguageVersion.CSharp8)) return Task.CompletedTask;
+
             var diagnostics = context.Diagnostics.Where(d => d.Id == Id.ForNotDisposedLocalVariable);
 
             context.RegisterCodeFix(CodeAction.Create(ActionTitle.UseUsingDeclaration, c => PrefixWithUsingDeclaration(context, c), Guid.Empty.ToString()), diagnostics);

@@ -59,7 +59,7 @@ namespace DisposableFixer
 #if !DEBUG
             context.EnableConcurrentExecution();
 #endif
-
+            
             context.RegisterSyntaxNodeAction(
                 AnalyzeInvocationExpressionStatement, 
                 SyntaxKind.InvocationExpression);

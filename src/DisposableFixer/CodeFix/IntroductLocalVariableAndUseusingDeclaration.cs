@@ -24,10 +24,11 @@ namespace DisposableFixer.CodeFix
     {
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
+            if (!context.IsLanguageVersionAtLeast(LanguageVersion.CSharp8)) return Task.CompletedTask;
+            
             var diagnostics = context.Diagnostics.Where(d => d.Id == Id.ForAnonymousObjectFromObjectCreation || d.Id == Id.ForAnonymousObjectFromMethodInvocation);
 
             context.RegisterCodeFix(CodeAction.Create(ActionTitle.DeclareLocalVariableAndUseUsingDeclaration, c => PrefixWithUsingDeclaration(context, c), Guid.Empty.ToString()), diagnostics);
-
             return Task.CompletedTask;
         }
 
