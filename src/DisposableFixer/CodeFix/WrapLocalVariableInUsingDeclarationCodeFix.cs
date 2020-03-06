@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Composition;
-using System.IO.Pipes;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,7 +30,15 @@ namespace DisposableFixer.CodeFix
 
         private static async Task<Document> PrefixWithUsingDeclaration(CodeFixContext context, CancellationToken cancel)
         {
-            return await Task.FromResult(context.Document);
+            var oldRoot = await context.Document.GetSyntaxRootAsync(cancel);
+            if (!(oldRoot.FindNode(context.Span) is ExpressionSyntax node)) return context.Document;
+            if (!node.TryFindParent<LocalDeclarationStatementSyntax>(out var localDeclaration)) return context.Document;
+
+            var newLocalDeclaration = localDeclaration.WithUsingKeyword(Token(SyntaxKind.UsingKeyword));
+            var editor = await DocumentEditor.CreateAsync(context.Document, context.CancellationToken);
+            editor.ReplaceNode(localDeclaration, newLocalDeclaration);
+
+            return editor.GetChangedDocument();
         }
 
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
