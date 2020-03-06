@@ -110,7 +110,7 @@ namespace SomeNamespace
 
         protected override CodeFixProvider GetCSharpCodeFixProvider()
         {
-            return new WrapLocalVariableInUsingCodeFixProvider();
+            return new WrapLocalVariableInUsingBlockCodeFixProvider();
         }
 
         [Test]

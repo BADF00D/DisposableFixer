@@ -11,7 +11,7 @@ namespace DisposableFixer.Test.IssueTests.Issues0
 
         protected override CodeFixProvider GetCSharpCodeFixProvider()
         {
-            return new DisposableFixer.CodeFix.WrapLocalVariableInUsingCodeFixProvider();
+            return new DisposableFixer.CodeFix.WrapLocalVariableInUsingBlockCodeFixProvider();
         }
 
         private const string Code = @"
