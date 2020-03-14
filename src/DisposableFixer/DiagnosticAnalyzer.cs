@@ -476,7 +476,7 @@ namespace DisposableFixer
 
             var symbolInfo = context.SemanticModel.GetSymbolInfo(node);
             var symbol = symbolInfo.Symbol as IMethodSymbol;
-
+            
             var type = symbol?.ReturnType as INamedTypeSymbol;
             var ctx = CustomAnalysisContext.WithOriginalNode(context, DisposableSource.InvocationExpression, type, Detector, Configuration);
             if (!ctx.CouldDetectType()) { }

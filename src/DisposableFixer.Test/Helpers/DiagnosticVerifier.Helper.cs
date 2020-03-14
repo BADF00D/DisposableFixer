@@ -16,10 +16,11 @@ namespace TestHelper
     public abstract partial class DiagnosticVerifier
     {
         private static readonly MetadataReference CorlibReference =
-            MetadataReference.CreateFromFile(typeof (object).Assembly.Location);
+            MetadataReference.CreateFromFile(typeof (object).Assembly.Location, MetadataReferenceProperties.Assembly);
 
         private static readonly MetadataReference SystemCoreReference =
-            MetadataReference.CreateFromFile(typeof (Enumerable).Assembly.Location);
+            MetadataReference.CreateFromFile(typeof (Enumerable).Assembly.Location, MetadataReferenceProperties.Assembly);
+
 
         private static readonly MetadataReference CSharpSymbolsReference =
             MetadataReference.CreateFromFile(typeof (CSharpCompilation).Assembly.Location);
@@ -140,7 +141,7 @@ namespace TestHelper
         /// <param name="source">Classes in the form of a string</param>
         /// <param name="language">The language the source code is in</param>
         /// <returns>A Document created from the source string</returns>
-        protected static Document CreateDocument(string source, string language = LanguageNames.CSharp)
+        public static Document CreateDocument(string source, string language = LanguageNames.CSharp)
         {
             return CreateProject(new[] {source}, language).Documents.First();
         }
