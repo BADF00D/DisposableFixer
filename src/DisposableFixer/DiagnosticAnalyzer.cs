@@ -28,6 +28,7 @@ namespace DisposableFixer
                 NotDisposed.AnonymousObject.FromObjectCreationDescriptor,
                 NotDisposed.AnonymousObject.FromMethodInvocationDescriptor,
                 NotDisposed.LocalVariable.Descriptor,
+                NotDisposed.TupleElement.Descriptor,
 
                 NotDisposed.Assignment.FromObjectCreation.ToField.OfSameTypeDescriptor,
                 NotDisposed.Assignment.FromObjectCreation.ToProperty.OfSameTypeDescriptor,
@@ -74,10 +75,13 @@ namespace DisposableFixer
             if (!(context.Node is ObjectCreationExpressionSyntax node)) return; //something went wrong
 
             var symbolInfo = context.SemanticModel.GetSymbolInfo(node);
-            var t = (symbolInfo.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
-            var ctx = CustomAnalysisContext.WithOriginalNode(context, DisposableSource.ObjectCreation, t, Detector, Configuration);
+            var type = (symbolInfo.Symbol as IMethodSymbol)?.ReceiverType as INamedTypeSymbol;
+            var ctx = CustomAnalysisContext.WithOriginalNode(context, DisposableSource.ObjectCreation, type, Detector, Configuration);
             if (!ctx.CouldDetectType()) { }
-            else if (!ctx.IsDisposableOrImplementsDisposable()) return;
+            else if (!ctx.IsDisposableOrImplementsDisposable())
+            {
+                if (type != null && type.IsTupleType) AnalyzeTupleType(ctx);
+            }
             else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new MemoryStream()).Dispose()
             else if (Detector.IsIgnoredTypeOrImplementsIgnoredInterface(ctx.Type)) { }
             else if (node.IsReturnedInProperty()) AnalyzeNodeInReturnStatementOfProperty(ctx);
@@ -482,7 +486,10 @@ namespace DisposableFixer
             if (!ctx.CouldDetectType()) { }
             else if (node.IsParentADisposeCallIgnoringParenthesis()) return; //(new object()).AsDisposable().Dispose()
             else if (node.IsPartOfAwaitExpression()) AnalyzeInvocationExpressionInsideAwaitExpression(ctx);
-            else if (!ctx.IsDisposableOrImplementsDisposable()) return;
+            else if (!ctx.IsDisposableOrImplementsDisposable())
+            {
+                if (type != null && type.IsTupleType) AnalyzeTupleType(ctx);
+            }
             else if (node.IsReturnedInProperty()) AnalyzeNodeInReturnStatementOfProperty(ctx);
             else if (ctx.IsTypeIgnoredOrImplementsIgnoredInterface()) { } //GetEnumerator()
             else if (Detector.IsTrackingMethodCall(node, context.SemanticModel)) { }//ignored extension methods
@@ -527,6 +534,44 @@ namespace DisposableFixer
             else if (node.IsPartOfAutoProperty()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(ctx);
             else if (node.IsPartOfPropertyExpressionBody()) AnalyzeNodeInAutoPropertyOrPropertyExpressionBody(ctx);
             else ctx.ReportNotDisposedAnonymousObject(); //call to Create(): MemoryStream
+        }
+
+        private static void AnalyzeTupleType(CustomAnalysisContext ctx)
+        {
+            var node = ctx.Node;
+            for (var i = 0; i < ctx.Type.TupleElements.Length; i++)
+            {
+                var tupleElement = ctx.Type.TupleElements[i];
+                if(!tupleElement.Type.IsDisposableOrImplementsDisposable()) continue;
+
+
+                //if (node.Parent is AssignmentExpressionSyntax aes)
+                //{
+                //    if (aes.Left is DeclarationExpressionSyntax des)
+                //    {
+                //        if (des.Designation is ParenthesizedVariableDesignationSyntax pvds)
+                //        {
+                //            if (pvds.Variables[i] is SingleVariableDesignationSyntax svds)
+                //            {
+                //                svds.Identifier.Text
+                //            }
+                //        }
+                //    }
+                //}
+
+
+                var tupleElementName = ctx.Node.Parent.IsAssignmentToDeconstructedTuple(i, out var variableName) 
+                    ? variableName
+                    : node.GetIdentifierIfIsPartOfVariableDeclarator()+"."+tupleElement.Name;
+                
+                if (ctx.Node.TryFindParentScope(out var parentScope))
+                {
+                    var vds = parentScope.DescendantNodes<InvocationExpressionSyntax>()
+                        .Where(ies => ies.IsCallToDisposeFor(tupleElementName, ctx.SemanticModel, ctx.Configuration));
+                    if(!vds.Any())
+                        ctx.ReportNotDisposedTupleElement(tupleElementName);
+                }
+            }
         }
 
         private static void AnalyzeForHiddenDisposables(SyntaxNode invocationExpressionSyntax, CustomAnalysisContext ctx)

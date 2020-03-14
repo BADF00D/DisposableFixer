@@ -8,14 +8,20 @@ namespace DisposableFixer.Extensions
 {
     internal static class InvocationExpressionSyntaxExtension
     {
+        public static bool IsCallToDisposeFor(this InvocationExpressionSyntax node,
+            MemberAccessExpressionSyntaxExpression.MemberPath path, SemanticModel semanticModel,
+            IConfiguration configuration)
+        {
+
+        }
+
         public static bool IsCallToDisposeFor(this InvocationExpressionSyntax node, string identifier,
             SemanticModel semanticModel, IConfiguration configuration)
         {
-            if (node.Parent is ConditionalAccessExpressionSyntax syntax)
+            if (node.Parent is ConditionalAccessExpressionSyntax confitionalAccess)
             {
                 /** indentifier?.Dispose or (identifier as IDisposbale)?.Dispose **/
-                var condAccess = syntax;
-                switch (condAccess.Expression)
+                switch (confitionalAccess.Expression)
                 {
                     case IdentifierNameSyntax identifierSyntax:
                         var expression = node.Expression as MemberBindingExpressionSyntax;
@@ -32,8 +38,8 @@ namespace DisposableFixer.Extensions
                             !mc.IsStatic
                             && mc.Name == expression?.Name.Identifier.Text
                             && mc.Parameter.Length == node.ArgumentList.Arguments.Count);
-                        /* We have to check the parameter types, but unfortunatelly such an example and unittest does not exists jet.
-                       For now, we have enought information */
+                        /* We have to check the parameter types, but unfortunately such an example and unit test does not exists jet.
+                       For now, we have enough information */
                         return partlyEqual;
                     case ParenthesizedExpressionSyntax parenthesizedExpressionSyntax:
                         if (!(parenthesizedExpressionSyntax.Expression is BinaryExpressionSyntax binaryExpression))
@@ -42,7 +48,7 @@ namespace DisposableFixer.Extensions
                     case MemberAccessExpressionSyntax mae:
                         //e.g. this.Member.Dispose();
                         var isid = mae.Name.Identifier.Text == identifier;
-                        var wnn = condAccess.WhenNotNull as InvocationExpressionSyntax;
+                        var wnn = confitionalAccess.WhenNotNull as InvocationExpressionSyntax;
                         var mbe = wnn?.Expression as MemberBindingExpressionSyntax;
                         return isid && mbe?.Name.Identifier.Text == Constants.Dispose;
                     case InvocationExpressionSyntax invocationExpressionSyntax when invocationExpressionSyntax.IsInterlockedExchangeExpression():
@@ -55,7 +61,7 @@ namespace DisposableFixer.Extensions
 
             {
                 var expression = node.Expression as MemberAccessExpressionSyntax;
-                if (expression.IsDisposeCallFor(identifier)) return true;
+                if (expression.GetMemberPath().IsDisposeCall()) return true;
                 switch (expression?.Expression)
                 {
                     case IdentifierNameSyntax identifierSyntax:
@@ -68,9 +74,9 @@ namespace DisposableFixer.Extensions
                             !mc.IsStatic
                             && mc.Name == expression.Name.Identifier.Text
                             && mc.Parameter.Length == node.ArgumentList.Arguments.Count);
-                        /* We have to check the parameter types, but unfortunatelly such an example and unittest does not exists jet.
-                           For now, we have enought information */
-                        return partlyEqual;
+                        /* We have to check the parameter types, but unfortunately such an example and unit test does not exists jet.
+                       For now, we have enough information */
+                            return partlyEqual;
                     }
                     case MemberAccessExpressionSyntax mae:
                         return mae.Name.Identifier.Text == identifier &&

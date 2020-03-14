@@ -701,5 +701,32 @@ namespace DisposableFixer {
                 return ResourceManager.GetString("NotDisposedMessageFormat", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Marks tuple elements that don&apos;t get disposed..
+        /// </summary>
+        internal static string NotDisposedTupleElementDescription {
+            get {
+                return ResourceManager.GetString("NotDisposedTupleElementDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tuple element &apos;{0}&apos; is not disposed.
+        /// </summary>
+        internal static string NotDisposedTupleElementMessageFormat {
+            get {
+                return ResourceManager.GetString("NotDisposedTupleElementMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Marks undiposed tuple elements.
+        /// </summary>
+        internal static string NotDisposedTupleElementTitle {
+            get {
+                return ResourceManager.GetString("NotDisposedTupleElementTitle", resourceCulture);
+            }
+        }
     }
 }

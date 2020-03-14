@@ -23,6 +23,20 @@ namespace DisposableFixer.Extensions
             }
         }
 
+        public static bool IsAssignmentToDeconstructedTuple(this SyntaxNode node, int index, out string variableName)
+        {
+            variableName = null;
+            if (node is AssignmentExpressionSyntax aes && aes.Left is DeclarationExpressionSyntax des &&
+                des.Designation is ParenthesizedVariableDesignationSyntax pvsd &&
+                pvsd.Variables[index] is SingleVariableDesignationSyntax svds)
+            {
+                variableName = svds.Identifier.Text;
+                return true;
+            }
+
+            return false;
+        }
+
         public static bool ContainsUsingOfVariableNamed(this SyntaxNode node, string variableName)
         {
             return node.DescendantNodes()

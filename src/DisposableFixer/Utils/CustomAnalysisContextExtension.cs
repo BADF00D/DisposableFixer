@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
+using DisposableFixer.Configuration;
 using DisposableFixer.Extensions;
 using Microsoft.CodeAnalysis;
 
@@ -23,13 +22,22 @@ namespace DisposableFixer.Utils
             return ctx.Detector.IsIgnoredTypeOrImplementsIgnoredInterface(ctx.Type);
         }
 
+        public static void ReportNotDisposedTupleElement(this CustomAnalysisContext ctx, string elementName)
+        {
+            var location = ctx.OriginalNode.GetLocation();
+            var descriptor = NotDisposed.TupleElement.Descriptor;
+            if (GetCustomSeverity(ctx.Type, ctx.Configuration, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
+
+            ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, elementName));
+        }
+
         public static void ReportNotDisposedAnonymousObject(this CustomAnalysisContext ctx)
         {
             var location = ctx.OriginalNode.GetLocation();
             var descriptor = ctx.Source == DisposableSource.InvocationExpression
                 ? NotDisposed.AnonymousObject.FromMethodInvocationDescriptor
                 : NotDisposed.AnonymousObject.FromObjectCreationDescriptor;
-            if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
+            if (GetCustomSeverity(ctx.Type, ctx.Configuration, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
 
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location));
         }
@@ -38,7 +46,7 @@ namespace DisposableFixer.Utils
         {
             var location = ctx.OriginalNode.GetLocation();
             var descriptor = NotDisposed.LocalVariable.Descriptor;
-            if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
+            if (GetCustomSeverity(ctx.Type, ctx.Configuration, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
 
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, variableName));
         }
@@ -64,7 +72,7 @@ namespace DisposableFixer.Utils
             var descriptor = ctx.Source == DisposableSource.InvocationExpression
                 ? NotDisposed.Assignment.FromMethodInvocation.ToField.OfSameTypeDescriptor
                 : NotDisposed.Assignment.FromObjectCreation.ToField.OfSameTypeDescriptor;
-            if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
+            if (GetCustomSeverity(ctx.Type, ctx.Configuration, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
 
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), fieldName));
         }
@@ -77,7 +85,7 @@ namespace DisposableFixer.Utils
             var descriptor = ctx.Source == DisposableSource.InvocationExpression
                 ? NotDisposed.Assignment.FromMethodInvocation.ToStaticField.OfSameTypeDescriptor
                 : NotDisposed.Assignment.FromObjectCreation.ToStaticField.OfSameTypeDescriptor;
-            if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
+            if (GetCustomSeverity(ctx.Type, ctx.Configuration, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
 
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), fieldName));
         }
@@ -95,7 +103,7 @@ namespace DisposableFixer.Utils
                 : isStatic 
                     ? NotDisposed.Assignment.FromObjectCreation.ToStaticProperty.OfAnotherTypeDescriptor
                     : NotDisposed.Assignment.FromObjectCreation.ToProperty.OfAnotherTypeDescriptor;
-            if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
+            if (GetCustomSeverity(ctx.Type, ctx.Configuration, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
             var propertyPath = typeOrInstanceName != null ? $"{typeOrInstanceName}.{propertyName}" : propertyName;
 
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), propertyPath));
@@ -113,7 +121,7 @@ namespace DisposableFixer.Utils
                 : isStatic
                     ? NotDisposed.Assignment.FromObjectCreation.ToStaticField.OfAnotherTypeDescriptor
                     : NotDisposed.Assignment.FromObjectCreation.ToField.OfAnotherTypeDescriptor;
-            if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
+            if (GetCustomSeverity(ctx.Type, ctx.Configuration, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
 
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), memberName, fieldName));
         }
@@ -138,7 +146,7 @@ namespace DisposableFixer.Utils
             var descriptor = ctx.Source == DisposableSource.InvocationExpression
                 ? NotDisposed.Assignment.FromMethodInvocation.ToProperty.OfSameTypeDescriptor
                 : NotDisposed.Assignment.FromObjectCreation.ToProperty.OfSameTypeDescriptor;
-            if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
+            if (GetCustomSeverity(ctx.Type, ctx.Configuration, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
 
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), propertyName));
         }
@@ -151,7 +159,7 @@ namespace DisposableFixer.Utils
             var descriptor = ctx.Source == DisposableSource.InvocationExpression
                 ? NotDisposed.Assignment.FromMethodInvocation.ToStaticProperty.OfSameTypeDescriptor
                 : NotDisposed.Assignment.FromObjectCreation.ToStaticProperty.OfSameTypeDescriptor;
-            if (GetCustomSeverity(ctx, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
+            if (GetCustomSeverity(ctx.Type, ctx.Configuration, out var severity)) descriptor = ReplaceSeverity(descriptor, severity);
 
             ctx.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, properties.ToImmutable(), propertyName));
         }
@@ -210,10 +218,10 @@ namespace DisposableFixer.Utils
                 descriptor.Category, severity, descriptor.IsEnabledByDefault, descriptor.Description);
         }
 
-        private static bool GetCustomSeverity(CustomAnalysisContext context, out DiagnosticSeverity severity)
+        private static bool GetCustomSeverity(INamespaceOrTypeSymbol type, IConfiguration configuration, out DiagnosticSeverity severity)
         {
-            var fullName = context.Type.GetFullNamespace();
-            return context.Configuration.TypeWithCustomSeverity.TryGetValue(fullName, out severity);
+            var fullName = type.GetFullNamespace();
+            return configuration.TypeWithCustomSeverity.TryGetValue(fullName, out severity);
         }
     }
 }

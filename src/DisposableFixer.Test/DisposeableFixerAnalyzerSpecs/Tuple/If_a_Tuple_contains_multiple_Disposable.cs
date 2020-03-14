@@ -39,19 +39,19 @@ namespace MyNamespace
             get {
                 yield return CreateTesTCase("x", string.Empty)
                     .SetName("Not disposed tuple")
-                    .Returns(Id.ForLocal.VariableInTuple);
+                    .Returns(Id.ForLocal.TupleElement);
                 yield return CreateTesTCase("(x,y)", string.Empty)
                     .SetName("Not disposed deconstructed tuple")
-                    .Returns(Id.ForLocal.VariableInTuple);
+                    .Returns(Id.ForLocal.TupleElement);
                 yield return CreateTesTCase("x", "x.Item2.Dispose();")
                     .SetName("Only one of two items in tuple gets disposed")
-                    .Returns(Id.ForLocal.VariableInTuple);
+                    .Returns(Id.ForLocal.TupleElement);
                 yield return CreateTesTCase("x", "x.Item1.Dispose();\r\nx.Item2.Dispose();")
                     .SetName("Both items get disposed")
                     .Returns(null);
                 yield return CreateTesTCase("(x,y)", "x.Dispose();")
                     .SetName("Only one of two items of deconstructed tuple gets disposed")
-                    .Returns(Id.ForLocal.VariableInTuple);
+                    .Returns(Id.ForLocal.TupleElement);
                 yield return CreateTesTCase("(x,y)", "x.Dispose();y.Dispose();")
                     .SetName("Both items of deconstructed tuple gets disposed")
                     .Returns(null);

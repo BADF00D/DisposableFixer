@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Threading;
+using Microsoft.CodeAnalysis;
 using NUnit.Framework;
 
 namespace DisposableFixer.Test
@@ -79,6 +80,14 @@ namespace DisposableFixer.Test
         {
             Console.WriteLine("Code to analyze:");
             Console.WriteLine(code);
+        }
+
+        protected static void PrintDiagnostics(IEnumerable<Diagnostic> diagnostics)
+        {
+            foreach (var diagnostic in diagnostics)
+            {
+                Console.WriteLine($"{diagnostic.Id} {diagnostic.GetMessage()}");
+            }
         }
     }
 }

@@ -330,4 +330,13 @@
   <data name="AssignmendFromObjectCreationToStaticPropertyOfAnotherTypeNotDisposedTitle" xml:space="preserve">
     <value>Marks undisposed objects assinged to a property, originated in an object creation.</value>
   </data>
+  <data name="NotDisposedTupleElementDescription" xml:space="preserve">
+    <value>Marks tuple elements that don't get disposed.</value>
+  </data>
+  <data name="NotDisposedTupleElementMessageFormat" xml:space="preserve">
+    <value>Tuple element '{0}' is not disposed</value>
+  </data>
+  <data name="NotDisposedTupleElementTitle" xml:space="preserve">
+    <value>Marks undiposed tuple elements</value>
+  </data>
 </root>

@@ -17,7 +17,7 @@ namespace MyNamespace
     {
         public MyClass()
         {
-            var ##VARIABLE## = CreateInternal();
+            ##BEFORE##var ##VARIABLE## = CreateInternal();
             ##STATEMENT##
         }
         private (int, IDisposable) CreateInternal() => throw new NotImplementedException();
@@ -25,13 +25,14 @@ namespace MyNamespace
 }";
 
         [Test, TestCaseSource(nameof(TestCases))]
-        public string Test(string code)
+        public (string, string) Test(string code)
         {
             PrintCodeToAnalyze(code);
             var diagnostics = MyHelper.RunAnalyser(code, Sut);
+            PrintDiagnostics(diagnostics);
 
-            if (diagnostics.Length == 0) return null;
-            if (diagnostics.Length == 1) return diagnostics[0].Id;
+            if (diagnostics.Length == 0) return (null, null);
+            if (diagnostics.Length == 1) return (diagnostics[0].Id, diagnostics[0].GetMessage());
             Assert.Fail("To many diagnostics");
             throw new Exception();
         }
@@ -41,22 +42,29 @@ namespace MyNamespace
             {
                 yield return CreateTesTCase("x", string.Empty)
                     .SetName("Not disposed tuple")
-                    .Returns(Id.ForLocal.VariableInTuple);
+                    .Returns((Id.ForLocal.TupleElement, "Tuple element 'Item2' is not disposed"));
                 yield return CreateTesTCase("(x,y)", string.Empty)
                     .SetName("Not disposed deconstructed tuple")
-                    .Returns(Id.ForLocal.VariableInTuple);
+                    .Returns((Id.ForLocal.TupleElement, "Tuple element 'y' is not disposed"));
                 yield return CreateTesTCase("x", "x.Item2.Dispose();")
                     .SetName("Disposed tuple")
-                    .Returns(null);
+                    .Returns((default(string), default(string)));
                 yield return CreateTesTCase("(x,y)", "x.Dispose();")
                     .SetName("Disposed deconstructed tuple")
-                    .Returns(null);
+                    .Returns((default(string), default(string)));
+
+                //special cases
+                yield return CreateTesTCase("x", string.Empty, "var Item2 = new MemoryStream();\r\n\t\t\tItem2.Dispose();\r\n\t\t\t")
+                    .Returns((Id.ForLocal.TupleElement, "Tuple element 'Item2' is not disposed"))
+                    .SetName("Duplicated identified");
             }
         }
 
-        private static TestCaseData CreateTesTCase(string variable, string statement)
+        private static TestCaseData CreateTesTCase(string variable, string statement, string before = null)
         {
-            var code = Code.Replace("##VARIABLE##", variable)
+            var code = Code
+                .Replace("##BEFORE##", before ?? string.Empty)
+                .Replace("##VARIABLE##", variable)
                 .Replace("##STATEMENT##", statement);
 
             return new TestCaseData(code);

@@ -39,7 +39,7 @@ namespace DisposableFixer
         public static class ForLocal
         {
             public const string Variable = "DF0010";
-            public const string VariableInTuple = "DF0011";
+            public const string TupleElement = "DF0011";
         }
 
         public static class ForAssignment
@@ -498,6 +498,28 @@ namespace DisposableFixer
                         resourceManager: Resources.ResourceManager,
                         resourceSource: typeof(Resources)));
         }
+
+        internal static class TupleElement
+        {
+            public static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
+                id: Id.ForLocal.TupleElement,
+                title: new LocalizableResourceString(
+                    nameOfLocalizableResource: nameof(Resources.NotDisposedTupleElementTitle),
+                    resourceManager: Resources.ResourceManager,
+                    resourceSource: typeof(Resources)),
+                messageFormat: new LocalizableResourceString(
+                    nameOfLocalizableResource: nameof(Resources.NotDisposedTupleElementMessageFormat),
+                    resourceManager: Resources.ResourceManager,
+                    resourceSource: typeof(Resources)),
+                category: Category.WrongUsage,
+                defaultSeverity: DiagnosticSeverity.Warning,
+                isEnabledByDefault: true,
+                description: new LocalizableResourceString(
+                    nameOfLocalizableResource: nameof(Resources.NotDisposedTupleElementDescription),
+                    resourceManager: Resources.ResourceManager,
+                    resourceSource: typeof(Resources)));
+        }
+
 
         internal static class LocalVariable
         {
