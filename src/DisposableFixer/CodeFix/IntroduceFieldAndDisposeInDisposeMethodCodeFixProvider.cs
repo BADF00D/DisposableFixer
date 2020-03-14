@@ -23,7 +23,7 @@ namespace DisposableFixer.CodeFix
         public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(
             Id.ForAnonymousObjectFromMethodInvocation,
             Id.ForAnonymousObjectFromObjectCreation,
-            Id.ForNotDisposedLocalVariable
+            Id.ForLocal.Variable
         );
 
         public override FixAllProvider GetFixAllProvider() => null;
@@ -33,7 +33,7 @@ namespace DisposableFixer.CodeFix
             var diagnostic = context.Diagnostics.FirstOrDefault();
             if (diagnostic == null) return Task.CompletedTask;
 
-            if (diagnostic.Id == Id.ForNotDisposedLocalVariable)
+            if (diagnostic.Id == Id.ForLocal.Variable)
             {
                 context.RegisterCodeFix(
                     CodeAction.Create(ActionTitle.CreateFieldAndDisposeInDisposeMethod,
@@ -274,7 +274,7 @@ namespace DisposableFixer.CodeFix
         private static bool IsUndisposedLocalVariable(CodeFixContext context)
         {
             return context.Diagnostics.First().Id ==
-                   Id.ForNotDisposedLocalVariable;
+                   Id.ForLocal.Variable;
         }
     }
 }

@@ -21,7 +21,7 @@ namespace DisposableFixer.CodeFix
     public class DisposeLocalVariableAfterLastUsageCodeFixProvider : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds =>
-            ImmutableArray.Create(Id.ForNotDisposedLocalVariable);
+            ImmutableArray.Create(Id.ForLocal.Variable);
 
         public override FixAllProvider GetFixAllProvider() => null;
 

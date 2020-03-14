@@ -25,7 +25,7 @@ namespace DisposableFixer.Test.CodeFix.DisposeLocalVariableAfterLastUsageCodeFix
         public void Should_the_CodeFixProvider_be_responsible_for_undispose_local_fields()
         {
             _sut.FixableDiagnosticIds.Should()
-                .Contain(Id.ForNotDisposedLocalVariable);
+                .Contain(Id.ForLocal.Variable);
         }
 
         [Test, TestCaseSource(nameof(TestCases))]
@@ -72,7 +72,7 @@ namespace SomeNamespace {
         }
     }
 }";
-            return new TestCaseData(code, Id.ForNotDisposedLocalVariable)
+            return new TestCaseData(code, Id.ForLocal.Variable)
                 .SetName("Undisposed local Variable in VariableDeclarator");
         }
 
@@ -96,7 +96,7 @@ namespace SomeNamespace
         }
     }
 }";
-            return new TestCaseData(code, Id.ForNotDisposedLocalVariable)
+            return new TestCaseData(code, Id.ForLocal.Variable)
                 .SetName("Undisposed local Variable in Assigment");
         }
 
@@ -125,7 +125,7 @@ namespace SomeNamespace
         }
     }
 }";
-            return new TestCaseData(code, Id.ForNotDisposedLocalVariable)
+            return new TestCaseData(code, Id.ForLocal.Variable)
                 .SetName("Undisposed local Variable in await in VariableDeclarator");
         }
 
@@ -155,7 +155,7 @@ namespace SomeNamespace
         }
     }
 }";
-            return new TestCaseData(code, Id.ForNotDisposedLocalVariable)
+            return new TestCaseData(code, Id.ForLocal.Variable)
                 .SetName("Undisposed local Variable in await in Assigment");
         }
 
@@ -176,7 +176,7 @@ namespace Test
         }
     }
 }";
-            return new TestCaseData(code, Id.ForNotDisposedLocalVariable)
+            return new TestCaseData(code, Id.ForLocal.Variable)
                 .SetName("Local variable used in InvocationExpression as MemberAccessExpression");
         }
 
@@ -203,7 +203,7 @@ namespace Test
         }
     }
 }";
-            return new TestCaseData(code, Id.ForNotDisposedLocalVariable)
+            return new TestCaseData(code, Id.ForLocal.Variable)
                 .SetName("Local variable used in InvocationExpression as Argument");
         }
 
@@ -225,7 +225,7 @@ namespace Test
         }
     }
 }";
-            return new TestCaseData(code, Id.ForNotDisposedLocalVariable)
+            return new TestCaseData(code, Id.ForLocal.Variable)
                 .SetName("Local variable used in ObjectCreationExpression as Argument");
         }
     }

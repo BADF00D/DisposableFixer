@@ -92,7 +92,7 @@ namespace SomeNamespace
 
         private static IEnumerable<TestCaseData> TestCases {
             get {
-                var forNotDisposedLocalVariable = Id.ForNotDisposedLocalVariable;
+                var forNotDisposedLocalVariable = Id.ForLocal.Variable;
                 yield return new TestCaseData(CodeWithUndisposedLocalVariableAndTrailingCode,
                         forNotDisposedLocalVariable)
                     .SetName("Local variable and more code");

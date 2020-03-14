@@ -35,7 +35,12 @@ namespace DisposableFixer
     {
         public const string ForAnonymousObjectFromObjectCreation = "DF0000";
         public const string ForAnonymousObjectFromMethodInvocation = "DF0001";
-        public const string ForNotDisposedLocalVariable = "DF0010";
+        
+        public static class ForLocal
+        {
+            public const string Variable = "DF0010";
+            public const string VariableInTuple = "DF0011";
+        }
 
         public static class ForAssignment
         {
@@ -497,7 +502,7 @@ namespace DisposableFixer
         internal static class LocalVariable
         {
             public static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
-                id: Id.ForNotDisposedLocalVariable,
+                id: Id.ForLocal.Variable,
                 title: new LocalizableResourceString(
                     nameOfLocalizableResource: nameof(Resources.NotDisposedLocalVariableTitle),
                     resourceManager: Resources.ResourceManager,

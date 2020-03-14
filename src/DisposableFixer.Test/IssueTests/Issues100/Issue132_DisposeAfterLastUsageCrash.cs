@@ -79,7 +79,7 @@ namespace System.Net.Http
             PrintCodeToFix(Code);
             var diagnostics = MyHelper.RunAnalyser(Code, GetCSharpDiagnosticAnalyzer());
             diagnostics.Should().HaveCount(1, "we expect one diagnostic");
-            diagnostics[0].Id.Should().Be(Id.ForNotDisposedLocalVariable, "this should be fixed");
+            diagnostics[0].Id.Should().Be(Id.ForLocal.Variable, "this should be fixed");
 
             var fixedCode = ApplyCSharpCodeFix(Code);
             PrintFixedCode(fixedCode);

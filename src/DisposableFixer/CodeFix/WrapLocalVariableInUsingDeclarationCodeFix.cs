@@ -24,7 +24,7 @@ namespace DisposableFixer.CodeFix
         {
             if (!context.IsLanguageVersionAtLeast(LanguageVersion.CSharp8)) return Task.CompletedTask;
 
-            var diagnostics = context.Diagnostics.Where(d => d.Id == Id.ForNotDisposedLocalVariable);
+            var diagnostics = context.Diagnostics.Where(d => d.Id == Id.ForLocal.Variable);
 
             context.RegisterCodeFix(CodeAction.Create(ActionTitle.UseUsingDeclaration, c => PrefixWithUsingDeclaration(context, c), Guid.Empty.ToString()), diagnostics);
 
@@ -45,7 +45,7 @@ namespace DisposableFixer.CodeFix
         }
 
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-            ImmutableArray.Create(Id.ForNotDisposedLocalVariable);
+            ImmutableArray.Create(Id.ForLocal.Variable);
         public override FixAllProvider GetFixAllProvider() => null;
     }
 }

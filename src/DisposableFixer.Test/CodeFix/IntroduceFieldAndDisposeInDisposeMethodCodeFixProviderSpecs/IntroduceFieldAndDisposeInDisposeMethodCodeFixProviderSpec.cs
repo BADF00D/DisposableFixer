@@ -25,7 +25,7 @@ namespace DisposableFixer.Test.CodeFix.IntroduceFieldAndDisposeInDisposeMethodCo
         public void Should_the_CodeFixProvider_be_responsible_for_undispose_local_fields()
         {
             _sut.FixableDiagnosticIds.Should()
-                .Contain(Id.ForNotDisposedLocalVariable);
+                .Contain(Id.ForLocal.Variable);
         }
 
         [Test]
@@ -139,7 +139,7 @@ namespace MyNamespace
     }
 }
 ";
-            return new TestCaseData(code, Id.ForNotDisposedLocalVariable)
+            return new TestCaseData(code, Id.ForLocal.Variable)
                 .SetName("Undisposed local variable");
         }
 

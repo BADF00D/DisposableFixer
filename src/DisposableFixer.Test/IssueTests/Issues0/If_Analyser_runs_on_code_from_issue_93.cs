@@ -19,9 +19,9 @@ using System.IO;
 
 namespace SelectManyTest
 {
-    internal class LocalVariable
+    internal class Variable
     {
-        public LocalVariable()
+        public Variable()
         {
             var stream = new MemoryStream();
         }
@@ -32,7 +32,7 @@ namespace SelectManyTest
         {
             PrintCodeToFix(Code);
             MyHelper.RunAnalyser(Code, GetCSharpDiagnosticAnalyzer())
-                .Should().Contain(d => d.Id == Id.ForNotDisposedLocalVariable, "this should be fixed");
+                .Should().Contain(d => d.Id == Id.ForLocal.Variable, "this should be fixed");
             ApplyCSharpCodeFix(Code);
         }
     }

@@ -57,12 +57,12 @@ namespace MyNamespace
         [Test]
         public void Diagnostic_1_should_mark_an_undisposed_local_variable()
         {
-            _diagnostics[0].Id.Should().Be(Id.ForNotDisposedLocalVariable);
+            _diagnostics[0].Id.Should().Be(Id.ForLocal.Variable);
         }
         [Test]
         public void Diagnostic_2_should_mark_an_undisposed_local_variable()
         {
-            _diagnostics[1].Id.Should().Be(Id.ForNotDisposedLocalVariable);
+            _diagnostics[1].Id.Should().Be(Id.ForLocal.Variable);
         }
     }
 }
