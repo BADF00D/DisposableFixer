@@ -160,7 +160,7 @@
     <value>Field '{0}' is not disposed.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToFieldOfSameTypeNotDisposedTitle" xml:space="preserve">
-    <value>Marks undisposed objects assinged to a field, originated from method invocation.</value>
+    <value>Marks undisposed objects assigned to a field, originated from method invocation.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToStaticFieldOfSameTypeNotDisposedDescription" xml:space="preserve">
     <value>Result of method invocation is assigned to a field that is never disposed.</value>
@@ -169,7 +169,7 @@
     <value>Static field '{0}' is not disposed.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToStaticFieldOfSameTypeNotDisposedTitle" xml:space="preserve">
-    <value>Marks undisposed objects assinged to a field, originated from method invocation.</value>
+    <value>Marks undisposed objects assigned to a field, originated from method invocation.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToPropertyOfSameTypeNotDisposedDescription" xml:space="preserve">
     <value>Result of method invocation is assigned to a property that is never disposed.</value>
@@ -178,7 +178,7 @@
     <value>Property '{0}' is not disposed.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToPropertyOfSameTypeNotDisposedTitle" xml:space="preserve">
-    <value>Marks undisposed objects assinged to a property, originated from a method invocation.</value>
+    <value>Marks undisposed objects assigned to a property, originated from a method invocation.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToStaticPropertyOfSameTypeNotDisposedDescription" xml:space="preserve">
     <value>Result of method invocation is assigned to a property that is never disposed.</value>
@@ -187,7 +187,7 @@
     <value>Static property '{0}' is not disposed.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToStaticPropertyOfSameTypeNotDisposedTitle" xml:space="preserve">
-    <value>Marks undisposed objects assinged to a property, originated from a method invocation.</value>
+    <value>Marks undisposed objects assigned to a property, originated from a method invocation.</value>
   </data>
   <data name="AssignmendFromObjectCreationToFieldOfSameTypeNotDisposedDescription" xml:space="preserve">
     <value>Result of object creation is assigned to a field that is never disposed.</value>
@@ -196,13 +196,13 @@
     <value>Field '{0}' is not disposed.</value>
   </data>
   <data name="AssignmendFromObjectCreationToFieldOfSameTypeNotDisposedTitle" xml:space="preserve">
-    <value>Marks undisposed objects assinged to a field, originated in an object creation.</value>
+    <value>Marks undisposed objects assigned to a field, originated in an object creation.</value>
   </data>
   <data name="AssignmendFromObjectCreationToPropertyOfSameTypeNotDisposedDescription" xml:space="preserve">
     <value>Result of object creation is assigned to a property that is never disposed.</value>
   </data>
   <data name="AssignmendFromObjectCreationToPropertyOfSameTypeNotDisposedTitle" xml:space="preserve">
-    <value>Marks undisposed objects assinged to a property, originated in an object creation.</value>
+    <value>Marks undisposed objects assigned to a property, originated in an object creation.</value>
   </data>
   <data name="AssignmendFromObjectCreationToStaticFieldOfSameTypeNotDisposedDescription" xml:space="preserve">
     <value>Result of object creation is assigned to a field that is never disposed.</value>
@@ -211,13 +211,13 @@
     <value>Static field '{0}' is not disposed.</value>
   </data>
   <data name="AssignmendFromObjectCreationToStaticFieldOfSameTypeNotDisposedTitle" xml:space="preserve">
-    <value>Marks undisposed objects assinged to a field, originated in an object creation.</value>
+    <value>Marks undisposed objects assigned to a field, originated in an object creation.</value>
   </data>
   <data name="AssignmendFromObjectCreationToStaticPropertyOfSameTypeNotDisposedDescription" xml:space="preserve">
     <value>Result of object creation is assigned to a property that is never disposed.</value>
   </data>
   <data name="AssignmendFromObjectCreationToStaticPropertyOfSameTypeNotDisposedTitle" xml:space="preserve">
-    <value>Marks undisposed objects assinged to a property, originated in an object creation.</value>
+    <value>Marks undisposed objects assigned to a property, originated in an object creation.</value>
   </data>
   <data name="AssignmendFromObjectCreationToStaticPropertyOfSameTypeNotDisposedMessageFormat" xml:space="preserve">
     <value>Static property '{0}' is not disposed.</value>
@@ -265,7 +265,7 @@
     <value>Previous value of field '{0}.{1}' might no be disposed.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToFieldOfAnotherTypeNotDisposedTitle" xml:space="preserve">
-    <value>Marks undisposed objects assinged to a field, originated from method invocation.</value>
+    <value>Marks undisposed objects assigned to a field, originated from method invocation.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToPropertyOfAnotherTypeNotDisposedDescription" xml:space="preserve">
     <value>Result of method invocation is assigned to a property that is never disposed.</value>
@@ -274,7 +274,7 @@
     <value>Previous value of property '{0}' might no be disposed.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToPropertyOfAnotherTypeNotDisposedTitle" xml:space="preserve">
-    <value>Marks undisposed objects assinged to a property, originated from a method invocation.</value>
+    <value>Marks undisposed objects assigned to a property, originated from a method invocation.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToStaticFieldOfAnotherTypeNotDisposedDescription" xml:space="preserve">
     <value>Result of method invocation is assigned to a field that is never disposed.</value>
@@ -283,7 +283,7 @@
     <value>Previous value of static field '{0}.{1}' might no be disposed.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToStaticFieldOfAnotherTypeNotDisposedTitle" xml:space="preserve">
-    <value>Marks undisposed objects assinged to a field, originated from method invocation.</value>
+    <value>Marks undisposed objects assigned to a field, originated from method invocation.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToStaticPropertyOfAnotherTypeNotDisposedDescription" xml:space="preserve">
     <value>Result of method invocation is assigned to a property that is never disposed.</value>
@@ -292,7 +292,7 @@
     <value>Previous value of static property '{0}' might no be disposed.</value>
   </data>
   <data name="AssignmendFromMethodInvocationToStaticPropertyOfAnotherTypeNotDisposedTitle" xml:space="preserve">
-    <value>Marks undisposed objects assinged to a property, originated from a method invocation.</value>
+    <value>Marks undisposed objects assigned to a property, originated from a method invocation.</value>
   </data>
   <data name="AssignmendFromObjectCreationToFieldOfAnotherTypeNotDisposedDescription" xml:space="preserve">
     <value>Result of object creation is assigned to a field that is never disposed.</value>
@@ -301,7 +301,7 @@
     <value>Previous value of field '{0}.{1}' might no be disposed.</value>
   </data>
   <data name="AssignmendFromObjectCreationToFieldOfAnotherTypeNotDisposedTitle" xml:space="preserve">
-    <value>Marks undisposed objects assinged to a field, originated in an object creation.</value>
+    <value>Marks undisposed objects assigned to a field, originated in an object creation.</value>
   </data>
   <data name="AssignmendFromObjectCreationToPropertyOfAnotherTypeNotDisposedDescription" xml:space="preserve">
     <value>Result of object creation is assigned to a property that is never disposed.</value>
@@ -310,7 +310,7 @@
     <value>Previous value of property '{0}' might no be disposed.</value>
   </data>
   <data name="AssignmendFromObjectCreationToPropertyOfAnotherTypeNotDisposedTitle" xml:space="preserve">
-    <value>Marks undisposed objects assinged to a property, originated in an object creation.</value>
+    <value>Marks undisposed objects assigned to a property, originated in an object creation.</value>
   </data>
   <data name="AssignmendFromObjectCreationToStaticFieldOfAnotherTypeNotDisposedDescription" xml:space="preserve">
     <value>Result of object creation is assigned to a field that is never disposed.</value>
@@ -319,7 +319,7 @@
     <value>Previous value of static field '{0}.{1}' might no be disposed.</value>
   </data>
   <data name="AssignmendFromObjectCreationToStaticFieldOfAnotherTypeNotDisposedTitle" xml:space="preserve">
-    <value>Marks undisposed objects assinged to a field, originated in an object creation.</value>
+    <value>Marks undisposed objects assigned to a field, originated in an object creation.</value>
   </data>
   <data name="AssignmendFromObjectCreationToStaticPropertyOfAnotherTypeNotDisposedDescription" xml:space="preserve">
     <value>Result of object creation is assigned to a property that is never disposed.</value>
@@ -328,6 +328,6 @@
     <value>Previous value of static property '{0}' might no be disposed.</value>
   </data>
   <data name="AssignmendFromObjectCreationToStaticPropertyOfAnotherTypeNotDisposedTitle" xml:space="preserve">
-    <value>Marks undisposed objects assinged to a property, originated in an object creation.</value>
+    <value>Marks undisposed objects assigned to a property, originated in an object creation.</value>
   </data>
 </root>
